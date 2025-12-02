@@ -48,7 +48,6 @@ export default function Home() {
             alt="Story Point Poker"
             width={120}
             height={120}
-            className="dark:invert"
             priority
           />
         </div>
