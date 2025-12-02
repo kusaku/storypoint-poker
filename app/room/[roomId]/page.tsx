@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useParams, useSearchParams } from 'next/navigation'
+import { useParams, useSearchParams, useRouter } from 'next/navigation'
 import { io, Socket } from 'socket.io-client'
 
 interface User {
@@ -21,10 +21,14 @@ const FIBONACCI_CARDS = [0, 1, 2, 3, 5, 8]
 export default function RoomPage() {
   const params = useParams()
   const searchParams = useSearchParams()
+  const router = useRouter()
   const roomId = params.roomId as string
-  const userName = searchParams.get('name') || 'Anonymous'
+  const urlUserName = searchParams.get('name')
   const isHost = searchParams.get('host') === 'true'
 
+  const [userName, setUserName] = useState<string>(urlUserName || '')
+  const [showNameModal, setShowNameModal] = useState(!urlUserName || urlUserName.trim() === '')
+  const [nameInput, setNameInput] = useState(urlUserName || '')
   const [socket, setSocket] = useState<Socket | null>(null)
   const [roomState, setRoomState] = useState<RoomState>({
     users: [],
@@ -34,10 +38,13 @@ export default function RoomPage() {
   const [connectionError, setConnectionError] = useState<string | null>(null)
   const [isConnected, setIsConnected] = useState(false)
   const [copied, setCopied] = useState(false)
-  const [showInviteModal, setShowInviteModal] = useState(false)
-  const [inviteName, setInviteName] = useState('')
 
   useEffect(() => {
+    // Don't connect to socket until name is entered
+    if (!userName || userName.trim() === '' || showNameModal) {
+      return
+    }
+
     console.log('Room page mounted', { roomId, userName, isHost })
     // Use same origin for Socket.io (will be proxied by Next.js)
     const socketUrl = typeof window !== 'undefined' ? window.location.origin : ''
@@ -120,7 +127,7 @@ export default function RoomPage() {
     return () => {
       newSocket.close()
     }
-  }, [roomId, userName])
+  }, [roomId, userName, showNameModal])
 
   const handleVote = (card: number | string) => {
     console.log('Vote clicked:', card, { socket: !!socket, revealed: roomState.revealed })
@@ -149,18 +156,22 @@ export default function RoomPage() {
     }
   }
 
-  const handleCopyInviteLink = () => {
-    setShowInviteModal(true)
+  const handleEnterName = () => {
+    const name = nameInput.trim()
+    if (name && name.length > 0) {
+      setUserName(name)
+      setShowNameModal(false)
+      // Update URL with the name
+      const newUrl = `/room/${roomId}?name=${encodeURIComponent(name)}${isHost ? '&host=true' : ''}`
+      router.replace(newUrl)
+    }
   }
 
-  const handleCopyWithName = async () => {
-    const name = inviteName.trim() || 'Guest'
-    const inviteUrl = `${window.location.origin}/room/${roomId}?name=${encodeURIComponent(name)}`
+  const handleCopyInviteLink = async () => {
+    const inviteUrl = `${window.location.origin}/room/${roomId}`
     try {
       await navigator.clipboard.writeText(inviteUrl)
       setCopied(true)
-      setShowInviteModal(false)
-      setInviteName('')
       setTimeout(() => setCopied(false), 2000)
     } catch (err) {
       console.error('Failed to copy:', err)
@@ -172,8 +183,6 @@ export default function RoomPage() {
       document.execCommand('copy')
       document.body.removeChild(textArea)
       setCopied(true)
-      setShowInviteModal(false)
-      setInviteName('')
       setTimeout(() => setCopied(false), 2000)
     }
   }
@@ -183,12 +192,57 @@ export default function RoomPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="bg-white rounded-lg shadow-md p-4 mb-4">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-2xl font-bold text-indigo-600">Room: {roomId}</h1>
-              <p className="text-gray-600">Welcome, {userName}!</p>
+        {/* Name Entry Modal - Required before entering room */}
+        {showNameModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
+              <h2 className="text-2xl font-bold text-indigo-600 mb-4">Enter Your Name</h2>
+              <p className="text-gray-600 mb-4">Please enter your name to join the room</p>
+              <div className="space-y-4">
+                <div>
+                  <label htmlFor="nameInput" className="block text-sm font-medium text-gray-700 mb-2">
+                    Your Name:
+                  </label>
+                  <input
+                    id="nameInput"
+                    type="text"
+                    value={nameInput}
+                    onChange={(e) => setNameInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && nameInput.trim().length > 0) {
+                        handleEnterName()
+                      }
+                    }}
+                    placeholder="Enter your name"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    autoFocus
+                    required
+                  />
+                  {nameInput.trim().length === 0 && (
+                    <p className="mt-1 text-xs text-red-500">Name is required</p>
+                  )}
+                </div>
+                <button
+                  onClick={handleEnterName}
+                  disabled={nameInput.trim().length === 0}
+                  className="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors font-medium disabled:bg-gray-300 disabled:cursor-not-allowed"
+                >
+                  Join Room
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Don't show room content until name is entered */}
+        {!showNameModal && (
+          <>
+            {/* Header */}
+            <div className="bg-white rounded-lg shadow-md p-4 mb-4">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h1 className="text-2xl font-bold text-indigo-600">Room: {roomId}</h1>
+                  <p className="text-gray-600">Welcome, {userName}!</p>
               <div className="flex items-center gap-2 mt-1">
                 {isConnected ? (
                   <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">🟢 Connected</span>
@@ -222,53 +276,43 @@ export default function RoomPage() {
           </div>
         </div>
 
-        {/* Invite Link Modal */}
-        {showInviteModal && (
+        {/* Name Entry Modal - Required before entering room */}
+        {showNameModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
-              <h2 className="text-2xl font-bold text-indigo-600 mb-4">Copy Invitation Link</h2>
+              <h2 className="text-2xl font-bold text-indigo-600 mb-4">Enter Your Name</h2>
+              <p className="text-gray-600 mb-4">Please enter your name to join the room</p>
               <div className="space-y-4">
                 <div>
-                  <label htmlFor="inviteName" className="block text-sm font-medium text-gray-700 mb-2">
-                    Enter name for the invitation link:
+                  <label htmlFor="nameInput" className="block text-sm font-medium text-gray-700 mb-2">
+                    Your Name:
                   </label>
                   <input
-                    id="inviteName"
+                    id="nameInput"
                     type="text"
-                    value={inviteName}
-                    onChange={(e) => setInviteName(e.target.value)}
+                    value={nameInput}
+                    onChange={(e) => setNameInput(e.target.value)}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        handleCopyWithName()
-                      }
-                      if (e.key === 'Escape') {
-                        setShowInviteModal(false)
-                        setInviteName('')
+                      if (e.key === 'Enter' && nameInput.trim().length > 0) {
+                        handleEnterName()
                       }
                     }}
-                    placeholder="Enter name (optional)"
+                    placeholder="Enter your name"
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                     autoFocus
+                    required
                   />
-                  <p className="mt-1 text-xs text-gray-500">Leave empty to use "Guest"</p>
+                  {nameInput.trim().length === 0 && (
+                    <p className="mt-1 text-xs text-red-500">Name is required</p>
+                  )}
                 </div>
-                <div className="flex gap-3">
-                  <button
-                    onClick={handleCopyWithName}
-                    className="flex-1 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors font-medium"
-                  >
-                    Copy Link
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowInviteModal(false)
-                      setInviteName('')
-                    }}
-                    className="flex-1 bg-gray-200 text-gray-800 py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors font-medium"
-                  >
-                    Cancel
-                  </button>
-                </div>
+                <button
+                  onClick={handleEnterName}
+                  disabled={nameInput.trim().length === 0}
+                  className="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors font-medium disabled:bg-gray-300 disabled:cursor-not-allowed"
+                >
+                  Join Room
+                </button>
               </div>
             </div>
           </div>
@@ -386,6 +430,8 @@ export default function RoomPage() {
             )}
           </div>
         </div>
+          </>
+        )}
       </div>
     </div>
   )
