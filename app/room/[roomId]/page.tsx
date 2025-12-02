@@ -301,13 +301,15 @@ export default function RoomPage() {
                     onClick={() => handleVote(card)}
                     disabled={roomState.revealed}
                     className={`
-                      aspect-square rounded-lg font-bold text-2xl transition-all
+                      aspect-square rounded-lg font-bold transition-all
+                      flex items-center justify-center p-[5%]
                       ${selectedCard === card
                         ? 'bg-indigo-600 dark:bg-indigo-500 text-white scale-110 shadow-lg'
                         : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200'
                       }
                       ${roomState.revealed ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
                     `}
+                    style={{ fontSize: 'clamp(2rem, 10vw, 6rem)', lineHeight: '1' }}
                   >
                     {card}
                   </button>
