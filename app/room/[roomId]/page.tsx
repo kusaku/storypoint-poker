@@ -274,15 +274,15 @@ export default function RoomPage() {
                       onClick={handleCopyInviteLink}
                       className="text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded hover:bg-green-200 dark:hover:bg-green-800 transition-colors flex items-center gap-1"
                     >
-                      {copied ? (
-                        <>
-                          <span>✓</span> Copied!
-                        </>
-                      ) : (
-                        <>
-                          <span>🔗</span> Copy Invite Link
-                        </>
-                      )}
+                        {copied ? (
+                          <>
+                            <span>✓</span> Copied!
+                          </>
+                        ) : (
+                          <>
+                            <span>🔗</span> Invitation Link
+                          </>
+                        )}
                     </button>
                   </div>
                 </div>
@@ -317,7 +317,7 @@ export default function RoomPage() {
                 ))}
               </div>
               
-              <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+              <div className="pt-4">
                 <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Add Comment</p>
                 <div className="relative">
                   <textarea

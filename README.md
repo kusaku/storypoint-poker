@@ -1,5 +1,9 @@
 # 🃏 Story Point Poker
 
+<div align="center">
+  <img src="https://raw.githubusercontent.com/kusaku/storypoint-poker/master/public/logo.png" alt="Story Point Poker Logo" width="200"/>
+</div>
+
 A real-time planning poker application for agile teams. Built with Next.js, Socket.io, and Tailwind CSS.
 
 ## ✨ Features

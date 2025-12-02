@@ -63,7 +63,7 @@ export default function Home() {
           Story Point Poker
         </h1>
         <p className="text-center text-gray-600 dark:text-gray-300 mb-8">
-          Agile planning poker for your team
+          Agile planning poker for our team
         </p>
 
         <form className="space-y-4">
