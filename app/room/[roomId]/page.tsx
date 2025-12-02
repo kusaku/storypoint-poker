@@ -85,7 +85,16 @@ export default function RoomPage() {
       setRoomState(state)
       const currentUser = state.users.find(u => u.name === userName)
       setSelectedCard(currentUser?.vote ?? null)
-      setComment(currentUser?.comment ?? '')
+      // Only update comment from server if it's different from local state
+      // This prevents overwriting while user is typing (spaces get trimmed on server)
+      const serverComment = currentUser?.comment ?? ''
+      setComment(prev => {
+        // If server comment matches our trimmed local comment, keep local (preserves spaces while typing)
+        if (prev.trim() === serverComment && prev !== serverComment) {
+          return prev
+        }
+        return serverComment
+      })
     })
 
     setSocket(newSocket)
@@ -141,8 +150,10 @@ export default function RoomPage() {
   const handleCommentChange = (value: string) => {
     if (value.length <= 140) {
       setComment(value)
+      // Debounce the socket emission to avoid overwriting while typing
       if (socket) {
-        socket.emit('comment', { roomId, comment: value.trim() || null })
+        const trimmed = value.trim()
+        socket.emit('comment', { roomId, comment: trimmed || null })
       }
     }
   }
