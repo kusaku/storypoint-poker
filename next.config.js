@@ -13,6 +13,15 @@ const nextConfig = {
   },
   // Ignore server directory
   pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
+  // Rewrite Socket.io requests to backend
+  async rewrites() {
+    return [
+      {
+        source: '/socket.io/:path*',
+        destination: 'http://localhost:3001/socket.io/:path*',
+      },
+    ]
+  },
 }
 
 module.exports = nextConfig

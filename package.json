@@ -4,8 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "build": "npm run build:frontend && npm run build:backend",
+    "build:frontend": "next build",
+    "build:backend": "cd server && npm install && npm run build",
+    "start": "node start.js",
+    "start:frontend": "next start",
+    "start:backend": "cd server && npm start",
     "lint": "next lint"
   },
   "dependencies": {

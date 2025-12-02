@@ -36,8 +36,8 @@ export default function RoomPage() {
 
   useEffect(() => {
     console.log('Room page mounted', { roomId, userName, isHost })
-    // Hardcoded Railway URL
-    const socketUrl = 'https://storypoint-poker-production.up.railway.app'
+    // Use same origin for Socket.io (will be proxied by Next.js)
+    const socketUrl = typeof window !== 'undefined' ? window.location.origin : ''
     console.log('Connecting to Socket.io server:', socketUrl)
     
     const newSocket = io(socketUrl, {
