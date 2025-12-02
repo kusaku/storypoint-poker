@@ -127,10 +127,18 @@ io.on('connection', (socket) => {
 })
 
 app.prepare().then(() => {
+  // Handle HTTP requests (Socket.io handles its own requests automatically)
   httpServer.on('request', async (req, res) => {
     try {
       const parsedUrl = parse(req.url, true)
       const { pathname } = parsedUrl
+
+      // Let Socket.io handle its own requests
+      if (pathname && pathname.startsWith('/socket.io/')) {
+        // Socket.io will handle this automatically, but we need to make sure
+        // the request isn't already handled
+        return
+      }
 
       // Health check
       if (pathname === '/health') {
@@ -156,6 +164,7 @@ app.prepare().then(() => {
     if (err) throw err
     console.log(`✅ Server ready on http://${hostname}:${port}`)
     console.log(`🌐 Next.js frontend + Socket.io backend running together`)
+    console.log(`🔌 Socket.io available at /socket.io/`)
   })
 })
 
