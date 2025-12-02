@@ -85,11 +85,9 @@ export default function RoomPage() {
       setRoomState(state)
       const currentUser = state.users.find(u => u.name === userName)
       setSelectedCard(currentUser?.vote ?? null)
-      // Only update comment from server if it's different from local state
-      // This prevents overwriting while user is typing (spaces get trimmed on server)
       const serverComment = currentUser?.comment ?? ''
       setComment(prev => {
-        // If server comment matches our trimmed local comment, keep local (preserves spaces while typing)
+        // Preserve local comment if it matches trimmed server comment (user is typing)
         if (prev.trim() === serverComment && prev !== serverComment) {
           return prev
         }
@@ -150,10 +148,8 @@ export default function RoomPage() {
   const handleCommentChange = (value: string) => {
     if (value.length <= 140) {
       setComment(value)
-      // Debounce the socket emission to avoid overwriting while typing
       if (socket) {
-        const trimmed = value.trim()
-        socket.emit('comment', { roomId, comment: trimmed || null })
+        socket.emit('comment', { roomId, comment: value.trim() || null })
       }
     }
   }
@@ -234,44 +230,44 @@ export default function RoomPage() {
         )}
 
         {!showNameModal && (
-          <>
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 mb-4">
-              <div className="flex justify-between items-center">
-                <div>
-                  <h1 className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">Room: {roomId}</h1>
-                  <p className="text-gray-600 dark:text-gray-300">Welcome, {userName}!</p>
-              <div className="flex items-center gap-2 mt-1">
-                {isConnected ? (
-                  <span className="text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded">🟢 Connected</span>
-                ) : (
-                  <span className="text-xs bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 px-2 py-1 rounded">🔴 Disconnected</span>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 mb-4">
+            <div className="flex justify-between items-center">
+              <div>
+                <h1 className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">Room: {roomId}</h1>
+                <p className="text-gray-600 dark:text-gray-300">Welcome, {userName}!</p>
+                <div className="flex items-center gap-2 mt-1">
+                  {isConnected ? (
+                    <span className="text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded">🟢 Connected</span>
+                  ) : (
+                    <span className="text-xs bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 px-2 py-1 rounded">🔴 Disconnected</span>
+                  )}
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-sm text-gray-500 dark:text-gray-400">Participants: {roomState.users.length}</p>
+                {isHost && (
+                  <div className="mt-2">
+                    <span className="text-xs bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 px-2 py-1 rounded">Host</span>
+                    <button
+                      onClick={handleCopyInviteLink}
+                      className="ml-2 text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded hover:bg-green-200 dark:hover:bg-green-800 transition-colors flex items-center gap-1"
+                    >
+                      {copied ? (
+                        <>
+                          <span>✓</span> Copied!
+                        </>
+                      ) : (
+                        <>
+                          <span>🔗</span> Copy Invite Link
+                        </>
+                      )}
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
-            <div className="text-right">
-              <p className="text-sm text-gray-500 dark:text-gray-400">Participants: {roomState.users.length}</p>
-              {isHost && (
-                <div className="mt-2">
-                  <span className="text-xs bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 px-2 py-1 rounded">Host</span>
-                  <button
-                    onClick={handleCopyInviteLink}
-                    className="ml-2 text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded hover:bg-green-200 dark:hover:bg-green-800 transition-colors flex items-center gap-1"
-                  >
-                    {copied ? (
-                      <>
-                        <span>✓</span> Copied!
-                      </>
-                    ) : (
-                      <>
-                        <span>🔗</span> Copy Invite Link
-                      </>
-                    )}
-                  </button>
-                </div>
-              )}
-            </div>
           </div>
-        </div>
+        )}
 
         {connectionError && (
           <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-4">
@@ -280,7 +276,6 @@ export default function RoomPage() {
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          {/* Main Voting Area */}
           <div className="lg:col-span-2 space-y-4">
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
               <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">Select Your Vote</h2>
@@ -337,107 +332,106 @@ export default function RoomPage() {
             </div>
 
             {isHost && (
-                  <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
-                    <div className="flex gap-3">
-                      <button
-                        onClick={handleReveal}
-                        disabled={roomState.revealed || !hasAtLeastOneVote}
-                        className="flex-1 bg-green-600 dark:bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-700 dark:hover:bg-green-600 disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed font-medium"
-                      >
-                        {roomState.revealed ? 'Votes Revealed' : 'Reveal Votes'}
-                      </button>
-                      <button
-                        onClick={handleReset}
-                        disabled={!roomState.revealed}
-                        className="flex-1 bg-orange-600 dark:bg-orange-500 text-white py-2 px-4 rounded-lg hover:bg-orange-700 dark:hover:bg-orange-600 disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed font-medium"
-                      >
-                        Reset
-                      </button>
-                    </div>
-                  </div>
-                )}
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+                <div className="flex gap-3">
+                  <button
+                    onClick={handleReveal}
+                    disabled={roomState.revealed || !hasAtLeastOneVote}
+                    className="flex-1 bg-green-600 dark:bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-700 dark:hover:bg-green-600 disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed font-medium"
+                  >
+                    {roomState.revealed ? 'Votes Revealed' : 'Reveal Votes'}
+                  </button>
+                  <button
+                    onClick={handleReset}
+                    disabled={!roomState.revealed}
+                    className="flex-1 bg-orange-600 dark:bg-orange-500 text-white py-2 px-4 rounded-lg hover:bg-orange-700 dark:hover:bg-orange-600 disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed font-medium"
+                  >
+                    Reset
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
-                <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">Participants</h2>
-                <div className="space-y-3">
-                  {roomState.users.map((user) => (
-                    <div key={user.id} className="relative">
-                      <div className="p-2 rounded bg-gray-50 dark:bg-gray-700 flex justify-between items-center">
-                        <span className="font-medium text-gray-900 dark:text-gray-100">{user.name}</span>
-                        <span className="text-sm flex-shrink-0">
-                          {roomState.revealed ? (
-                            <span className="font-bold text-indigo-600 dark:text-indigo-400">{user.vote ?? '—'}</span>
-                          ) : (
-                            <span className={user.hasVoted ? 'text-green-600 dark:text-green-400' : 'text-gray-400 dark:text-gray-500'}>
-                              {user.hasVoted ? '✓' : '○'}
-                            </span>
-                          )}
+            <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">Participants</h2>
+            <div className="space-y-3">
+              {roomState.users.map((user) => (
+                <div key={user.id} className="relative">
+                  <div className="p-2 rounded bg-gray-50 dark:bg-gray-700 flex justify-between items-center">
+                    <span className="font-medium text-gray-900 dark:text-gray-100">{user.name}</span>
+                    <span className="text-sm flex-shrink-0">
+                      {roomState.revealed ? (
+                        <span className="font-bold text-indigo-600 dark:text-indigo-400">{user.vote ?? '—'}</span>
+                      ) : (
+                        <span className={user.hasVoted ? 'text-green-600 dark:text-green-400' : 'text-gray-400 dark:text-gray-500'}>
+                          {user.hasVoted ? '✓' : '○'}
                         </span>
-                      </div>
-                      {user.comment && (
-                        <div className="absolute left-full top-0 ml-2 z-10">
-                          <div className="bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-900 rounded-lg px-3 py-2 text-sm shadow-lg relative max-w-xs whitespace-normal">
-                            <p className="break-words">{user.comment}</p>
-                            <div className="absolute right-full top-3 w-0 h-0 border-t-4 border-b-4 border-r-4 border-transparent border-r-gray-800 dark:border-r-gray-200"></div>
-                          </div>
-                        </div>
                       )}
-                    </div>
-                  ))}
-                </div>
-                {roomState.revealed && voteDistribution.length > 0 && (
-                  <div className="mt-4 p-3 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg">
-                    <p className="text-sm font-semibold text-indigo-800 dark:text-indigo-300 mb-2">Vote Distribution:</p>
-                        <ResponsiveContainer width="100%" height={250}>
-                          <PieChart>
-                            <Pie
-                              data={voteDistribution}
-                              cx="50%"
-                              cy="50%"
-                              labelLine={true}
-                              label={({ name, value }: any) => {
-                                const total = voteDistribution.reduce((sum, item) => sum + item.value, 0)
-                                const percentage = total > 0 ? Math.round((value / total) * 100) : 0
-                                return `${name} (${percentage}%)`
-                              }}
-                              outerRadius={60}
-                              fill="#8884d8"
-                              dataKey="value"
-                            >
-                              {voteDistribution.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                              ))}
-                            </Pie>
-                            <Tooltip 
-                              content={({ active, payload }) => {
-                                if (active && payload && payload.length) {
-                                  const data = payload[0]
-                                  return (
-                                    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-2 shadow-lg">
-                                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                        {`${data.name}: ${data.value} vote${data.value > 1 ? 's' : ''}`}
-                                      </p>
-                                    </div>
-                                  )
-                                }
-                                return null
-                              }}
-                            />
-                            <Legend 
-                              wrapperStyle={{ 
-                                fontSize: '12px',
-                                color: 'inherit'
-                              }}
-                              formatter={(value) => value}
-                            />
-                          </PieChart>
-                        </ResponsiveContainer>
+                    </span>
                   </div>
-                )}
+                  {user.comment && (
+                    <div className="absolute left-full top-0 ml-2 z-10">
+                      <div className="bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-900 rounded-lg px-3 py-2 text-sm shadow-lg relative max-w-xs whitespace-normal">
+                        <p className="break-words">{user.comment}</p>
+                        <div className="absolute right-full top-3 w-0 h-0 border-t-4 border-b-4 border-r-4 border-transparent border-r-gray-800 dark:border-r-gray-200"></div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+            {roomState.revealed && voteDistribution.length > 0 && (
+              <div className="mt-4 p-3 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg">
+                <p className="text-sm font-semibold text-indigo-800 dark:text-indigo-300 mb-2">Vote Distribution:</p>
+                <ResponsiveContainer width="100%" height={250}>
+                  <PieChart>
+                    <Pie
+                      data={voteDistribution}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={true}
+                      label={({ name, value }: any) => {
+                        const total = voteDistribution.reduce((sum, item) => sum + item.value, 0)
+                        const percentage = total > 0 ? Math.round((value / total) * 100) : 0
+                        return `${name} (${percentage}%)`
+                      }}
+                      outerRadius={60}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {voteDistribution.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip 
+                      content={({ active, payload }) => {
+                        if (active && payload && payload.length) {
+                          const data = payload[0]
+                          return (
+                            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-2 shadow-lg">
+                              <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                {`${data.name}: ${data.value} vote${data.value > 1 ? 's' : ''}`}
+                              </p>
+                            </div>
+                          )
+                        }
+                        return null
+                      }}
+                    />
+                    <Legend 
+                      wrapperStyle={{ 
+                        fontSize: '12px',
+                        color: 'inherit'
+                      }}
+                      formatter={(value) => value}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
               </div>
+            )}
+          </div>
         </div>
-          </>
         )}
       </div>
     </div>

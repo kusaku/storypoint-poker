@@ -51,12 +51,9 @@ io.on('connection', (socket) => {
     
     // Find existing user with same name and cancel their disconnect timer
     let existingUser = null
-    let existingSocketId = null
     for (const [userId, user] of room.users.entries()) {
       if (user.name === userName) {
         existingUser = user
-        existingSocketId = userId
-        // Cancel disconnect timer if it exists
         if (disconnectTimers.has(userId)) {
           clearTimeout(disconnectTimers.get(userId))
           disconnectTimers.delete(userId)
@@ -172,9 +169,6 @@ io.on('connection', (socket) => {
         }, CLIENT_DISCONNECT_TIMEOUT)
         
         disconnectTimers.set(socket.id, timer)
-        
-        // Don't remove user immediately - keep them for 1 minute
-        // This allows reconnection to restore their vote
       }
     })
   })
