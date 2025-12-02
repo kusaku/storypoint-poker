@@ -25,6 +25,11 @@ const io = new Server(httpServer, {
 
 // Socket.io room management
 const rooms = new Map()
+const disconnectTimers = new Map() // Track timers for disconnected users
+const roomDeleteTimers = new Map() // Track timers for empty room deletion
+
+const CLIENT_DISCONNECT_TIMEOUT = 60 * 1000 // 1 minute
+const ROOM_DELETE_TIMEOUT = 60 * 60 * 1000 // 1 hour
 
 io.on('connection', (socket) => {
   socket.on('join-room', ({ roomId, userName }) => {
@@ -38,10 +43,24 @@ io.on('connection', (socket) => {
 
     const room = rooms.get(roomId)
     
+    // Cancel any pending deletion timer for this room
+    if (roomDeleteTimers.has(roomId)) {
+      clearTimeout(roomDeleteTimers.get(roomId))
+      roomDeleteTimers.delete(roomId)
+    }
+    
+    // Find existing user with same name and cancel their disconnect timer
     let existingUser = null
+    let existingSocketId = null
     for (const [userId, user] of room.users.entries()) {
       if (user.name === userName) {
         existingUser = user
+        existingSocketId = userId
+        // Cancel disconnect timer if it exists
+        if (disconnectTimers.has(userId)) {
+          clearTimeout(disconnectTimers.get(userId))
+          disconnectTimers.delete(userId)
+        }
         room.users.delete(userId)
         break
       }
@@ -109,18 +128,36 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     rooms.forEach((room, roomId) => {
       if (room.users.has(socket.id)) {
-        room.users.delete(socket.id)
-        io.to(roomId).emit('room-state', {
-          users: Array.from(room.users.values()),
-          revealed: room.revealed
-        })
-        if (room.users.size === 0) {
-          setTimeout(() => {
-            if (rooms.get(roomId)?.users.size === 0) {
-              rooms.delete(roomId)
+        const user = room.users.get(socket.id)
+        
+        // Set timer to remove user after 1 minute
+        const timer = setTimeout(() => {
+          if (room.users.has(socket.id)) {
+            room.users.delete(socket.id)
+            disconnectTimers.delete(socket.id)
+            
+            io.to(roomId).emit('room-state', {
+              users: Array.from(room.users.values()),
+              revealed: room.revealed
+            })
+            
+            // If room is now empty, set timer to delete it after 1 hour
+            if (room.users.size === 0) {
+              const roomTimer = setTimeout(() => {
+                if (rooms.get(roomId)?.users.size === 0) {
+                  rooms.delete(roomId)
+                  roomDeleteTimers.delete(roomId)
+                }
+              }, ROOM_DELETE_TIMEOUT)
+              roomDeleteTimers.set(roomId, roomTimer)
             }
-          }, 300000)
-        }
+          }
+        }, CLIENT_DISCONNECT_TIMEOUT)
+        
+        disconnectTimers.set(socket.id, timer)
+        
+        // Don't remove user immediately - keep them for 1 minute
+        // This allows reconnection to restore their vote
       }
     })
   })
