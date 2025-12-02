@@ -171,7 +171,20 @@ export default function RoomPage() {
     }
   }
 
-  const POPULAR_EMOJIS = ['👍', '❤️', '😊', '😄', '😃', '😁', '😂', '🤣', '😎', '😍', '🥰', '😘', '🎉', '🔥', '✅', '👏', '💯', '💩', '😢', '😭', '🤔', '😴', '🤯']
+  const POPULAR_EMOJIS = [
+    // Positive reactions
+    '👍', '❤️', '✅', '👏', '💯',
+    // Happy faces
+    '😊', '😄', '😃', '😁', '😍', '🥰', '😘', '😎',
+    // Celebration
+    '🎉', '🔥',
+    // Funny
+    '😂', '🤣', '💩', '🤡',
+    // Negative
+    '😢', '😭',
+    // Thinking/other
+    '🤔', '🤯', '😴'
+  ]
 
   const hasAtLeastOneVote = roomState.users.some(u => u.hasVoted && u.vote !== null)
 
