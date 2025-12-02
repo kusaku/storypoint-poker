@@ -34,6 +34,8 @@ export default function RoomPage() {
   const [connectionError, setConnectionError] = useState<string | null>(null)
   const [isConnected, setIsConnected] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [showInviteModal, setShowInviteModal] = useState(false)
+  const [inviteName, setInviteName] = useState('')
 
   useEffect(() => {
     console.log('Room page mounted', { roomId, userName, isHost })
@@ -147,11 +149,18 @@ export default function RoomPage() {
     }
   }
 
-  const handleCopyInviteLink = async () => {
-    const inviteUrl = `${window.location.origin}/room/${roomId}?name=`
+  const handleCopyInviteLink = () => {
+    setShowInviteModal(true)
+  }
+
+  const handleCopyWithName = async () => {
+    const name = inviteName.trim() || 'Guest'
+    const inviteUrl = `${window.location.origin}/room/${roomId}?name=${encodeURIComponent(name)}`
     try {
       await navigator.clipboard.writeText(inviteUrl)
       setCopied(true)
+      setShowInviteModal(false)
+      setInviteName('')
       setTimeout(() => setCopied(false), 2000)
     } catch (err) {
       console.error('Failed to copy:', err)
@@ -163,6 +172,8 @@ export default function RoomPage() {
       document.execCommand('copy')
       document.body.removeChild(textArea)
       setCopied(true)
+      setShowInviteModal(false)
+      setInviteName('')
       setTimeout(() => setCopied(false), 2000)
     }
   }
@@ -210,6 +221,58 @@ export default function RoomPage() {
             </div>
           </div>
         </div>
+
+        {/* Invite Link Modal */}
+        {showInviteModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
+              <h2 className="text-2xl font-bold text-indigo-600 mb-4">Copy Invitation Link</h2>
+              <div className="space-y-4">
+                <div>
+                  <label htmlFor="inviteName" className="block text-sm font-medium text-gray-700 mb-2">
+                    Enter name for the invitation link:
+                  </label>
+                  <input
+                    id="inviteName"
+                    type="text"
+                    value={inviteName}
+                    onChange={(e) => setInviteName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        handleCopyWithName()
+                      }
+                      if (e.key === 'Escape') {
+                        setShowInviteModal(false)
+                        setInviteName('')
+                      }
+                    }}
+                    placeholder="Enter name (optional)"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    autoFocus
+                  />
+                  <p className="mt-1 text-xs text-gray-500">Leave empty to use "Guest"</p>
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={handleCopyWithName}
+                    className="flex-1 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors font-medium"
+                  >
+                    Copy Link
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowInviteModal(false)
+                      setInviteName('')
+                    }}
+                    className="flex-1 bg-gray-200 text-gray-800 py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Connection Error Alert */}
         {connectionError && (
