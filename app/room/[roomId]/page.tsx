@@ -276,48 +276,6 @@ export default function RoomPage() {
           </div>
         </div>
 
-        {/* Name Entry Modal - Required before entering room */}
-        {showNameModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
-              <h2 className="text-2xl font-bold text-indigo-600 mb-4">Enter Your Name</h2>
-              <p className="text-gray-600 mb-4">Please enter your name to join the room</p>
-              <div className="space-y-4">
-                <div>
-                  <label htmlFor="nameInput" className="block text-sm font-medium text-gray-700 mb-2">
-                    Your Name:
-                  </label>
-                  <input
-                    id="nameInput"
-                    type="text"
-                    value={nameInput}
-                    onChange={(e) => setNameInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && nameInput.trim().length > 0) {
-                        handleEnterName()
-                      }
-                    }}
-                    placeholder="Enter your name"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                    autoFocus
-                    required
-                  />
-                  {nameInput.trim().length === 0 && (
-                    <p className="mt-1 text-xs text-red-500">Name is required</p>
-                  )}
-                </div>
-                <button
-                  onClick={handleEnterName}
-                  disabled={nameInput.trim().length === 0}
-                  className="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors font-medium disabled:bg-gray-300 disabled:cursor-not-allowed"
-                >
-                  Join Room
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Connection Error Alert */}
         {connectionError && (
           <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-4">
