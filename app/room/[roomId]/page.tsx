@@ -443,11 +443,18 @@ export default function RoomPage() {
                               ))}
                             </Pie>
                             <Tooltip 
-                              contentStyle={{
-                                backgroundColor: 'var(--tooltip-bg, rgba(255, 255, 255, 0.95))',
-                                border: '1px solid var(--tooltip-border, #e5e7eb)',
-                                borderRadius: '8px',
-                                color: 'var(--tooltip-text, #000)',
+                              content={({ active, payload }) => {
+                                if (active && payload && payload.length) {
+                                  const data = payload[0]
+                                  return (
+                                    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-2 shadow-lg">
+                                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                        {`${data.name}: ${data.value} vote${data.value > 1 ? 's' : ''} (${data.payload.percentage}%)`}
+                                      </p>
+                                    </div>
+                                  )
+                                }
+                                return null
                               }}
                             />
                             <Legend 
