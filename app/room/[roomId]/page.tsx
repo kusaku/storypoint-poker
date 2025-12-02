@@ -190,7 +190,7 @@ export default function RoomPage() {
   const allVoted = roomState.users.length > 0 && roomState.users.every(u => u.hasVoted)
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="max-w-6xl mx-auto">
         {/* Name Entry Modal - Required before entering room */}
         {showNameModal && (
@@ -238,27 +238,27 @@ export default function RoomPage() {
         {!showNameModal && (
           <>
             {/* Header */}
-            <div className="bg-white rounded-lg shadow-md p-4 mb-4">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 mb-4">
               <div className="flex justify-between items-center">
                 <div>
-                  <h1 className="text-2xl font-bold text-indigo-600">Room: {roomId}</h1>
-                  <p className="text-gray-600">Welcome, {userName}!</p>
+                  <h1 className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">Room: {roomId}</h1>
+                  <p className="text-gray-600 dark:text-gray-300">Welcome, {userName}!</p>
               <div className="flex items-center gap-2 mt-1">
                 {isConnected ? (
-                  <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">🟢 Connected</span>
+                  <span className="text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded">🟢 Connected</span>
                 ) : (
-                  <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded">🔴 Disconnected</span>
+                  <span className="text-xs bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 px-2 py-1 rounded">🔴 Disconnected</span>
                 )}
               </div>
             </div>
             <div className="text-right">
-              <p className="text-sm text-gray-500">Participants: {roomState.users.length}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Participants: {roomState.users.length}</p>
               {isHost && (
                 <div className="mt-2">
-                  <span className="text-xs bg-indigo-100 text-indigo-800 px-2 py-1 rounded">Host</span>
+                  <span className="text-xs bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 px-2 py-1 rounded">Host</span>
                   <button
                     onClick={handleCopyInviteLink}
-                    className="ml-2 text-xs bg-green-100 text-green-800 px-2 py-1 rounded hover:bg-green-200 transition-colors flex items-center gap-1"
+                    className="ml-2 text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded hover:bg-green-200 dark:hover:bg-green-800 transition-colors flex items-center gap-1"
                   >
                     {copied ? (
                       <>
@@ -320,18 +320,18 @@ export default function RoomPage() {
 
         {/* Connection Error Alert */}
         {connectionError && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-4">
             <div className="flex items-start">
               <div className="flex-shrink-0">
-                <span className="text-red-400 text-xl">⚠️</span>
+                <span className="text-red-400 dark:text-red-500 text-xl">⚠️</span>
               </div>
               <div className="ml-3">
-                <h3 className="text-sm font-medium text-red-800">Connection Error</h3>
-                <p className="mt-1 text-sm text-red-700">{connectionError}</p>
-                <p className="mt-2 text-xs text-red-600">
-                  <strong>For local testing:</strong> Make sure the Socket.io server is running: <code className="bg-red-100 px-1 rounded">cd server && npm run dev</code>
+                <h3 className="text-sm font-medium text-red-800 dark:text-red-300">Connection Error</h3>
+                <p className="mt-1 text-sm text-red-700 dark:text-red-400">{connectionError}</p>
+                <p className="mt-2 text-xs text-red-600 dark:text-red-400">
+                  <strong>For local testing:</strong> Make sure the Socket.io server is running: <code className="bg-red-100 dark:bg-red-900/30 px-1 rounded">cd server && npm run dev</code>
                   <br />
-                  <strong>For production:</strong> Set <code className="bg-red-100 px-1 rounded">NEXT_PUBLIC_SOCKET_URL</code> in Vercel environment variables.
+                  <strong>For production:</strong> Set <code className="bg-red-100 dark:bg-red-900/30 px-1 rounded">NEXT_PUBLIC_SOCKET_URL</code> in Vercel environment variables.
                 </p>
               </div>
             </div>
@@ -342,8 +342,8 @@ export default function RoomPage() {
           {/* Main Voting Area */}
           <div className="lg:col-span-2 space-y-4">
             {/* Voting Cards */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-bold mb-4 text-gray-800">Select Your Vote</h2>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+              <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">Select Your Vote</h2>
               <div className="grid grid-cols-3 gap-4">
                 {FIBONACCI_CARDS.map((card) => (
                   <button
@@ -353,8 +353,8 @@ export default function RoomPage() {
                     className={`
                       aspect-square rounded-lg font-bold text-2xl transition-all
                       ${selectedCard === card
-                        ? 'bg-indigo-600 text-white scale-110 shadow-lg'
-                        : 'bg-gray-100 hover:bg-gray-200 text-gray-800'
+                        ? 'bg-indigo-600 dark:bg-indigo-500 text-white scale-110 shadow-lg'
+                        : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200'
                       }
                       ${roomState.revealed ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
                     `}
@@ -364,71 +364,71 @@ export default function RoomPage() {
                 ))}
               </div>
               {selectedCard !== null && !roomState.revealed && (
-                <p className="mt-4 text-center text-green-600 font-medium">
+                <p className="mt-4 text-center text-green-600 dark:text-green-400 font-medium">
                   ✓ You voted: {selectedCard}
                 </p>
               )}
             </div>
 
-            {/* Host Controls */}
-            {isHost && (
-              <div className="bg-white rounded-lg shadow-md p-4">
-                <div className="flex gap-3">
-                  <button
-                    onClick={handleReveal}
-                    disabled={!allVoted || roomState.revealed}
-                    className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed font-medium"
-                  >
-                    {roomState.revealed ? 'Votes Revealed' : 'Reveal Votes'}
-                  </button>
-                  <button
-                    onClick={handleReset}
-                    disabled={!roomState.revealed}
-                    className="flex-1 bg-orange-600 text-white py-2 px-4 rounded-lg hover:bg-orange-700 disabled:bg-gray-300 disabled:cursor-not-allowed font-medium"
-                  >
-                    Reset
-                  </button>
-                </div>
-              </div>
-            )}
+                {/* Host Controls */}
+                {isHost && (
+                  <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+                    <div className="flex gap-3">
+                      <button
+                        onClick={handleReveal}
+                        disabled={!allVoted || roomState.revealed}
+                        className="flex-1 bg-green-600 dark:bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-700 dark:hover:bg-green-600 disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed font-medium"
+                      >
+                        {roomState.revealed ? 'Votes Revealed' : 'Reveal Votes'}
+                      </button>
+                      <button
+                        onClick={handleReset}
+                        disabled={!roomState.revealed}
+                        className="flex-1 bg-orange-600 dark:bg-orange-500 text-white py-2 px-4 rounded-lg hover:bg-orange-700 dark:hover:bg-orange-600 disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed font-medium"
+                      >
+                        Reset
+                      </button>
+                    </div>
+                  </div>
+                )}
           </div>
 
-          {/* Participants Sidebar */}
-          <div className="bg-white rounded-lg shadow-md p-4">
-            <h2 className="text-xl font-bold mb-4 text-gray-800">Participants</h2>
-            <div className="space-y-2">
-              {roomState.users.map((user) => (
-                <div
-                  key={user.id}
-                  className="flex justify-between items-center p-2 rounded bg-gray-50"
-                >
-                  <span className="font-medium">{user.name}</span>
-                  <span className="text-sm">
-                    {roomState.revealed ? (
-                      <span className="font-bold text-indigo-600">{user.vote ?? '—'}</span>
-                    ) : (
-                      <span className={user.hasVoted ? 'text-green-600' : 'text-gray-400'}>
-                        {user.hasVoted ? '✓' : '○'}
-                      </span>
-                    )}
-                  </span>
-                </div>
-              ))}
-            </div>
-            {roomState.revealed && (
-              <div className="mt-4 p-3 bg-indigo-50 rounded-lg">
-                <p className="text-sm font-semibold text-indigo-800 mb-2">Results:</p>
-                <div className="space-y-1">
+              {/* Participants Sidebar */}
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+                <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">Participants</h2>
+                <div className="space-y-2">
                   {roomState.users.map((user) => (
-                    <div key={user.id} className="flex justify-between text-sm">
-                      <span>{user.name}:</span>
-                      <span className="font-bold">{user.vote ?? '—'}</span>
+                    <div
+                      key={user.id}
+                      className="flex justify-between items-center p-2 rounded bg-gray-50 dark:bg-gray-700"
+                    >
+                      <span className="font-medium text-gray-900 dark:text-gray-100">{user.name}</span>
+                      <span className="text-sm">
+                        {roomState.revealed ? (
+                          <span className="font-bold text-indigo-600 dark:text-indigo-400">{user.vote ?? '—'}</span>
+                        ) : (
+                          <span className={user.hasVoted ? 'text-green-600 dark:text-green-400' : 'text-gray-400 dark:text-gray-500'}>
+                            {user.hasVoted ? '✓' : '○'}
+                          </span>
+                        )}
+                      </span>
                     </div>
                   ))}
                 </div>
+                {roomState.revealed && (
+                  <div className="mt-4 p-3 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg">
+                    <p className="text-sm font-semibold text-indigo-800 dark:text-indigo-300 mb-2">Results:</p>
+                    <div className="space-y-1">
+                      {roomState.users.map((user) => (
+                        <div key={user.id} className="flex justify-between text-sm text-gray-900 dark:text-gray-100">
+                          <span>{user.name}:</span>
+                          <span className="font-bold">{user.vote ?? '—'}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
         </div>
           </>
         )}
