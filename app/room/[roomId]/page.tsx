@@ -81,6 +81,12 @@ export default function RoomPage() {
     newSocket.on('room-state', (state: RoomState) => {
       console.log('Room state updated:', state)
       setRoomState(state)
+      
+      // Restore user's previous vote if they had one (for page refresh)
+      const currentUser = state.users.find(u => u.name === userName)
+      if (currentUser && currentUser.hasVoted && currentUser.vote !== null) {
+        setSelectedCard(currentUser.vote)
+      }
     })
 
     // Keep these for backwards compatibility, but room-state is primary
@@ -412,20 +418,9 @@ export default function RoomPage() {
                     </div>
                   ))}
                 </div>
-                {roomState.revealed && (
+                {roomState.revealed && voteDistribution.length > 0 && (
                   <div className="mt-4 p-3 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg">
-                    <p className="text-sm font-semibold text-indigo-800 dark:text-indigo-300 mb-2">Results:</p>
-                    <div className="space-y-1 mb-4">
-                      {roomState.users.map((user) => (
-                        <div key={user.id} className="flex justify-between text-sm text-gray-900 dark:text-gray-100">
-                          <span>{user.name}:</span>
-                          <span className="font-bold">{user.vote ?? '—'}</span>
-                        </div>
-                      ))}
-                    </div>
-                    {voteDistribution.length > 0 && (
-                      <div className="mt-4">
-                        <p className="text-sm font-semibold text-indigo-800 dark:text-indigo-300 mb-2">Vote Distribution:</p>
+                    <p className="text-sm font-semibold text-indigo-800 dark:text-indigo-300 mb-2">Vote Distribution:</p>
                         <ResponsiveContainer width="100%" height={250}>
                           <PieChart>
                             <Pie
@@ -470,8 +465,6 @@ export default function RoomPage() {
                             />
                           </PieChart>
                         </ResponsiveContainer>
-                      </div>
-                    )}
                   </div>
                 )}
               </div>

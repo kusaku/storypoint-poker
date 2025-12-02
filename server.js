@@ -43,11 +43,23 @@ io.on('connection', (socket) => {
     }
 
     const room = rooms.get(roomId)
+    
+    // Check if user with same name already exists (for reconnection)
+    let existingUser = null
+    for (const [userId, user] of room.users.entries()) {
+      if (user.name === userName) {
+        existingUser = user
+        // Remove old socket.id entry
+        room.users.delete(userId)
+        break
+      }
+    }
+
     const user = {
       id: socket.id,
       name: userName,
-      vote: null,
-      hasVoted: false
+      vote: existingUser ? existingUser.vote : null,
+      hasVoted: existingUser ? existingUser.hasVoted : false
     }
 
     room.users.set(socket.id, user)
