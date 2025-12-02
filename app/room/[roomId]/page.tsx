@@ -362,8 +362,8 @@ export default function RoomPage() {
                 <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">Participants</h2>
                 <div className="space-y-3">
                   {roomState.users.map((user) => (
-                    <div key={user.id} className="flex items-start gap-2">
-                      <div className="p-2 rounded bg-gray-50 dark:bg-gray-700 flex justify-between items-center flex-1 min-w-0">
+                    <div key={user.id} className="relative">
+                      <div className="p-2 rounded bg-gray-50 dark:bg-gray-700 flex justify-between items-center">
                         <span className="font-medium text-gray-900 dark:text-gray-100">{user.name}</span>
                         <span className="text-sm flex-shrink-0">
                           {roomState.revealed ? (
@@ -376,10 +376,10 @@ export default function RoomPage() {
                         </span>
                       </div>
                       {user.comment && (
-                        <div className="flex-shrink-0">
+                        <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 z-10">
                           <div className="bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-900 rounded-lg px-3 py-2 text-sm shadow-lg relative max-w-xs">
                             <p className="break-words whitespace-normal">{user.comment}</p>
-                            <div className="absolute left-0 top-1/2 -translate-x-full -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-r-4 border-transparent border-r-gray-800 dark:border-r-gray-200"></div>
+                            <div className="absolute right-full top-1/2 -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-r-4 border-transparent border-r-gray-800 dark:border-r-gray-200"></div>
                           </div>
                         </div>
                       )}
