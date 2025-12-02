@@ -127,50 +127,38 @@ io.on('connection', (socket) => {
 })
 
 app.prepare().then(() => {
-  // Handle HTTP requests - Socket.io will handle /socket.io/ requests automatically
+  // Handle HTTP requests
+  // Socket.io automatically handles /socket.io/ requests, so we only handle other routes
   httpServer.on('request', async (req, res) => {
+    const parsedUrl = parse(req.url, true)
+    const { pathname } = parsedUrl
+
+    // Health check
+    if (pathname === '/health') {
+      res.writeHead(200, { 'Content-Type': 'application/json' })
+      res.end(JSON.stringify({ 
+        status: 'ok', 
+        service: 'storypoint-poker',
+        timestamp: new Date().toISOString()
+      }))
+      return
+    }
+
+    // Skip Socket.io - it handles its own requests
+    if (pathname && pathname.startsWith('/socket.io/')) {
+      return // Socket.io will handle this
+    }
+
+    // Let Next.js handle all other routes
     try {
-      const parsedUrl = parse(req.url, true)
-      const { pathname } = parsedUrl
-
-      // Health check
-      if (pathname === '/health') {
-        res.writeHead(200, { 'Content-Type': 'application/json' })
-        res.end(JSON.stringify({ 
-          status: 'ok', 
-          service: 'storypoint-poker',
-          timestamp: new Date().toISOString()
-        }))
-        return
-      }
-
-      // Socket.io handles /socket.io/ requests automatically
-      // If the request is for Socket.io and hasn't been handled, it means Socket.io
-      // will process it, so we don't need to do anything
-      if (pathname && pathname.startsWith('/socket.io/')) {
-        // Socket.io handles these - don't process in our handler
-        // The request will be handled by Socket.io's internal handler
-        return
-      }
-
-      // Let Next.js handle all other routes (including /)
       await handle(req, res, parsedUrl)
     } catch (err) {
-      // Only log non-Socket.io errors
-      if (!req.url || !req.url.startsWith('/socket.io/')) {
-        console.error('Error occurred handling', req.url, err)
-      }
+      console.error('Error handling request:', err)
       if (!res.headersSent) {
         res.statusCode = 500
         res.end('internal server error')
       }
     }
-  })
-
-  // Make sure Socket.io can handle upgrade requests (WebSocket)
-  httpServer.on('upgrade', (req, socket, head) => {
-    // Socket.io will handle WebSocket upgrades automatically
-    // This is just to ensure upgrade requests are passed through
   })
 
   httpServer.listen(port, hostname, (err) => {
