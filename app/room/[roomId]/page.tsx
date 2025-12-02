@@ -271,58 +271,56 @@ export default function RoomPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* Main Voting Area */}
           <div className="lg:col-span-2 space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">Select Your Vote</h2>
-                <div className="grid grid-cols-3 gap-4">
-                  {FIBONACCI_CARDS.map((card) => (
-                    <button
-                      key={card}
-                      onClick={() => handleVote(card)}
-                      disabled={roomState.revealed}
-                      className={`
-                        aspect-square rounded-lg font-bold transition-all
-                        flex items-center justify-center p-[5%]
-                        ${selectedCard === card
-                          ? 'bg-indigo-600 dark:bg-indigo-500 text-white scale-110 shadow-lg'
-                          : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200'
-                        }
-                        ${spinningCard === card ? 'card-spin' : ''}
-                        ${roomState.revealed ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-                      `}
-                      style={{ fontSize: 'clamp(2rem, 10vw, 6rem)', lineHeight: '1' }}
-                    >
-                      {card}
-                    </button>
-                  ))}
-                </div>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+              <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">Select Your Vote</h2>
+              <div className="grid grid-cols-3 gap-4">
+                {FIBONACCI_CARDS.map((card) => (
+                  <button
+                    key={card}
+                    onClick={() => handleVote(card)}
+                    disabled={roomState.revealed}
+                    className={`
+                      aspect-square rounded-lg font-bold transition-all
+                      flex items-center justify-center p-[5%]
+                      ${selectedCard === card
+                        ? 'bg-indigo-600 dark:bg-indigo-500 text-white scale-110 shadow-lg'
+                        : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200'
+                      }
+                      ${spinningCard === card ? 'card-spin' : ''}
+                      ${roomState.revealed ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+                    `}
+                    style={{ fontSize: 'clamp(2rem, 10vw, 6rem)', lineHeight: '1' }}
+                  >
+                    {card}
+                  </button>
+                ))}
               </div>
+            </div>
 
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">Add Comment</h2>
-                <div className="relative">
-                  <textarea
-                    value={comment}
-                    onChange={(e) => handleCommentChange(e.target.value)}
-                    placeholder="Type your comment here..."
-                    maxLength={140}
-                    rows={4}
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 resize-none"
-                  />
-                  <div className="flex justify-between items-center mt-2">
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                      {comment.length}/140
-                    </span>
-                    {comment.trim() && (
-                      <button
-                        onClick={handleRemoveComment}
-                        className="text-xs text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium flex items-center gap-1"
-                        title="Remove comment"
-                      >
-                        <span>✕</span> Remove
-                      </button>
-                    )}
-                  </div>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+              <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">Add Comment</h2>
+              <div className="relative">
+                <textarea
+                  value={comment}
+                  onChange={(e) => handleCommentChange(e.target.value)}
+                  placeholder="Type your comment here..."
+                  maxLength={140}
+                  rows={4}
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 resize-none"
+                />
+                <div className="flex justify-between items-center mt-2">
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    {comment.length}/140
+                  </span>
+                  {comment.trim() && (
+                    <button
+                      onClick={handleRemoveComment}
+                      className="text-xs text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium flex items-center gap-1"
+                      title="Remove comment"
+                    >
+                      <span>✕</span> Remove
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
@@ -355,10 +353,10 @@ export default function RoomPage() {
                   {roomState.users.map((user) => (
                     <div key={user.id} className="relative">
                       {user.comment && (
-                        <div className="absolute bottom-full right-0 mb-2 max-w-xs">
+                        <div className="absolute bottom-0 right-0 mb-8 max-w-xs z-10">
                           <div className="bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-900 rounded-lg px-3 py-2 text-sm shadow-lg relative">
                             <p className="break-words">{user.comment}</p>
-                            <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-800 dark:border-t-gray-200"></div>
+                            <div className="absolute bottom-0 right-4 translate-y-full w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-800 dark:border-b-gray-200"></div>
                           </div>
                         </div>
                       )}
