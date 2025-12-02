@@ -46,10 +46,8 @@ export default function RoomPage() {
       return
     }
 
-    console.log('Room page mounted', { roomId, userName, isHost })
     // Use same origin for Socket.io (will be proxied by Next.js)
     const socketUrl = typeof window !== 'undefined' ? window.location.origin : ''
-    console.log('Connecting to Socket.io server:', socketUrl)
     
     const newSocket = io(socketUrl, {
       transports: ['polling', 'websocket'], // Try polling first, then websocket
@@ -60,26 +58,22 @@ export default function RoomPage() {
     })
 
     newSocket.on('connect', () => {
-      console.log('✅ Connected to Socket.io server, socket ID:', newSocket.id)
-      console.log('Joining room:', { roomId, userName })
       setIsConnected(true)
       setConnectionError(null)
       newSocket.emit('join-room', { roomId, userName })
     })
 
     newSocket.on('connect_error', (error) => {
-      console.error('❌ Socket.io connection error:', error)
+      console.error('Socket.io connection error:', error)
       setIsConnected(false)
       setConnectionError(`Failed to connect to Socket.io server at ${socketUrl}. Make sure the server is running and the URL is correct.`)
     })
 
     newSocket.on('disconnect', () => {
-      console.log('⚠️ Disconnected from Socket.io server')
       setIsConnected(false)
     })
 
     newSocket.on('room-state', (state: RoomState) => {
-      console.log('Room state updated:', state)
       setRoomState(state)
       
       // Restore user's previous vote if they had one (for page refresh)
@@ -91,7 +85,6 @@ export default function RoomPage() {
 
     // Keep these for backwards compatibility, but room-state is primary
     newSocket.on('user-joined', (user: User) => {
-      console.log('User joined:', user)
       setRoomState(prev => ({
         ...prev,
         users: [...prev.users.filter(u => u.id !== user.id), user]
@@ -99,7 +92,6 @@ export default function RoomPage() {
     })
 
     newSocket.on('user-left', (userId: string) => {
-      console.log('User left:', userId)
       setRoomState(prev => ({
         ...prev,
         users: prev.users.filter(u => u.id !== userId)
@@ -107,7 +99,6 @@ export default function RoomPage() {
     })
 
     newSocket.on('vote-received', (data: { userId: string; vote: number | string }) => {
-      console.log('Vote received:', data)
       setRoomState(prev => ({
         ...prev,
         users: prev.users.map(u =>
@@ -137,28 +128,20 @@ export default function RoomPage() {
   }, [roomId, userName, showNameModal])
 
   const handleVote = (card: number | string) => {
-    console.log('Vote clicked:', card, { socket: !!socket, revealed: roomState.revealed })
     if (socket && !roomState.revealed) {
       setSelectedCard(card)
-      console.log('Emitting vote:', { roomId, vote: card })
       socket.emit('vote', { roomId, vote: card })
-    } else {
-      console.warn('Cannot vote:', { hasSocket: !!socket, revealed: roomState.revealed })
     }
   }
 
   const handleReveal = () => {
-    console.log('Reveal clicked', { socket: !!socket, isHost })
     if (socket && isHost) {
-      console.log('Emitting reveal-votes:', { roomId })
       socket.emit('reveal-votes', { roomId })
     }
   }
 
   const handleReset = () => {
-    console.log('Reset clicked', { socket: !!socket, isHost })
     if (socket && isHost) {
-      console.log('Emitting reset-votes:', { roomId })
       socket.emit('reset-votes', { roomId })
     }
   }

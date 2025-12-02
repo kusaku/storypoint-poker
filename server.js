@@ -30,10 +30,7 @@ const io = new Server(httpServer, {
 const rooms = new Map()
 
 io.on('connection', (socket) => {
-  console.log('✅ User connected:', socket.id)
-
   socket.on('join-room', ({ roomId, userName }) => {
-    console.log('👤 User joining room:', { socketId: socket.id, roomId, userName })
     if (!rooms.has(roomId)) {
       rooms.set(roomId, {
         id: roomId,
@@ -72,7 +69,6 @@ io.on('connection', (socket) => {
   })
 
   socket.on('vote', ({ roomId, vote }) => {
-    console.log('🗳️ Vote received:', { socketId: socket.id, roomId, vote })
     const room = rooms.get(roomId)
     if (room) {
       const user = room.users.get(socket.id)
@@ -90,7 +86,6 @@ io.on('connection', (socket) => {
   })
 
   socket.on('reveal-votes', ({ roomId }) => {
-    console.log('👁️ Revealing votes for room:', roomId)
     const room = rooms.get(roomId)
     if (room) {
       room.revealed = true
@@ -103,7 +98,6 @@ io.on('connection', (socket) => {
   })
 
   socket.on('reset-votes', ({ roomId }) => {
-    console.log('🔄 Resetting votes for room:', roomId)
     const room = rooms.get(roomId)
     if (room) {
       room.revealed = false
@@ -120,7 +114,6 @@ io.on('connection', (socket) => {
   })
 
   socket.on('disconnect', () => {
-    console.log('❌ User disconnected:', socket.id)
     rooms.forEach((room, roomId) => {
       if (room.users.has(socket.id)) {
         room.users.delete(socket.id)
