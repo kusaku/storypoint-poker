@@ -149,14 +149,11 @@ app.prepare().then(() => {
     }
 
     // Skip Socket.io - it's handled by the io instance attached above
-    if (pathname && pathname.startsWith('/socket.io/')) {
-      // Don't handle - Socket.io will process this
-      // If we've reached here, Socket.io didn't handle it, which means
-      // the request might be malformed, but we still shouldn't process it
-      if (!res.headersSent) {
-        res.statusCode = 404
-        res.end('Not found')
-      }
+    // Socket.io processes these requests internally, so we don't handle them here
+    if (pathname && pathname.startsWith('/socket.io')) {
+      // Socket.io should handle this - if response not sent, it means Socket.io
+      // didn't process it (shouldn't happen, but just in case)
+      // We don't send a response here to avoid interfering with Socket.io
       return
     }
 
