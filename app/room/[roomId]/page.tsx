@@ -332,9 +332,9 @@ export default function RoomPage() {
                 <h3 className="text-sm font-medium text-red-800 dark:text-red-300">Connection Error</h3>
                 <p className="mt-1 text-sm text-red-700 dark:text-red-400">{connectionError}</p>
                 <p className="mt-2 text-xs text-red-600 dark:text-red-400">
-                  <strong>For local testing:</strong> Make sure the Socket.io server is running: <code className="bg-red-100 dark:bg-red-900/30 px-1 rounded">cd server && npm run dev</code>
+                  <strong>For local testing:</strong> Make sure the server is running: <code className="bg-red-100 dark:bg-red-900/30 px-1 rounded">npm run dev</code>
                   <br />
-                  <strong>For production:</strong> Set <code className="bg-red-100 dark:bg-red-900/30 px-1 rounded">NEXT_PUBLIC_SOCKET_URL</code> in Vercel environment variables.
+                  <strong>For Railway:</strong> The Socket.io server runs on the same port as the Next.js app. No additional configuration needed.
                 </p>
               </div>
             </div>
