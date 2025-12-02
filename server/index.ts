@@ -1,8 +1,10 @@
 import { Server } from 'socket.io'
 import { createServer } from 'http'
 
-const httpServer = createServer((req, res) => {
-  // Health check endpoint
+const httpServer = createServer()
+
+// Health check endpoint (before Socket.io)
+httpServer.on('request', (req, res) => {
   if (req.url === '/health' || req.url === '/') {
     res.writeHead(200, { 'Content-Type': 'application/json' })
     res.end(JSON.stringify({ 
@@ -12,9 +14,6 @@ const httpServer = createServer((req, res) => {
     }))
     return
   }
-  // Let Socket.io handle other requests
-  res.writeHead(404)
-  res.end('Not Found')
 })
 
 const io = new Server(httpServer, {
