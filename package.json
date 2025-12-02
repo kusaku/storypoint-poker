@@ -3,13 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "npm run build:frontend && npm run build:backend",
-    "build:frontend": "next build",
-    "build:backend": "cd server && npm install && npm run build",
-    "start": "node start.js",
-    "start:frontend": "next start",
-    "start:backend": "cd server && npm start",
+    "dev": "node server.js",
+    "build": "next build",
+    "start": "NODE_ENV=production node server.js",
     "lint": "next lint"
   },
   "dependencies": {
