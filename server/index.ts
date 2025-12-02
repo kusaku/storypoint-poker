@@ -4,17 +4,12 @@ import { createServer } from 'http'
 const httpServer = createServer()
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.FRONTEND_URL 
-      ? [
-          process.env.FRONTEND_URL,
-          /\.vercel\.app$/,
-          /\.railway\.app$/,
-          /\.onrender\.com$/
-        ]
-      : "http://localhost:3000",
+    origin: "*", // Allow all origins for now - can restrict later
     methods: ["GET", "POST"],
-    credentials: true
-  }
+    credentials: true,
+    allowedHeaders: ["*"]
+  },
+  allowEIO3: true
 })
 
 interface User {

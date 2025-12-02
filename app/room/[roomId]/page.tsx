@@ -41,7 +41,11 @@ export default function RoomPage() {
     console.log('Connecting to Socket.io server:', socketUrl)
     
     const newSocket = io(socketUrl, {
-      transports: ['websocket', 'polling']
+      transports: ['polling', 'websocket'], // Try polling first, then websocket
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+      timeout: 20000
     })
 
     newSocket.on('connect', () => {
