@@ -371,8 +371,8 @@ export default function RoomPage() {
                     </span>
                   </div>
                   {user.comment && (
-                    <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 z-10">
-                      <div className="bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-900 rounded-lg px-3 py-2 text-sm shadow-lg relative" style={{ width: 'max-content', maxWidth: 'calc(100vw - 100% - 1rem)' }}>
+                    <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 z-10" style={{ maxWidth: 'calc(100vw - 2rem)' }}>
+                      <div className="bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-900 rounded-lg px-3 py-2 text-sm shadow-lg relative" style={{ width: 'max-content', maxWidth: '100%' }}>
                         <div style={{ whiteSpace: 'normal', wordBreak: 'break-word' }}>{user.comment}</div>
                         <div className="absolute right-full top-1/2 -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-r-4 border-transparent border-r-gray-800 dark:border-r-gray-200"></div>
                       </div>
