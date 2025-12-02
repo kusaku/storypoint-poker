@@ -7,34 +7,30 @@ A real-time planning poker application for agile teams. Built with Next.js, Sock
 - 🎯 Create and join planning poker rooms
 - ⚡ Real-time voting with Socket.io
 - 🎴 Fibonacci sequence cards (0, 1, 2, 3, 5, 8)
+- 💬 Comments with emoji picker (140 character limit)
 - 👁️ Reveal votes functionality
 - 📊 Vote distribution pie chart
-- 🌓 Dark mode support (follows system preference)
+- 🌓 Dark mode support with manual theme switcher
 - 👑 Host controls for vote management
-- 📱 Responsive design with Tailwind CSS
+- 📱 Responsive design
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
 - Node.js 18+
-- npm or yarn
+- npm
 
-### Installation
+### Installation & Development
 
 ```bash
 npm install
-```
-
-### Development
-
-```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000)
+Open [http://localhost:3000](http://localhost:3000) - auto-reloads on changes.
 
-### Production Build
+### Production
 
 ```bash
 npm run build
@@ -43,18 +39,12 @@ npm start
 
 ## 🚢 Deployment
 
-Deploy to Render (free tier available):
-
-1. Push to GitHub
-2. Connect to Render
-3. Deploy!
-
-See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed instructions.
+Deploy to Render (free tier available). See [DEPLOYMENT.md](./DEPLOYMENT.md) for details.
 
 ## 🛠️ Tech Stack
 
 - **Frontend:** Next.js 14, React, TypeScript, Tailwind CSS
-- **Real-time:** Socket.io (integrated)
+- **Real-time:** Socket.io (integrated into Next.js server)
 - **Charts:** Recharts
 - **Hosting:** Render
 
