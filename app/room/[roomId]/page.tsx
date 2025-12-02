@@ -277,7 +277,7 @@ export default function RoomPage() {
                 <p className="mt-2 text-xs text-red-600 dark:text-red-400">
                   <strong>For local testing:</strong> Make sure the server is running: <code className="bg-red-100 dark:bg-red-900/30 px-1 rounded">npm run dev</code>
                   <br />
-                  <strong>For Railway:</strong> The Socket.io server runs on the same port as the Next.js app. No additional configuration needed.
+                  <strong>For production:</strong> The Socket.io server runs on the same port as the Next.js app. No additional configuration needed.
                 </p>
               </div>
             </div>

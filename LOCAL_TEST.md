@@ -53,12 +53,11 @@ The server will start on `http://localhost:3000`
 4. Join the same room
 5. Test voting and real-time features!
 
-## ✅ Ready for Railway
+## ✅ Ready for Deployment
 
-The single service setup is ready to deploy to Railway:
+The single service setup is ready to deploy to Render or any Node.js hosting:
 - Build command: `npm install && npm run build`
 - Start command: `npm start`
 - Root directory: `.` (root)
 
 Everything works locally! 🎉
-
