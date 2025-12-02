@@ -10,7 +10,8 @@ const port = parseInt(process.env.PORT || '3000', 10)
 const app = next({ dev, hostname, port })
 const handle = app.getRequestHandler()
 
-// Create HTTP server that will handle both Next.js and Socket.io
+// Create HTTP server with Next.js handler
+// Socket.io will be attached after and will handle /socket.io/ requests
 const httpServer = createServer()
 const io = new Server(httpServer, {
   cors: {
@@ -127,8 +128,7 @@ io.on('connection', (socket) => {
 })
 
 app.prepare().then(() => {
-  // Handle HTTP requests
-  // Socket.io automatically handles /socket.io/ requests, so we only handle other routes
+  // Handle HTTP requests - Socket.io handles /socket.io/ automatically
   httpServer.on('request', async (req, res) => {
     const parsedUrl = parse(req.url, true)
     const { pathname } = parsedUrl
@@ -144,9 +144,14 @@ app.prepare().then(() => {
       return
     }
 
-    // Skip Socket.io - it handles its own requests
+    // Let Socket.io handle /socket.io/ requests - don't process them here
+    // Socket.io processes these at the server level before this handler
     if (pathname && pathname.startsWith('/socket.io/')) {
-      return // Socket.io will handle this
+      // Socket.io should have already handled this, but if not, 
+      // we need to let it pass through
+      // The issue is Socket.io needs to process the request, not us
+      // So we just don't handle it - Socket.io's internal handler will
+      return
     }
 
     // Let Next.js handle all other routes
