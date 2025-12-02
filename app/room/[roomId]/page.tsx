@@ -357,10 +357,10 @@ export default function RoomPage() {
             <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">Participants</h2>
             <div className="space-y-3">
               {roomState.users.map((user) => (
-                <div key={user.id} className="relative">
-                  <div className="p-2 rounded bg-gray-50 dark:bg-gray-700 flex justify-between items-center">
+                <div key={user.id} className="relative flex items-start">
+                  <div className="p-2 rounded bg-gray-50 dark:bg-gray-700 flex justify-between items-center flex-1 min-w-0">
                     <span className="font-medium text-gray-900 dark:text-gray-100">{user.name}</span>
-                    <span className="text-sm flex-shrink-0">
+                    <span className="text-sm flex-shrink-0 ml-2">
                       {roomState.revealed ? (
                         <span className="font-bold text-indigo-600 dark:text-indigo-400">{user.vote ?? '—'}</span>
                       ) : (
@@ -371,10 +371,10 @@ export default function RoomPage() {
                     </span>
                   </div>
                   {user.comment && (
-                    <div className="absolute left-full top-0 ml-2 z-10" style={{ maxWidth: 'calc(100vw - 2rem)', width: 'max-content' }}>
-                      <div className="bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-900 rounded-lg px-3 py-2 text-sm shadow-lg relative">
-                        <p style={{ whiteSpace: 'normal', wordBreak: 'break-word' }}>{user.comment}</p>
-                        <div className="absolute right-full top-3 w-0 h-0 border-t-4 border-b-4 border-r-4 border-transparent border-r-gray-800 dark:border-r-gray-200"></div>
+                    <div className="absolute left-full top-0 ml-2 z-10" style={{ maxWidth: 'calc(100vw - 100% - 2rem)' }}>
+                      <div className="bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-900 rounded-lg px-3 py-2 text-sm shadow-lg">
+                        <div className="whitespace-normal break-words">{user.comment}</div>
+                        <div className="absolute left-0 top-3 -translate-x-full w-0 h-0 border-t-4 border-b-4 border-r-4 border-transparent border-r-gray-800 dark:border-r-gray-200"></div>
                       </div>
                     </div>
                   )}
