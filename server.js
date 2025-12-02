@@ -127,7 +127,7 @@ io.on('connection', (socket) => {
 })
 
 app.prepare().then(() => {
-  // Handle HTTP requests
+  // Handle HTTP requests - Socket.io will handle /socket.io/ requests automatically
   httpServer.on('request', async (req, res) => {
     try {
       const parsedUrl = parse(req.url, true)
@@ -144,11 +144,12 @@ app.prepare().then(() => {
         return
       }
 
-      // Skip Socket.io paths - let Socket.io handle them
-      // Socket.io processes these at a lower level, so we just don't handle them here
+      // Socket.io handles /socket.io/ requests automatically
+      // If the request is for Socket.io and hasn't been handled, it means Socket.io
+      // will process it, so we don't need to do anything
       if (pathname && pathname.startsWith('/socket.io/')) {
-        // Don't handle - let Socket.io process it
-        // Socket.io will handle this request automatically
+        // Socket.io handles these - don't process in our handler
+        // The request will be handled by Socket.io's internal handler
         return
       }
 
@@ -164,6 +165,12 @@ app.prepare().then(() => {
         res.end('internal server error')
       }
     }
+  })
+
+  // Make sure Socket.io can handle upgrade requests (WebSocket)
+  httpServer.on('upgrade', (req, socket, head) => {
+    // Socket.io will handle WebSocket upgrades automatically
+    // This is just to ensure upgrade requests are passed through
   })
 
   httpServer.listen(port, hostname, (err) => {
