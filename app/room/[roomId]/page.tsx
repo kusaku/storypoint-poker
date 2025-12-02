@@ -2,6 +2,8 @@
 
 import { useEffect, useState, useMemo } from 'react'
 import { useParams, useSearchParams, useRouter } from 'next/navigation'
+import Link from 'next/link'
+import Image from 'next/image'
 import { io, Socket } from 'socket.io-client'
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts'
 import { ThemeSwitcher } from '../../theme-switcher'
@@ -51,7 +53,6 @@ export default function RoomPage() {
   })
   const [selectedCard, setSelectedCard] = useState<number | string | null>(null)
   const [spinningCard, setSpinningCard] = useState<number | string | null>(null)
-  const [connectionError, setConnectionError] = useState<string | null>(null)
   const [isConnected, setIsConnected] = useState(false)
   const [copied, setCopied] = useState(false)
   const [comment, setComment] = useState<string>('')
@@ -69,13 +70,11 @@ export default function RoomPage() {
 
     newSocket.on('connect', () => {
       setIsConnected(true)
-      setConnectionError(null)
       newSocket.emit('join-room', { roomId, userName })
     })
 
     newSocket.on('connect_error', () => {
       setIsConnected(false)
-      setConnectionError('Failed to connect to server')
     })
 
     newSocket.on('disconnect', () => {
@@ -246,47 +245,50 @@ export default function RoomPage() {
           <>
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 mb-4">
               <div className="flex justify-between items-center">
-                <div>
-                  <h1 className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">Room: {roomId}</h1>
-                  <p className="text-gray-600 dark:text-gray-300">Welcome, {userName}!</p>
-                  <div className="flex items-center gap-2 mt-1">
-                    {isConnected ? (
-                      <span className="text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded">🟢 Connected</span>
-                    ) : (
-                      <span className="text-xs bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 px-2 py-1 rounded">🔴 Disconnected</span>
-                    )}
+                <div className="flex items-center gap-4">
+                  <Link href="/" className="flex-shrink-0">
+                    <Image
+                      src="/logo.png"
+                      alt="Story Point Poker"
+                      width={60}
+                      height={60}
+                      className="hover:opacity-80 transition-opacity"
+                    />
+                  </Link>
+                  <div>
+                    <h1 className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">Room: {roomId}</h1>
+                    <p className="text-gray-600 dark:text-gray-300">Welcome, {userName}!</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      {isConnected ? (
+                        <span className="text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded">🟢 Connected</span>
+                      ) : (
+                        <span className="text-xs bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 px-2 py-1 rounded">🔴 Disconnected</span>
+                      )}
+                    </div>
                   </div>
                 </div>
                 <div className="text-right">
                   <p className="text-sm text-gray-500 dark:text-gray-400">Participants: {roomState.users.length}</p>
-                  {isHost && (
-                    <div className="mt-2">
-                      <span className="text-xs bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 px-2 py-1 rounded">Host</span>
-                      <button
-                        onClick={handleCopyInviteLink}
-                        className="ml-2 text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded hover:bg-green-200 dark:hover:bg-green-800 transition-colors flex items-center gap-1"
-                      >
-                        {copied ? (
-                          <>
-                            <span>✓</span> Copied!
-                          </>
-                        ) : (
-                          <>
-                            <span>🔗</span> Copy Invite Link
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  )}
+                  <div className="mt-2">
+                    <button
+                      onClick={handleCopyInviteLink}
+                      className="text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded hover:bg-green-200 dark:hover:bg-green-800 transition-colors flex items-center gap-1"
+                    >
+                      {copied ? (
+                        <>
+                          <span>✓</span> Copied!
+                        </>
+                      ) : (
+                        <>
+                          <span>🔗</span> Copy Invite Link
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {connectionError && (
-              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-4">
-                <p className="text-sm text-red-700 dark:text-red-400">{connectionError}</p>
-              </div>
-            )}
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="lg:col-span-2 space-y-4">
@@ -399,7 +401,7 @@ export default function RoomPage() {
                       )}
                     </span>
                   </div>
-                  {user.comment && (
+                  {user.comment && roomState.revealed && (
                     <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 z-10" style={{ maxWidth: '320px', width: 'max-content' }}>
                       <div className="bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-900 rounded-lg px-3 py-2 text-sm shadow-lg relative">
                         <div style={{ whiteSpace: 'normal', wordBreak: 'break-word' }}>{user.comment}</div>
