@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 
 export default function Home() {
   const [roomName, setRoomName] = useState('')
@@ -41,8 +42,18 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8 max-w-md w-full">
+        <div className="flex justify-center mb-4">
+          <Image
+            src="/logo.png"
+            alt="Story Point Poker"
+            width={120}
+            height={120}
+            className="dark:invert"
+            priority
+          />
+        </div>
         <h1 className="text-4xl font-bold text-center mb-2 text-indigo-600 dark:text-indigo-400">
-          🃏 Story Point Poker
+          Story Point Poker
         </h1>
         <p className="text-center text-gray-600 dark:text-gray-300 mb-8">
           Agile planning poker for your team
