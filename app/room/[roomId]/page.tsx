@@ -126,13 +126,12 @@ export default function RoomPage() {
   }
 
   const handleCopyInviteLink = async () => {
-    const inviteUrl = `${window.location.origin}/room/${roomId}`
     try {
-      await navigator.clipboard.writeText(inviteUrl)
+      await navigator.clipboard.writeText(`${window.location.origin}/room/${roomId}`)
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
-    } catch (err) {
-      console.error('Failed to copy:', err)
+    } catch {
+      // Clipboard API failed, silently ignore
     }
   }
 
