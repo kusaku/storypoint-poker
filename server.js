@@ -10,7 +10,7 @@ const port = parseInt(process.env.PORT || '3000', 10)
 const app = next({ dev, hostname, port })
 const handle = app.getRequestHandler()
 
-// Socket.io server setup
+// Create HTTP server that will handle both Next.js and Socket.io
 const httpServer = createServer()
 const io = new Server(httpServer, {
   cors: {
@@ -133,7 +133,7 @@ app.prepare().then(() => {
       const { pathname } = parsedUrl
 
       // Health check
-      if (pathname === '/health' || pathname === '/') {
+      if (pathname === '/health') {
         res.writeHead(200, { 'Content-Type': 'application/json' })
         res.end(JSON.stringify({ 
           status: 'ok', 
@@ -143,7 +143,7 @@ app.prepare().then(() => {
         return
       }
 
-      // Let Next.js handle all other routes
+      // Let Next.js handle all other routes (including /)
       await handle(req, res, parsedUrl)
     } catch (err) {
       console.error('Error occurred handling', req.url, err)
