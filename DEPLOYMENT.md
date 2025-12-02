@@ -63,3 +63,5 @@ storypoint-poker/
 ## ✅ That's It!
 
 Everything runs in a single Railway service - both frontend and backend together!
+
+**Note:** No environment variables needed! The Socket.io server runs on the same port as Next.js, so it automatically connects to the same origin. You don't need `NEXT_PUBLIC_SOCKET_URL` or any other Socket.io-related variables.

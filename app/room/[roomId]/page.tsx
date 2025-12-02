@@ -46,7 +46,7 @@ export default function RoomPage() {
       return
     }
 
-    // Use same origin for Socket.io (will be proxied by Next.js)
+    // Always connect to the same origin as the web app (no NEXT_PUBLIC_SOCKET_URL needed)
     const socketUrl = typeof window !== 'undefined' ? window.location.origin : ''
     
     const newSocket = io(socketUrl, {
