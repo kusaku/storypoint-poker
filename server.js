@@ -127,18 +127,11 @@ io.on('connection', (socket) => {
 })
 
 app.prepare().then(() => {
-  // Handle HTTP requests (Socket.io handles its own requests automatically)
+  // Handle HTTP requests
   httpServer.on('request', async (req, res) => {
     try {
       const parsedUrl = parse(req.url, true)
       const { pathname } = parsedUrl
-
-      // Let Socket.io handle its own requests
-      if (pathname && pathname.startsWith('/socket.io/')) {
-        // Socket.io will handle this automatically, but we need to make sure
-        // the request isn't already handled
-        return
-      }
 
       // Health check
       if (pathname === '/health') {
@@ -151,12 +144,25 @@ app.prepare().then(() => {
         return
       }
 
+      // Skip Socket.io paths - let Socket.io handle them
+      // Socket.io processes these at a lower level, so we just don't handle them here
+      if (pathname && pathname.startsWith('/socket.io/')) {
+        // Don't handle - let Socket.io process it
+        // Socket.io will handle this request automatically
+        return
+      }
+
       // Let Next.js handle all other routes (including /)
       await handle(req, res, parsedUrl)
     } catch (err) {
-      console.error('Error occurred handling', req.url, err)
-      res.statusCode = 500
-      res.end('internal server error')
+      // Only log non-Socket.io errors
+      if (!req.url || !req.url.startsWith('/socket.io/')) {
+        console.error('Error occurred handling', req.url, err)
+      }
+      if (!res.headersSent) {
+        res.statusCode = 500
+        res.end('internal server error')
+      }
     }
   })
 
