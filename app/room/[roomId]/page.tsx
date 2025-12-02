@@ -351,19 +351,9 @@ export default function RoomPage() {
                 <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">Participants</h2>
                 <div className="space-y-3">
                   {roomState.users.map((user) => (
-                    <div key={user.id} className="p-2 rounded bg-gray-50 dark:bg-gray-700">
-                      <div className="flex justify-between items-start gap-2">
-                        <div className="flex-1 flex items-start gap-2 min-w-0">
-                          <span className="font-medium text-gray-900 dark:text-gray-100 flex-shrink-0">{user.name}</span>
-                          {user.comment && (
-                            <div className="flex-1 min-w-0">
-                              <div className="bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-900 rounded-lg px-3 py-2 text-sm shadow-lg relative inline-block max-w-full">
-                                <p className="break-words whitespace-normal">{user.comment}</p>
-                                <div className="absolute left-0 top-1/2 -translate-x-full -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-r-4 border-transparent border-r-gray-800 dark:border-r-gray-200"></div>
-                              </div>
-                            </div>
-                          )}
-                        </div>
+                    <div key={user.id} className="p-2 rounded bg-gray-50 dark:bg-gray-700 flex items-start gap-2">
+                      <div className="flex justify-between items-center flex-1 min-w-0">
+                        <span className="font-medium text-gray-900 dark:text-gray-100">{user.name}</span>
                         <span className="text-sm flex-shrink-0">
                           {roomState.revealed ? (
                             <span className="font-bold text-indigo-600 dark:text-indigo-400">{user.vote ?? '—'}</span>
@@ -374,6 +364,14 @@ export default function RoomPage() {
                           )}
                         </span>
                       </div>
+                      {user.comment && (
+                        <div className="flex-shrink-0">
+                          <div className="bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-900 rounded-lg px-3 py-2 text-sm shadow-lg relative max-w-xs">
+                            <p className="break-words whitespace-normal">{user.comment}</p>
+                            <div className="absolute left-0 top-1/2 -translate-x-full -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-r-4 border-transparent border-r-gray-800 dark:border-r-gray-200"></div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
