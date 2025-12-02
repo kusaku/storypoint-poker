@@ -284,7 +284,7 @@ export default function RoomPage() {
           <div className="lg:col-span-2 space-y-4">
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
               <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">Select Your Vote</h2>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-3 gap-4 mb-4">
                 {FIBONACCI_CARDS.map((card) => (
                   <button
                     key={card}
@@ -306,32 +306,32 @@ export default function RoomPage() {
                   </button>
                 ))}
               </div>
-            </div>
-
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">Add Comment</h2>
-              <div className="relative">
-                <textarea
-                  value={comment}
-                  onChange={(e) => handleCommentChange(e.target.value)}
-                  placeholder="Type your comment here..."
-                  maxLength={140}
-                  rows={4}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 resize-none"
-                />
-                <div className="flex justify-between items-center mt-2">
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
-                    {comment.length}/140
-                  </span>
-                  {comment.trim() && (
-                    <button
-                      onClick={handleRemoveComment}
-                      className="text-xs text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium flex items-center gap-1"
-                      title="Remove comment"
-                    >
-                      <span>✕</span> Remove
-                    </button>
-                  )}
+              
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Add Comment</p>
+                <div className="relative">
+                  <textarea
+                    value={comment}
+                    onChange={(e) => handleCommentChange(e.target.value)}
+                    placeholder="Type your comment here..."
+                    maxLength={140}
+                    rows={2}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 resize-none text-sm"
+                  />
+                  <div className="flex justify-between items-center mt-1">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      {comment.length}/140
+                    </span>
+                    {comment.trim() && (
+                      <button
+                        onClick={handleRemoveComment}
+                        className="text-xs text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium flex items-center gap-1"
+                        title="Remove comment"
+                      >
+                        <span>✕</span> Remove
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
