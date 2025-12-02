@@ -4,8 +4,14 @@ import { createServer } from 'http'
 const httpServer = createServer()
 const io = new Server(httpServer, {
   cors: {
-    origin: "*", // Allow all origins for now - can restrict later
-    methods: ["GET", "POST"],
+    origin: [
+      "http://localhost:3000",
+      /\.vercel\.app$/,
+      /\.railway\.app$/,
+      /\.onrender\.com$/,
+      /^https?:\/\/.*$/ // Allow all HTTPS origins
+    ],
+    methods: ["GET", "POST", "OPTIONS"],
     credentials: true,
     allowedHeaders: ["*"]
   },
