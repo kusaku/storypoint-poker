@@ -362,8 +362,8 @@ export default function RoomPage() {
                 <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">Participants</h2>
                 <div className="space-y-3">
                   {roomState.users.map((user) => (
-                    <div key={user.id} className="p-2 rounded bg-gray-50 dark:bg-gray-700 flex items-start gap-2">
-                      <div className="flex justify-between items-center flex-1 min-w-0">
+                    <div key={user.id} className="flex items-start gap-2">
+                      <div className="p-2 rounded bg-gray-50 dark:bg-gray-700 flex justify-between items-center flex-1 min-w-0">
                         <span className="font-medium text-gray-900 dark:text-gray-100">{user.name}</span>
                         <span className="text-sm flex-shrink-0">
                           {roomState.revealed ? (
