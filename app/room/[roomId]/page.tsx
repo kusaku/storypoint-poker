@@ -237,7 +237,7 @@ export default function RoomPage() {
             {/* Voting Cards */}
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-xl font-bold mb-4 text-gray-800">Select Your Vote</h2>
-              <div className="grid grid-cols-4 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 {FIBONACCI_CARDS.map((card) => (
                   <button
                     key={card}
