@@ -433,7 +433,11 @@ export default function RoomPage() {
                               cx="50%"
                               cy="50%"
                               labelLine={false}
-                              label={({ name, percentage }) => `${name} (${percentage}%)`}
+                              label={(entry: any) => {
+                                const total = voteDistribution.reduce((sum, item) => sum + item.value, 0)
+                                const percentage = total > 0 ? ((entry.value / total) * 100).toFixed(0) : '0'
+                                return `${entry.name} (${percentage}%)`
+                              }}
                               outerRadius={70}
                               fill="#8884d8"
                               dataKey="value"
