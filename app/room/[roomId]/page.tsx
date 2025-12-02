@@ -149,6 +149,8 @@ export default function RoomPage() {
     }
   }
 
+  const hasAtLeastOneVote = roomState.users.some(u => u.hasVoted && u.vote !== null)
+
 
   // Calculate vote distribution for pie chart
   const voteDistribution = useMemo(() => {
@@ -337,7 +339,7 @@ export default function RoomPage() {
                     <div className="flex gap-3">
                       <button
                         onClick={handleReveal}
-                        disabled={roomState.revealed}
+                        disabled={roomState.revealed || !hasAtLeastOneVote}
                         className="flex-1 bg-green-600 dark:bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-700 dark:hover:bg-green-600 disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed font-medium"
                       >
                         {roomState.revealed ? 'Votes Revealed' : 'Reveal Votes'}
