@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { ThemeSwitcher } from './theme-switcher'
@@ -8,6 +8,8 @@ import { ThemeSwitcher } from './theme-switcher'
 export default function Home() {
   const [roomName, setRoomName] = useState('')
   const [userName, setUserName] = useState('')
+  const [logoWidth, setLogoWidth] = useState<number | undefined>(undefined)
+  const titleRef = useRef<HTMLHeadingElement>(null)
   const router = useRouter()
 
   const validateAndNavigate = (roomId: string, isHost: boolean) => {
@@ -33,6 +35,12 @@ export default function Home() {
     validateAndNavigate(roomName.trim(), false)
   }
 
+  useEffect(() => {
+    if (titleRef.current) {
+      setLogoWidth(titleRef.current.offsetWidth)
+    }
+  }, [])
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
       <div className="absolute top-4 right-4">
@@ -43,12 +51,15 @@ export default function Home() {
           <Image
             src="/logo.png"
             alt="Story Point Poker"
-            width={120}
-            height={120}
+            width={logoWidth || 400}
+            height={0}
+            sizes="100vw"
+            className="h-auto"
+            style={{ width: logoWidth ? `${logoWidth}px` : 'auto' }}
             priority
           />
         </div>
-        <h1 className="text-4xl font-bold text-center mb-2 text-indigo-600 dark:text-indigo-400">
+        <h1 ref={titleRef} className="text-4xl font-bold text-center mb-2 text-indigo-600 dark:text-indigo-400">
           Story Point Poker
         </h1>
         <p className="text-center text-gray-600 dark:text-gray-300 mb-8">

@@ -250,8 +250,8 @@ export default function RoomPage() {
                     <Image
                       src="/logo.png"
                       alt="Story Point Poker"
-                      width={60}
-                      height={60}
+                      width={90}
+                      height={90}
                       className="hover:opacity-80 transition-opacity"
                     />
                   </Link>

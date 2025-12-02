@@ -6,8 +6,8 @@ export const metadata: Metadata = {
   title: 'Story Point Poker',
   description: 'Agile planning poker for your team',
   icons: {
-    icon: '/logo.png',
-    apple: '/logo.png',
+    icon: '/favicon.ico',
+    apple: '/favicon.ico',
   },
 }
 
