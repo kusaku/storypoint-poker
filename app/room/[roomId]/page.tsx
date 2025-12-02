@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useMemo, useRef } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useParams, useSearchParams, useRouter } from 'next/navigation'
 import { io, Socket } from 'socket.io-client'
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts'
@@ -32,35 +32,6 @@ const COLORS = [
   '#84CC16', // lime-500
 ]
 
-function CommentBubble({ comment }: { comment: string }) {
-  const bubbleRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const updateMaxWidth = () => {
-      if (bubbleRef.current) {
-        const rect = bubbleRef.current.getBoundingClientRect()
-        const maxW = window.innerWidth - rect.left - 16 // 16px = 1rem padding
-        bubbleRef.current.style.maxWidth = `${maxW}px`
-      }
-    }
-
-    updateMaxWidth()
-    window.addEventListener('resize', updateMaxWidth)
-    return () => window.removeEventListener('resize', updateMaxWidth)
-  }, [])
-
-  return (
-    <div 
-      ref={bubbleRef}
-      className="absolute left-full top-1/2 -translate-y-1/2 ml-2 z-10"
-    >
-      <div className="bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-900 rounded-lg px-3 py-2 text-sm shadow-lg relative" style={{ width: 'max-content', maxWidth: '100%' }}>
-        <div style={{ whiteSpace: 'normal', wordBreak: 'break-word' }}>{comment}</div>
-        <div className="absolute right-full top-1/2 -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-r-4 border-transparent border-r-gray-800 dark:border-r-gray-200"></div>
-      </div>
-    </div>
-  )
-}
 
 export default function RoomPage() {
   const params = useParams()
@@ -401,7 +372,12 @@ export default function RoomPage() {
                     </span>
                   </div>
                   {user.comment && (
-                    <CommentBubble comment={user.comment} />
+                    <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 z-10">
+                      <div className="bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-900 rounded-lg px-3 py-2 text-sm shadow-lg relative max-w-xs">
+                        <div className="break-words">{user.comment}</div>
+                        <div className="absolute right-full top-1/2 -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-r-4 border-transparent border-r-gray-800 dark:border-r-gray-200"></div>
+                      </div>
+                    </div>
                   )}
                 </div>
               ))}
