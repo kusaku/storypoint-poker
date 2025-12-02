@@ -1,7 +1,22 @@
 import { Server } from 'socket.io'
 import { createServer } from 'http'
 
-const httpServer = createServer()
+const httpServer = createServer((req, res) => {
+  // Health check endpoint
+  if (req.url === '/health' || req.url === '/') {
+    res.writeHead(200, { 'Content-Type': 'application/json' })
+    res.end(JSON.stringify({ 
+      status: 'ok', 
+      service: 'storypoint-poker-socket-server',
+      timestamp: new Date().toISOString()
+    }))
+    return
+  }
+  // Let Socket.io handle other requests
+  res.writeHead(404)
+  res.end('Not Found')
+})
+
 const io = new Server(httpServer, {
   cors: {
     origin: (origin, callback) => {
@@ -142,7 +157,17 @@ io.on('connection', (socket) => {
 })
 
 const PORT = process.env.PORT || 3001
-httpServer.listen(PORT, () => {
-  console.log(`Socket.io server running on port ${PORT}`)
+const HOST = process.env.HOST || '0.0.0.0'
+
+httpServer.listen(PORT, HOST, () => {
+  console.log(`✅ Socket.io server running on ${HOST}:${PORT}`)
+  console.log(`🌐 Server is ready to accept connections`)
+})
+
+httpServer.on('error', (error: NodeJS.ErrnoException) => {
+  console.error('❌ Server error:', error)
+  if (error.code === 'EADDRINUSE') {
+    console.error(`Port ${PORT} is already in use`)
+  }
 })
 
