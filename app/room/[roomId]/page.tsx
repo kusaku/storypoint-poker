@@ -165,15 +165,24 @@ export default function RoomPage() {
       setTimeout(() => setCopied(false), 2000)
     } catch (err) {
       console.error('Failed to copy:', err)
-      // Fallback for older browsers
-      const textArea = document.createElement('textarea')
-      textArea.value = inviteUrl
-      document.body.appendChild(textArea)
-      textArea.select()
-      document.execCommand('copy')
-      document.body.removeChild(textArea)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+      // Fallback for older browsers (deprecated but necessary for legacy support)
+      try {
+        const textArea = document.createElement('textarea')
+        textArea.value = inviteUrl
+        textArea.style.position = 'fixed'
+        textArea.style.opacity = '0'
+        document.body.appendChild(textArea)
+        textArea.select()
+        // @ts-ignore - Legacy API for older browser support
+        const success = document.execCommand('copy')
+        document.body.removeChild(textArea)
+        if (success) {
+          setCopied(true)
+          setTimeout(() => setCopied(false), 2000)
+        }
+      } catch (fallbackErr) {
+        console.error('Fallback copy also failed:', fallbackErr)
+      }
     }
   }
 
