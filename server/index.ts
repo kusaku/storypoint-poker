@@ -47,9 +47,6 @@ const rooms = new Map<string, Room>()
 io.on('connection', (socket) => {
   console.log('✅ User connected:', socket.id)
 
-  socket.on('disconnect', () => {
-    console.log('❌ User disconnected:', socket.id)
-
   socket.on('join-room', ({ roomId, userName }: { roomId: string; userName: string }) => {
     console.log('👤 User joining room:', { socketId: socket.id, roomId, userName })
     if (!rooms.has(roomId)) {
@@ -105,8 +102,7 @@ io.on('connection', (socket) => {
       io.to(roomId).emit('votes-revealed')
       io.to(roomId).emit('room-state', {
         users: Array.from(room.users.values()),
-        revealed: room.revealed,
-        currentStory: room.currentStory
+        revealed: room.revealed
       })
     }
   })
