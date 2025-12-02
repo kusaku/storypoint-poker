@@ -57,13 +57,12 @@ io.on('connection', (socket) => {
     room.users.set(socket.id, user)
     socket.join(roomId)
 
-    socket.emit('room-state', {
+    // Broadcast updated room state to all users in the room (including the new user)
+    io.to(roomId).emit('room-state', {
       users: Array.from(room.users.values()),
       revealed: room.revealed,
       currentStory: room.currentStory
     })
-
-    socket.to(roomId).emit('user-joined', user)
   })
 
   socket.on('vote', ({ roomId, vote }: { roomId: string; vote: number | string }) => {
@@ -75,9 +74,11 @@ io.on('connection', (socket) => {
         user.hasVoted = true
         room.users.set(socket.id, user)
 
-        socket.to(roomId).emit('vote-received', {
-          userId: socket.id,
-          vote
+        // Broadcast updated room state to all users in the room
+        io.to(roomId).emit('room-state', {
+          users: Array.from(room.users.values()),
+          revealed: room.revealed,
+          currentStory: room.currentStory
         })
       }
     }
@@ -133,7 +134,13 @@ io.on('connection', (socket) => {
     rooms.forEach((room, roomId) => {
       if (room.users.has(socket.id)) {
         room.users.delete(socket.id)
-        socket.to(roomId).emit('user-left', socket.id)
+        
+        // Broadcast updated room state to remaining users
+        io.to(roomId).emit('room-state', {
+          users: Array.from(room.users.values()),
+          revealed: room.revealed,
+          currentStory: room.currentStory
+        })
         
         // Clean up empty rooms after 5 minutes
         if (room.users.size === 0) {

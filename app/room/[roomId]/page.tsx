@@ -41,22 +41,32 @@ export default function RoomPage() {
       transports: ['websocket', 'polling']
     })
 
+
     newSocket.on('connect', () => {
+      console.log('Connected to Socket.io server')
       newSocket.emit('join-room', { roomId, userName })
     })
 
+    newSocket.on('connect_error', (error) => {
+      console.error('Socket.io connection error:', error)
+    })
+
     newSocket.on('room-state', (state: RoomState) => {
+      console.log('Room state updated:', state)
       setRoomState(state)
     })
 
+    // Keep these for backwards compatibility, but room-state is primary
     newSocket.on('user-joined', (user: User) => {
+      console.log('User joined:', user)
       setRoomState(prev => ({
         ...prev,
-        users: [...prev.users, user]
+        users: [...prev.users.filter(u => u.id !== user.id), user]
       }))
     })
 
     newSocket.on('user-left', (userId: string) => {
+      console.log('User left:', userId)
       setRoomState(prev => ({
         ...prev,
         users: prev.users.filter(u => u.id !== userId)
@@ -64,6 +74,7 @@ export default function RoomPage() {
     })
 
     newSocket.on('vote-received', (data: { userId: string; vote: number | string }) => {
+      console.log('Vote received:', data)
       setRoomState(prev => ({
         ...prev,
         users: prev.users.map(u =>
