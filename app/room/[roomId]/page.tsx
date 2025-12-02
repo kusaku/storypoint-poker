@@ -34,6 +34,20 @@ const COLORS = [
   '#84CC16', // lime-500
 ]
 
+const POPULAR_EMOJIS = [
+  // Positive reactions
+  '👍', '❤️', '✅', '👏', '💯',
+  // Happy faces
+  '😊', '😄', '😃', '😁', '😍', '🥰', '😘', '😎',
+  // Celebration
+  '🎉', '🔥',
+  // Funny
+  '😂', '🤣', '💩', '🤡',
+  // Negative
+  '😢', '😭',
+  // Thinking/other
+  '🤔', '🤯', '😴'
+]
 
 export default function RoomPage() {
   const params = useParams()
@@ -170,21 +184,6 @@ export default function RoomPage() {
       }
     }
   }
-
-  const POPULAR_EMOJIS = [
-    // Positive reactions
-    '👍', '❤️', '✅', '👏', '💯',
-    // Happy faces
-    '😊', '😄', '😃', '😁', '😍', '🥰', '😘', '😎',
-    // Celebration
-    '🎉', '🔥',
-    // Funny
-    '😂', '🤣', '💩', '🤡',
-    // Negative
-    '😢', '😭',
-    // Thinking/other
-    '🤔', '🤯', '😴'
-  ]
 
   const hasAtLeastOneVote = roomState.users.some(u => u.hasVoted && u.vote !== null)
 
