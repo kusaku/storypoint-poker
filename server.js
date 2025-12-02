@@ -131,6 +131,7 @@ io.on('connection', (socket) => {
       room.users.forEach(user => {
         user.vote = null
         user.hasVoted = false
+        user.comment = null
       })
       io.to(roomId).emit('room-state', {
         users: Array.from(room.users.values()),
