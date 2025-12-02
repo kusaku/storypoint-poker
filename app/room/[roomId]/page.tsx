@@ -37,6 +37,7 @@ export default function RoomPage() {
     revealed: false
   })
   const [selectedCard, setSelectedCard] = useState<number | string | null>(null)
+  const [spinningCard, setSpinningCard] = useState<number | string | null>(null)
   const [connectionError, setConnectionError] = useState<string | null>(null)
   const [isConnected, setIsConnected] = useState(false)
   const [copied, setCopied] = useState(false)
@@ -107,10 +108,15 @@ export default function RoomPage() {
       // If clicking the same card, cancel the vote
       if (selectedCard === card) {
         setSelectedCard(null)
+        setSpinningCard(null)
         socket.emit('vote', { roomId, vote: null })
       } else {
+        // Trigger spinning animation
+        setSpinningCard(card)
         setSelectedCard(card)
         socket.emit('vote', { roomId, vote: card })
+        // Clear spinning state after animation completes
+        setTimeout(() => setSpinningCard(null), 600)
       }
     }
   }
@@ -318,6 +324,7 @@ export default function RoomPage() {
                         ? 'bg-indigo-600 dark:bg-indigo-500 text-white scale-110 shadow-lg'
                         : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200'
                       }
+                      ${spinningCard === card ? 'card-spin' : ''}
                       ${roomState.revealed ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
                     `}
                     style={{ fontSize: 'clamp(2rem, 10vw, 6rem)', lineHeight: '1' }}
