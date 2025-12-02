@@ -31,6 +31,8 @@ export default function RoomPage() {
     revealed: false
   })
   const [selectedCard, setSelectedCard] = useState<number | string | null>(null)
+  const [connectionError, setConnectionError] = useState<string | null>(null)
+  const [isConnected, setIsConnected] = useState(false)
 
   useEffect(() => {
     console.log('Room page mounted', { roomId, userName, isHost })
@@ -44,11 +46,20 @@ export default function RoomPage() {
     newSocket.on('connect', () => {
       console.log('✅ Connected to Socket.io server, socket ID:', newSocket.id)
       console.log('Joining room:', { roomId, userName })
+      setIsConnected(true)
+      setConnectionError(null)
       newSocket.emit('join-room', { roomId, userName })
     })
 
     newSocket.on('connect_error', (error) => {
-      console.error('Socket.io connection error:', error)
+      console.error('❌ Socket.io connection error:', error)
+      setIsConnected(false)
+      setConnectionError(`Failed to connect to Socket.io server at ${socketUrl}. Make sure the server is running and the URL is correct.`)
+    })
+
+    newSocket.on('disconnect', () => {
+      console.log('⚠️ Disconnected from Socket.io server')
+      setIsConnected(false)
     })
 
     newSocket.on('room-state', (state: RoomState) => {
@@ -141,6 +152,13 @@ export default function RoomPage() {
             <div>
               <h1 className="text-2xl font-bold text-indigo-600">Room: {roomId}</h1>
               <p className="text-gray-600">Welcome, {userName}!</p>
+              <div className="flex items-center gap-2 mt-1">
+                {isConnected ? (
+                  <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">🟢 Connected</span>
+                ) : (
+                  <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded">🔴 Disconnected</span>
+                )}
+              </div>
             </div>
             <div className="text-right">
               <p className="text-sm text-gray-500">Participants: {roomState.users.length}</p>
@@ -148,6 +166,26 @@ export default function RoomPage() {
             </div>
           </div>
         </div>
+
+        {/* Connection Error Alert */}
+        {connectionError && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+            <div className="flex items-start">
+              <div className="flex-shrink-0">
+                <span className="text-red-400 text-xl">⚠️</span>
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-red-800">Connection Error</h3>
+                <p className="mt-1 text-sm text-red-700">{connectionError}</p>
+                <p className="mt-2 text-xs text-red-600">
+                  <strong>For local testing:</strong> Make sure the Socket.io server is running: <code className="bg-red-100 px-1 rounded">cd server && npm run dev</code>
+                  <br />
+                  <strong>For production:</strong> Set <code className="bg-red-100 px-1 rounded">NEXT_PUBLIC_SOCKET_URL</code> in Vercel environment variables.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* Main Voting Area */}
