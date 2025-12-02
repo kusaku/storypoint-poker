@@ -333,11 +333,6 @@ export default function RoomPage() {
                   </button>
                 ))}
               </div>
-              {selectedCard !== null && !roomState.revealed && (
-                <p className="mt-4 text-center text-green-600 dark:text-green-400 font-medium">
-                  ✓ You voted: {selectedCard}
-                </p>
-              )}
             </div>
 
                 {/* Host Controls */}
