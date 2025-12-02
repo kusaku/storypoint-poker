@@ -10,12 +10,12 @@ const port = parseInt(process.env.PORT || '3000', 10)
 const app = next({ dev, hostname, port })
 const handle = app.getRequestHandler()
 
-// Create HTTP server
+// Create HTTP server - we'll attach handlers after Socket.io is set up
 const httpServer = createServer()
 
-// Attach Socket.io FIRST so it can handle /socket.io requests
+// Attach Socket.io - it will handle /socket.io requests automatically
+// Socket.io attaches its own request handlers internally
 const io = new Server(httpServer, {
-  path: '/socket.io',
   cors: {
     origin: (origin, callback) => {
       callback(null, true)
@@ -23,8 +23,7 @@ const io = new Server(httpServer, {
     methods: ["GET", "POST", "OPTIONS"],
     credentials: true,
     allowedHeaders: ["*"]
-  },
-  allowEIO3: true
+  }
 })
 
 // Socket.io room management
@@ -131,8 +130,8 @@ io.on('connection', (socket) => {
 
 app.prepare().then(() => {
   // Handle HTTP requests
-  // Socket.io is attached first, so it will handle /socket.io/ requests
-  // We only handle non-Socket.io requests here
+  // Socket.io automatically handles /socket.io requests when attached to the server
+  // Our handler only processes non-Socket.io requests
   httpServer.on('request', async (req, res) => {
     const parsedUrl = parse(req.url, true)
     const { pathname } = parsedUrl
@@ -148,12 +147,13 @@ app.prepare().then(() => {
       return
     }
 
-    // Skip Socket.io - it's handled by the io instance attached above
-    // Socket.io processes these requests internally, so we don't handle them here
+    // Skip Socket.io - Socket.io handles these automatically
+    // If pathname starts with /socket.io, Socket.io's internal handler should process it
+    // We check this to avoid interfering, but Socket.io should handle it before our handler runs
     if (pathname && pathname.startsWith('/socket.io')) {
-      // Socket.io should handle this - if response not sent, it means Socket.io
-      // didn't process it (shouldn't happen, but just in case)
-      // We don't send a response here to avoid interfering with Socket.io
+      // Socket.io should have already handled this
+      // If response not sent, it means Socket.io didn't process it (unlikely)
+      // In that case, we still don't handle it to avoid conflicts
       return
     }
 

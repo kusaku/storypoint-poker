@@ -16,7 +16,7 @@ interface RoomState {
   revealed: boolean
 }
 
-const FIBONACCI_CARDS = [0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, '?']
+const FIBONACCI_CARDS = [0, 1, 2, 3, 5, 8]
 
 export default function RoomPage() {
   const params = useParams()
@@ -33,6 +33,7 @@ export default function RoomPage() {
   const [selectedCard, setSelectedCard] = useState<number | string | null>(null)
   const [connectionError, setConnectionError] = useState<string | null>(null)
   const [isConnected, setIsConnected] = useState(false)
+  const [copied, setCopied] = useState(false)
 
   useEffect(() => {
     console.log('Room page mounted', { roomId, userName, isHost })
@@ -146,6 +147,26 @@ export default function RoomPage() {
     }
   }
 
+  const handleCopyInviteLink = async () => {
+    const inviteUrl = `${window.location.origin}/room/${roomId}?name=`
+    try {
+      await navigator.clipboard.writeText(inviteUrl)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch (err) {
+      console.error('Failed to copy:', err)
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea')
+      textArea.value = inviteUrl
+      document.body.appendChild(textArea)
+      textArea.select()
+      document.execCommand('copy')
+      document.body.removeChild(textArea)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }
+  }
+
   const allVoted = roomState.users.length > 0 && roomState.users.every(u => u.hasVoted)
 
   return (
@@ -167,7 +188,25 @@ export default function RoomPage() {
             </div>
             <div className="text-right">
               <p className="text-sm text-gray-500">Participants: {roomState.users.length}</p>
-              {isHost && <span className="text-xs bg-indigo-100 text-indigo-800 px-2 py-1 rounded">Host</span>}
+              {isHost && (
+                <div className="mt-2">
+                  <span className="text-xs bg-indigo-100 text-indigo-800 px-2 py-1 rounded">Host</span>
+                  <button
+                    onClick={handleCopyInviteLink}
+                    className="ml-2 text-xs bg-green-100 text-green-800 px-2 py-1 rounded hover:bg-green-200 transition-colors flex items-center gap-1"
+                  >
+                    {copied ? (
+                      <>
+                        <span>✓</span> Copied!
+                      </>
+                    ) : (
+                      <>
+                        <span>🔗</span> Copy Invite Link
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -198,14 +237,14 @@ export default function RoomPage() {
             {/* Voting Cards */}
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-xl font-bold mb-4 text-gray-800">Select Your Vote</h2>
-              <div className="grid grid-cols-4 sm:grid-cols-6 gap-3">
+              <div className="grid grid-cols-4 gap-4">
                 {FIBONACCI_CARDS.map((card) => (
                   <button
                     key={card}
                     onClick={() => handleVote(card)}
                     disabled={roomState.revealed}
                     className={`
-                      aspect-square rounded-lg font-bold text-lg transition-all
+                      aspect-square rounded-lg font-bold text-2xl transition-all
                       ${selectedCard === card
                         ? 'bg-indigo-600 text-white scale-110 shadow-lg'
                         : 'bg-gray-100 hover:bg-gray-200 text-gray-800'
