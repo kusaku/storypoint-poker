@@ -10,34 +10,27 @@ export default function Home() {
   const [userName, setUserName] = useState('')
   const router = useRouter()
 
-  const createRoom = (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    if (!userName || userName.trim() === '') {
+  const validateAndNavigate = (roomId: string, isHost: boolean) => {
+    if (!userName.trim()) {
       alert('Please enter your name')
       return
     }
-    
+    router.push(`/room/${roomId}?name=${encodeURIComponent(userName)}${isHost ? '&host=true' : ''}`)
+  }
+
+  const createRoom = (e: React.FormEvent) => {
+    e.preventDefault()
     const roomId = Math.random().toString(36).substring(2, 9)
-    const url = `/room/${roomId}?name=${encodeURIComponent(userName)}&host=true`
-    router.push(url)
+    validateAndNavigate(roomId, true)
   }
 
   const joinRoom = (e: React.FormEvent) => {
     e.preventDefault()
-    
-    if (!userName || userName.trim() === '') {
-      alert('Please enter your name')
-      return
-    }
-    
-    if (!roomName || roomName.trim() === '') {
+    if (!roomName.trim()) {
       alert('Please enter a room ID')
       return
     }
-    
-    const url = `/room/${roomName}?name=${encodeURIComponent(userName)}`
-    router.push(url)
+    validateAndNavigate(roomName.trim(), false)
   }
 
   return (

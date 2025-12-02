@@ -20,6 +20,17 @@ interface RoomState {
 
 const FIBONACCI_CARDS = [0, 1, 2, 3, 5, 8]
 
+const COLORS = [
+  '#4F46E5', // indigo-600
+  '#10B981', // green-500
+  '#F59E0B', // amber-500
+  '#EF4444', // red-500
+  '#8B5CF6', // violet-500
+  '#06B6D4', // cyan-500
+  '#EC4899', // pink-500
+  '#84CC16', // lime-500
+]
+
 export default function RoomPage() {
   const params = useParams()
   const searchParams = useSearchParams()
@@ -59,10 +70,9 @@ export default function RoomPage() {
       newSocket.emit('join-room', { roomId, userName })
     })
 
-    newSocket.on('connect_error', (error) => {
-      console.error('Socket.io connection error:', error)
+    newSocket.on('connect_error', () => {
       setIsConnected(false)
-      setConnectionError(`Failed to connect to Socket.io server. Make sure the server is running.`)
+      setConnectionError('Failed to connect to server')
     })
 
     newSocket.on('disconnect', () => {
@@ -71,29 +81,8 @@ export default function RoomPage() {
 
     newSocket.on('room-state', (state: RoomState) => {
       setRoomState(state)
-      
-      // Sync selected card with user's current vote (for page refresh and vote cancellation)
       const currentUser = state.users.find(u => u.name === userName)
-      if (currentUser) {
-        if (currentUser.vote !== null && currentUser.vote !== undefined) {
-          setSelectedCard(currentUser.vote)
-        } else {
-          setSelectedCard(null)
-        }
-      }
-    })
-
-    newSocket.on('votes-revealed', () => {
-      setRoomState(prev => ({ ...prev, revealed: true }))
-    })
-
-    newSocket.on('votes-reset', () => {
-      setRoomState(prev => ({
-        ...prev,
-        revealed: false,
-        users: prev.users.map(u => ({ ...u, vote: null, hasVoted: false }))
-      }))
-      setSelectedCard(null)
+      setSelectedCard(currentUser?.vote ?? null)
     })
 
     setSocket(newSocket)
@@ -104,21 +93,15 @@ export default function RoomPage() {
   }, [roomId, userName, showNameModal])
 
   const handleVote = (card: number | string) => {
-    if (socket && !roomState.revealed) {
-      // If clicking the same card, cancel the vote
-      if (selectedCard === card) {
-        setSelectedCard(null)
-        setSpinningCard(null)
-        socket.emit('vote', { roomId, vote: null })
-      } else {
-        // Trigger spinning animation
-        setSpinningCard(card)
-        setSelectedCard(card)
-        socket.emit('vote', { roomId, vote: card })
-        // Clear spinning state after animation completes
-        setTimeout(() => setSpinningCard(null), 600)
-      }
+    if (!socket || roomState.revealed) return
+    
+    const isCancelling = selectedCard === card
+    setSelectedCard(isCancelling ? null : card)
+    if (!isCancelling) {
+      setSpinningCard(card)
+      setTimeout(() => setSpinningCard(null), 600)
     }
+    socket.emit('vote', { roomId, vote: isCancelling ? null : card })
   }
 
   const handleReveal = () => {
@@ -135,13 +118,11 @@ export default function RoomPage() {
 
   const handleEnterName = () => {
     const name = nameInput.trim()
-    if (name && name.length > 0) {
-      setUserName(name)
-      setShowNameModal(false)
-      // Update URL with the name
-      const newUrl = `/room/${roomId}?name=${encodeURIComponent(name)}${isHost ? '&host=true' : ''}`
-      router.replace(newUrl)
-    }
+    if (!name) return
+    
+    setUserName(name)
+    setShowNameModal(false)
+    router.replace(`/room/${roomId}?name=${encodeURIComponent(name)}${isHost ? '&host=true' : ''}`)
   }
 
   const handleCopyInviteLink = async () => {
@@ -157,25 +138,18 @@ export default function RoomPage() {
 
   const hasAtLeastOneVote = roomState.users.some(u => u.hasVoted && u.vote !== null)
 
-
-  // Calculate vote distribution for pie chart
   const voteDistribution = useMemo(() => {
-    if (!roomState.revealed || roomState.users.length === 0) return []
+    if (!roomState.revealed) return []
     
     const voteCounts = new Map<number | string, number>()
-    for (const user of roomState.users) {
+    roomState.users.forEach(user => {
       if (user.vote != null) {
         voteCounts.set(user.vote, (voteCounts.get(user.vote) ?? 0) + 1)
       }
-    }
+    })
 
-    const total = roomState.users.length
     return Array.from(voteCounts.entries())
-      .map(([vote, count]) => ({
-        name: String(vote),
-        value: count,
-        percentage: Math.round((count / total) * 100).toString()
-      }))
+      .map(([vote, count]) => ({ name: String(vote), value: count }))
       .sort((a, b) => {
         if (a.name === '?') return 1
         if (b.name === '?') return -1
@@ -183,25 +157,12 @@ export default function RoomPage() {
       })
   }, [roomState.revealed, roomState.users])
 
-  // Colors for pie chart segments
-  const COLORS = [
-    '#4F46E5', // indigo-600
-    '#10B981', // green-500
-    '#F59E0B', // amber-500
-    '#EF4444', // red-500
-    '#8B5CF6', // violet-500
-    '#06B6D4', // cyan-500
-    '#EC4899', // pink-500
-    '#84CC16', // lime-500
-  ]
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="fixed top-4 right-4 z-50">
         <ThemeSwitcher />
       </div>
       <div className="max-w-6xl mx-auto">
-        {/* Name Entry Modal - Required before entering room */}
         {showNameModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-md w-full">
@@ -243,10 +204,8 @@ export default function RoomPage() {
           </div>
         )}
 
-        {/* Don't show room content until name is entered */}
         {!showNameModal && (
           <>
-            {/* Header */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 mb-4">
               <div className="flex justify-between items-center">
                 <div>
@@ -285,30 +244,15 @@ export default function RoomPage() {
           </div>
         </div>
 
-        {/* Connection Error Alert */}
         {connectionError && (
           <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-4">
-            <div className="flex items-start">
-              <div className="flex-shrink-0">
-                <span className="text-red-400 dark:text-red-500 text-xl">⚠️</span>
-              </div>
-              <div className="ml-3">
-                <h3 className="text-sm font-medium text-red-800 dark:text-red-300">Connection Error</h3>
-                <p className="mt-1 text-sm text-red-700 dark:text-red-400">{connectionError}</p>
-                <p className="mt-2 text-xs text-red-600 dark:text-red-400">
-                  <strong>For local testing:</strong> Make sure the server is running: <code className="bg-red-100 dark:bg-red-900/30 px-1 rounded">npm run dev</code>
-                  <br />
-                  <strong>For production:</strong> The Socket.io server runs on the same port as the Next.js app. No additional configuration needed.
-                </p>
-              </div>
-            </div>
+            <p className="text-sm text-red-700 dark:text-red-400">{connectionError}</p>
           </div>
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* Main Voting Area */}
           <div className="lg:col-span-2 space-y-4">
-            {/* Voting Cards */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
               <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">Select Your Vote</h2>
               <div className="grid grid-cols-3 gap-4">
@@ -335,8 +279,7 @@ export default function RoomPage() {
               </div>
             </div>
 
-                {/* Host Controls */}
-                {isHost && (
+            {isHost && (
                   <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
                     <div className="flex gap-3">
                       <button
@@ -358,8 +301,7 @@ export default function RoomPage() {
                 )}
           </div>
 
-              {/* Participants Sidebar */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
                 <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">Participants</h2>
                 <div className="space-y-2">
                   {roomState.users.map((user) => (
@@ -390,10 +332,10 @@ export default function RoomPage() {
                               cx="50%"
                               cy="50%"
                               labelLine={true}
-                              label={(entry: any) => {
+                              label={({ name, value }: any) => {
                                 const total = voteDistribution.reduce((sum, item) => sum + item.value, 0)
-                                const percentage = total > 0 ? ((entry.value / total) * 100).toFixed(0) : '0'
-                                return `${entry.name} (${percentage}%)`
+                                const percentage = total > 0 ? Math.round((value / total) * 100) : 0
+                                return `${name} (${percentage}%)`
                               }}
                               outerRadius={60}
                               fill="#8884d8"
@@ -410,7 +352,7 @@ export default function RoomPage() {
                                   return (
                                     <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-2 shadow-lg">
                                       <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                        {`${data.name}: ${data.value} vote${data.value > 1 ? 's' : ''} (${data.payload.percentage}%)`}
+                                        {`${data.name}: ${data.value} vote${data.value > 1 ? 's' : ''}`}
                                       </p>
                                     </div>
                                   )
