@@ -71,10 +71,14 @@ export default function RoomPage() {
     newSocket.on('room-state', (state: RoomState) => {
       setRoomState(state)
       
-      // Restore user's previous vote if they had one (for page refresh)
+      // Sync selected card with user's current vote (for page refresh and vote cancellation)
       const currentUser = state.users.find(u => u.name === userName)
-      if (currentUser?.hasVoted && currentUser.vote !== null) {
-        setSelectedCard(currentUser.vote)
+      if (currentUser) {
+        if (currentUser.vote !== null && currentUser.vote !== undefined) {
+          setSelectedCard(currentUser.vote)
+        } else {
+          setSelectedCard(null)
+        }
       }
     })
 
@@ -100,8 +104,14 @@ export default function RoomPage() {
 
   const handleVote = (card: number | string) => {
     if (socket && !roomState.revealed) {
-      setSelectedCard(card)
-      socket.emit('vote', { roomId, vote: card })
+      // If clicking the same card, cancel the vote
+      if (selectedCard === card) {
+        setSelectedCard(null)
+        socket.emit('vote', { roomId, vote: null })
+      } else {
+        setSelectedCard(card)
+        socket.emit('vote', { roomId, vote: card })
+      }
     }
   }
 
@@ -139,7 +149,6 @@ export default function RoomPage() {
     }
   }
 
-  const allVoted = roomState.users.length > 0 && roomState.users.every(u => u.hasVoted)
 
   // Calculate vote distribution for pie chart
   const voteDistribution = useMemo(() => {
@@ -328,7 +337,7 @@ export default function RoomPage() {
                     <div className="flex gap-3">
                       <button
                         onClick={handleReveal}
-                        disabled={!allVoted || roomState.revealed}
+                        disabled={roomState.revealed}
                         className="flex-1 bg-green-600 dark:bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-700 dark:hover:bg-green-600 disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed font-medium"
                       >
                         {roomState.revealed ? 'Votes Revealed' : 'Reveal Votes'}

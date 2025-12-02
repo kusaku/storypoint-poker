@@ -74,7 +74,7 @@ io.on('connection', (socket) => {
       const user = room.users.get(socket.id)
       if (user) {
         user.vote = vote
-        user.hasVoted = true
+        user.hasVoted = vote !== null && vote !== undefined
         room.users.set(socket.id, user)
 
         io.to(roomId).emit('room-state', {
