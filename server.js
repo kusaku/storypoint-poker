@@ -13,9 +13,9 @@ const handle = app.getRequestHandler()
 // Create HTTP server
 const httpServer = createServer()
 
-// Attach Socket.io FIRST so it can handle /socket.io/ requests
+// Attach Socket.io FIRST so it can handle /socket.io requests
 const io = new Server(httpServer, {
-  path: '/socket.io/',
+  path: '/socket.io',
   cors: {
     origin: (origin, callback) => {
       callback(null, true)
