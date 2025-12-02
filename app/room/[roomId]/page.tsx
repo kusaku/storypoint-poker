@@ -426,19 +426,19 @@ export default function RoomPage() {
                     {voteDistribution.length > 0 && (
                       <div className="mt-4">
                         <p className="text-sm font-semibold text-indigo-800 dark:text-indigo-300 mb-2">Vote Distribution:</p>
-                        <ResponsiveContainer width="100%" height={200}>
+                        <ResponsiveContainer width="100%" height={250}>
                           <PieChart>
                             <Pie
                               data={voteDistribution}
                               cx="50%"
                               cy="50%"
-                              labelLine={false}
+                              labelLine={true}
                               label={(entry: any) => {
                                 const total = voteDistribution.reduce((sum, item) => sum + item.value, 0)
                                 const percentage = total > 0 ? ((entry.value / total) * 100).toFixed(0) : '0'
                                 return `${entry.name} (${percentage}%)`
                               }}
-                              outerRadius={70}
+                              outerRadius={60}
                               fill="#8884d8"
                               dataKey="value"
                             >
