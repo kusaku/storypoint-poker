@@ -70,7 +70,8 @@ io.on('connection', (socket) => {
       id: socket.id,
       name: userName,
       vote: existingUser?.vote ?? null,
-      hasVoted: existingUser?.hasVoted ?? false
+      hasVoted: existingUser?.hasVoted ?? false,
+      comment: existingUser?.comment ?? null
     }
 
     room.users.set(socket.id, user)
@@ -89,6 +90,22 @@ io.on('connection', (socket) => {
       if (user) {
         user.vote = vote
         user.hasVoted = vote !== null && vote !== undefined
+        room.users.set(socket.id, user)
+
+        io.to(roomId).emit('room-state', {
+          users: Array.from(room.users.values()),
+          revealed: room.revealed
+        })
+      }
+    }
+  })
+
+  socket.on('comment', ({ roomId, comment }) => {
+    const room = rooms.get(roomId)
+    if (room) {
+      const user = room.users.get(socket.id)
+      if (user) {
+        user.comment = comment
         room.users.set(socket.id, user)
 
         io.to(roomId).emit('room-state', {
