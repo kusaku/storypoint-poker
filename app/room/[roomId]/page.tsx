@@ -230,52 +230,52 @@ export default function RoomPage() {
         )}
 
         {!showNameModal && (
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 mb-4">
-            <div className="flex justify-between items-center">
-              <div>
-                <h1 className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">Room: {roomId}</h1>
-                <p className="text-gray-600 dark:text-gray-300">Welcome, {userName}!</p>
-                <div className="flex items-center gap-2 mt-1">
-                  {isConnected ? (
-                    <span className="text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded">🟢 Connected</span>
-                  ) : (
-                    <span className="text-xs bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 px-2 py-1 rounded">🔴 Disconnected</span>
+          <>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 mb-4">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h1 className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">Room: {roomId}</h1>
+                  <p className="text-gray-600 dark:text-gray-300">Welcome, {userName}!</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    {isConnected ? (
+                      <span className="text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded">🟢 Connected</span>
+                    ) : (
+                      <span className="text-xs bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 px-2 py-1 rounded">🔴 Disconnected</span>
+                    )}
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Participants: {roomState.users.length}</p>
+                  {isHost && (
+                    <div className="mt-2">
+                      <span className="text-xs bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 px-2 py-1 rounded">Host</span>
+                      <button
+                        onClick={handleCopyInviteLink}
+                        className="ml-2 text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded hover:bg-green-200 dark:hover:bg-green-800 transition-colors flex items-center gap-1"
+                      >
+                        {copied ? (
+                          <>
+                            <span>✓</span> Copied!
+                          </>
+                        ) : (
+                          <>
+                            <span>🔗</span> Copy Invite Link
+                          </>
+                        )}
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>
-              <div className="text-right">
-                <p className="text-sm text-gray-500 dark:text-gray-400">Participants: {roomState.users.length}</p>
-                {isHost && (
-                  <div className="mt-2">
-                    <span className="text-xs bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 px-2 py-1 rounded">Host</span>
-                    <button
-                      onClick={handleCopyInviteLink}
-                      className="ml-2 text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded hover:bg-green-200 dark:hover:bg-green-800 transition-colors flex items-center gap-1"
-                    >
-                      {copied ? (
-                        <>
-                          <span>✓</span> Copied!
-                        </>
-                      ) : (
-                        <>
-                          <span>🔗</span> Copy Invite Link
-                        </>
-                      )}
-                    </button>
-                  </div>
-                )}
-              </div>
             </div>
-          </div>
-        )}
 
-        {connectionError && (
-          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-4">
-            <p className="text-sm text-red-700 dark:text-red-400">{connectionError}</p>
-          </div>
-        )}
+            {connectionError && (
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-4">
+                <p className="text-sm text-red-700 dark:text-red-400">{connectionError}</p>
+              </div>
+            )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="lg:col-span-2 space-y-4">
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
               <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">Select Your Vote</h2>
@@ -371,7 +371,7 @@ export default function RoomPage() {
                     </span>
                   </div>
                   {user.comment && (
-                    <div className="absolute left-full top-0 ml-2 z-10" style={{ maxWidth: 'calc(100vw - 100%)' }}>
+                    <div className="absolute left-full top-0 ml-2 z-10" style={{ maxWidth: 'calc(100vw - 2rem - 100%)' }}>
                       <div className="bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-900 rounded-lg px-3 py-2 text-sm shadow-lg relative" style={{ whiteSpace: 'normal', wordBreak: 'break-word' }}>
                         <p>{user.comment}</p>
                         <div className="absolute right-full top-3 w-0 h-0 border-t-4 border-b-4 border-r-4 border-transparent border-r-gray-800 dark:border-r-gray-200"></div>
@@ -432,6 +432,7 @@ export default function RoomPage() {
             )}
           </div>
         </div>
+          </>
         )}
       </div>
     </div>
