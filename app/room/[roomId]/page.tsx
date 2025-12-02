@@ -14,7 +14,6 @@ interface User {
 interface RoomState {
   users: User[]
   revealed: boolean
-  currentStory: string
 }
 
 const FIBONACCI_CARDS = [0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, '?']
@@ -29,21 +28,22 @@ export default function RoomPage() {
   const [socket, setSocket] = useState<Socket | null>(null)
   const [roomState, setRoomState] = useState<RoomState>({
     users: [],
-    revealed: false,
-    currentStory: ''
+    revealed: false
   })
   const [selectedCard, setSelectedCard] = useState<number | string | null>(null)
-  const [storyName, setStoryName] = useState('')
 
   useEffect(() => {
+    console.log('Room page mounted', { roomId, userName, isHost })
     const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001'
+    console.log('Connecting to Socket.io server:', socketUrl)
+    
     const newSocket = io(socketUrl, {
       transports: ['websocket', 'polling']
     })
 
-
     newSocket.on('connect', () => {
-      console.log('Connected to Socket.io server')
+      console.log('✅ Connected to Socket.io server, socket ID:', newSocket.id)
+      console.log('Joining room:', { roomId, userName })
       newSocket.emit('join-room', { roomId, userName })
     })
 
@@ -104,28 +104,29 @@ export default function RoomPage() {
   }, [roomId, userName])
 
   const handleVote = (card: number | string) => {
+    console.log('Vote clicked:', card, { socket: !!socket, revealed: roomState.revealed })
     if (socket && !roomState.revealed) {
       setSelectedCard(card)
+      console.log('Emitting vote:', { roomId, vote: card })
       socket.emit('vote', { roomId, vote: card })
+    } else {
+      console.warn('Cannot vote:', { hasSocket: !!socket, revealed: roomState.revealed })
     }
   }
 
   const handleReveal = () => {
+    console.log('Reveal clicked', { socket: !!socket, isHost })
     if (socket && isHost) {
+      console.log('Emitting reveal-votes:', { roomId })
       socket.emit('reveal-votes', { roomId })
     }
   }
 
   const handleReset = () => {
+    console.log('Reset clicked', { socket: !!socket, isHost })
     if (socket && isHost) {
+      console.log('Emitting reset-votes:', { roomId })
       socket.emit('reset-votes', { roomId })
-    }
-  }
-
-  const handleSetStory = () => {
-    if (socket && isHost && storyName) {
-      socket.emit('set-story', { roomId, story: storyName })
-      setStoryName('')
     }
   }
 
@@ -151,44 +152,6 @@ export default function RoomPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* Main Voting Area */}
           <div className="lg:col-span-2 space-y-4">
-            {/* Story Input (Host only) */}
-            {isHost && (
-              <div className="bg-white rounded-lg shadow-md p-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Current Story
-                </label>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={storyName}
-                    onChange={(e) => setStoryName(e.target.value)}
-                    placeholder="Enter story name..."
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
-                  />
-                  <button
-                    onClick={handleSetStory}
-                    className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700"
-                  >
-                    Set Story
-                  </button>
-                </div>
-                {roomState.currentStory && (
-                  <p className="mt-2 text-lg font-semibold text-gray-800">
-                    📋 {roomState.currentStory}
-                  </p>
-                )}
-              </div>
-            )}
-
-            {/* Story Display */}
-            {roomState.currentStory && !isHost && (
-              <div className="bg-white rounded-lg shadow-md p-4">
-                <p className="text-lg font-semibold text-gray-800">
-                  📋 {roomState.currentStory}
-                </p>
-              </div>
-            )}
-
             {/* Voting Cards */}
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-xl font-bold mb-4 text-gray-800">Select Your Vote</h2>

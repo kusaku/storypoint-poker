@@ -10,17 +10,41 @@ export default function Home() {
 
   const createRoom = (e: React.FormEvent) => {
     e.preventDefault()
-    if (roomName && userName) {
-      const roomId = Math.random().toString(36).substring(2, 9)
-      router.push(`/room/${roomId}?name=${encodeURIComponent(userName)}&host=true`)
+    console.log('Create room clicked', { userName, roomName })
+    
+    if (!userName || userName.trim() === '') {
+      console.error('User name is required')
+      alert('Please enter your name')
+      return
     }
+    
+    const roomId = Math.random().toString(36).substring(2, 9)
+    console.log('Creating room with ID:', roomId)
+    const url = `/room/${roomId}?name=${encodeURIComponent(userName)}&host=true`
+    console.log('Navigating to:', url)
+    router.push(url)
   }
 
   const joinRoom = (e: React.FormEvent) => {
     e.preventDefault()
-    if (roomName && userName) {
-      router.push(`/room/${roomName}?name=${encodeURIComponent(userName)}`)
+    console.log('Join room clicked', { userName, roomName })
+    
+    if (!userName || userName.trim() === '') {
+      console.error('User name is required')
+      alert('Please enter your name')
+      return
     }
+    
+    if (!roomName || roomName.trim() === '') {
+      console.error('Room ID is required')
+      alert('Please enter a room ID')
+      return
+    }
+    
+    console.log('Joining room:', roomName)
+    const url = `/room/${roomName}?name=${encodeURIComponent(userName)}`
+    console.log('Navigating to:', url)
+    router.push(url)
   }
 
   return (

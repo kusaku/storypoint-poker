@@ -28,21 +28,23 @@ interface Room {
   id: string
   users: Map<string, User>
   revealed: boolean
-  currentStory: string
 }
 
 const rooms = new Map<string, Room>()
 
 io.on('connection', (socket) => {
-  console.log('User connected:', socket.id)
+  console.log('✅ User connected:', socket.id)
+
+  socket.on('disconnect', () => {
+    console.log('❌ User disconnected:', socket.id)
 
   socket.on('join-room', ({ roomId, userName }: { roomId: string; userName: string }) => {
+    console.log('👤 User joining room:', { socketId: socket.id, roomId, userName })
     if (!rooms.has(roomId)) {
       rooms.set(roomId, {
         id: roomId,
         users: new Map(),
-        revealed: false,
-        currentStory: ''
+        revealed: false
       })
     }
 
@@ -60,12 +62,12 @@ io.on('connection', (socket) => {
     // Broadcast updated room state to all users in the room (including the new user)
     io.to(roomId).emit('room-state', {
       users: Array.from(room.users.values()),
-      revealed: room.revealed,
-      currentStory: room.currentStory
+      revealed: room.revealed
     })
   })
 
   socket.on('vote', ({ roomId, vote }: { roomId: string; vote: number | string }) => {
+    console.log('🗳️ Vote received:', { socketId: socket.id, roomId, vote })
     const room = rooms.get(roomId)
     if (room) {
       const user = room.users.get(socket.id)
@@ -77,14 +79,14 @@ io.on('connection', (socket) => {
         // Broadcast updated room state to all users in the room
         io.to(roomId).emit('room-state', {
           users: Array.from(room.users.values()),
-          revealed: room.revealed,
-          currentStory: room.currentStory
+          revealed: room.revealed
         })
       }
     }
   })
 
   socket.on('reveal-votes', ({ roomId }: { roomId: string }) => {
+    console.log('👁️ Revealing votes for room:', roomId)
     const room = rooms.get(roomId)
     if (room) {
       room.revealed = true
@@ -98,10 +100,10 @@ io.on('connection', (socket) => {
   })
 
   socket.on('reset-votes', ({ roomId }: { roomId: string }) => {
+    console.log('🔄 Resetting votes for room:', roomId)
     const room = rooms.get(roomId)
     if (room) {
       room.revealed = false
-      room.currentStory = ''
       room.users.forEach(user => {
         user.vote = null
         user.hasVoted = false
@@ -109,26 +111,13 @@ io.on('connection', (socket) => {
       io.to(roomId).emit('votes-reset')
       io.to(roomId).emit('room-state', {
         users: Array.from(room.users.values()),
-        revealed: room.revealed,
-        currentStory: room.currentStory
-      })
-    }
-  })
-
-  socket.on('set-story', ({ roomId, story }: { roomId: string; story: string }) => {
-    const room = rooms.get(roomId)
-    if (room) {
-      room.currentStory = story
-      io.to(roomId).emit('room-state', {
-        users: Array.from(room.users.values()),
-        revealed: room.revealed,
-        currentStory: room.currentStory
+        revealed: room.revealed
       })
     }
   })
 
   socket.on('disconnect', () => {
-    console.log('User disconnected:', socket.id)
+    console.log('❌ User disconnected:', socket.id)
     
     // Remove user from all rooms
     rooms.forEach((room, roomId) => {
@@ -138,8 +127,7 @@ io.on('connection', (socket) => {
         // Broadcast updated room state to remaining users
         io.to(roomId).emit('room-state', {
           users: Array.from(room.users.values()),
-          revealed: room.revealed,
-          currentStory: room.currentStory
+          revealed: room.revealed
         })
         
         // Clean up empty rooms after 5 minutes
