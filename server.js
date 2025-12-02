@@ -10,10 +10,12 @@ const port = parseInt(process.env.PORT || '3000', 10)
 const app = next({ dev, hostname, port })
 const handle = app.getRequestHandler()
 
-// Create HTTP server with Next.js handler
-// Socket.io will be attached after and will handle /socket.io/ requests
+// Create HTTP server
 const httpServer = createServer()
+
+// Attach Socket.io FIRST so it can handle /socket.io/ requests
 const io = new Server(httpServer, {
+  path: '/socket.io/',
   cors: {
     origin: (origin, callback) => {
       callback(null, true)
@@ -128,7 +130,9 @@ io.on('connection', (socket) => {
 })
 
 app.prepare().then(() => {
-  // Handle HTTP requests - Socket.io handles /socket.io/ automatically
+  // Handle HTTP requests
+  // Socket.io is attached first, so it will handle /socket.io/ requests
+  // We only handle non-Socket.io requests here
   httpServer.on('request', async (req, res) => {
     const parsedUrl = parse(req.url, true)
     const { pathname } = parsedUrl
@@ -144,13 +148,15 @@ app.prepare().then(() => {
       return
     }
 
-    // Let Socket.io handle /socket.io/ requests - don't process them here
-    // Socket.io processes these at the server level before this handler
+    // Skip Socket.io - it's handled by the io instance attached above
     if (pathname && pathname.startsWith('/socket.io/')) {
-      // Socket.io should have already handled this, but if not, 
-      // we need to let it pass through
-      // The issue is Socket.io needs to process the request, not us
-      // So we just don't handle it - Socket.io's internal handler will
+      // Don't handle - Socket.io will process this
+      // If we've reached here, Socket.io didn't handle it, which means
+      // the request might be malformed, but we still shouldn't process it
+      if (!res.headersSent) {
+        res.statusCode = 404
+        res.end('Not found')
+      }
       return
     }
 
