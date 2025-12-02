@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useParams, useSearchParams, useRouter } from 'next/navigation'
 import { io, Socket } from 'socket.io-client'
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts'
 
 interface User {
   id: string
@@ -188,6 +189,44 @@ export default function RoomPage() {
   }
 
   const allVoted = roomState.users.length > 0 && roomState.users.every(u => u.hasVoted)
+
+  // Calculate vote distribution for pie chart
+  const voteDistribution = useMemo(() => {
+    if (!roomState.revealed) return []
+    
+    const voteCounts = new Map<number | string, number>()
+    roomState.users.forEach(user => {
+      if (user.vote !== null && user.vote !== undefined) {
+        const vote = user.vote
+        voteCounts.set(vote, (voteCounts.get(vote) || 0) + 1)
+      }
+    })
+
+    return Array.from(voteCounts.entries())
+      .map(([vote, count]) => ({
+        name: String(vote),
+        value: count,
+        percentage: ((count / roomState.users.length) * 100).toFixed(0)
+      }))
+      .sort((a, b) => {
+        // Sort by vote value (numbers first, then '?')
+        if (a.name === '?') return 1
+        if (b.name === '?') return -1
+        return Number(a.name) - Number(b.name)
+      })
+  }, [roomState.revealed, roomState.users])
+
+  // Colors for pie chart segments
+  const COLORS = [
+    '#4F46E5', // indigo-600
+    '#10B981', // green-500
+    '#F59E0B', // amber-500
+    '#EF4444', // red-500
+    '#8B5CF6', // violet-500
+    '#06B6D4', // cyan-500
+    '#EC4899', // pink-500
+    '#84CC16', // lime-500
+  ]
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4">
@@ -376,7 +415,7 @@ export default function RoomPage() {
                 {roomState.revealed && (
                   <div className="mt-4 p-3 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg">
                     <p className="text-sm font-semibold text-indigo-800 dark:text-indigo-300 mb-2">Results:</p>
-                    <div className="space-y-1">
+                    <div className="space-y-1 mb-4">
                       {roomState.users.map((user) => (
                         <div key={user.id} className="flex justify-between text-sm text-gray-900 dark:text-gray-100">
                           <span>{user.name}:</span>
@@ -384,6 +423,44 @@ export default function RoomPage() {
                         </div>
                       ))}
                     </div>
+                    {voteDistribution.length > 0 && (
+                      <div className="mt-4">
+                        <p className="text-sm font-semibold text-indigo-800 dark:text-indigo-300 mb-2">Vote Distribution:</p>
+                        <ResponsiveContainer width="100%" height={200}>
+                          <PieChart>
+                            <Pie
+                              data={voteDistribution}
+                              cx="50%"
+                              cy="50%"
+                              labelLine={false}
+                              label={({ name, percentage }) => `${name} (${percentage}%)`}
+                              outerRadius={70}
+                              fill="#8884d8"
+                              dataKey="value"
+                            >
+                              {voteDistribution.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                              ))}
+                            </Pie>
+                            <Tooltip 
+                              contentStyle={{
+                                backgroundColor: 'var(--tooltip-bg, rgba(255, 255, 255, 0.95))',
+                                border: '1px solid var(--tooltip-border, #e5e7eb)',
+                                borderRadius: '8px',
+                                color: 'var(--tooltip-text, #000)',
+                              }}
+                            />
+                            <Legend 
+                              wrapperStyle={{ 
+                                fontSize: '12px',
+                                color: 'inherit'
+                              }}
+                              formatter={(value) => value}
+                            />
+                          </PieChart>
+                        </ResponsiveContainer>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

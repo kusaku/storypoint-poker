@@ -8,6 +8,22 @@
   --background-end-rgb: 255, 255, 255;
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    --tooltip-bg: rgba(31, 41, 55, 0.95);
+    --tooltip-border: #4b5563;
+    --tooltip-text: #f3f4f6;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --tooltip-bg: rgba(255, 255, 255, 0.95);
+    --tooltip-border: #e5e7eb;
+    --tooltip-text: #000;
+  }
+}
+
 body {
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
