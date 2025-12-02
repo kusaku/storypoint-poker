@@ -41,15 +41,9 @@ export default function RoomPage() {
   const [copied, setCopied] = useState(false)
 
   useEffect(() => {
-    // Don't connect to socket until name is entered
-    if (!userName || userName.trim() === '' || showNameModal) {
-      return
-    }
+    if (!userName?.trim() || showNameModal) return
 
-    // Always connect to the same origin as the web app (no NEXT_PUBLIC_SOCKET_URL needed)
-    const socketUrl = typeof window !== 'undefined' ? window.location.origin : ''
-    
-    const newSocket = io(socketUrl, {
+    const newSocket = io(window.location.origin, {
       transports: ['polling', 'websocket'], // Try polling first, then websocket
       reconnection: true,
       reconnectionAttempts: 5,
@@ -66,7 +60,7 @@ export default function RoomPage() {
     newSocket.on('connect_error', (error) => {
       console.error('Socket.io connection error:', error)
       setIsConnected(false)
-      setConnectionError(`Failed to connect to Socket.io server at ${socketUrl}. Make sure the server is running and the URL is correct.`)
+      setConnectionError(`Failed to connect to Socket.io server. Make sure the server is running.`)
     })
 
     newSocket.on('disconnect', () => {
@@ -78,33 +72,9 @@ export default function RoomPage() {
       
       // Restore user's previous vote if they had one (for page refresh)
       const currentUser = state.users.find(u => u.name === userName)
-      if (currentUser && currentUser.hasVoted && currentUser.vote !== null) {
+      if (currentUser?.hasVoted && currentUser.vote !== null) {
         setSelectedCard(currentUser.vote)
       }
-    })
-
-    // Keep these for backwards compatibility, but room-state is primary
-    newSocket.on('user-joined', (user: User) => {
-      setRoomState(prev => ({
-        ...prev,
-        users: [...prev.users.filter(u => u.id !== user.id), user]
-      }))
-    })
-
-    newSocket.on('user-left', (userId: string) => {
-      setRoomState(prev => ({
-        ...prev,
-        users: prev.users.filter(u => u.id !== userId)
-      }))
-    })
-
-    newSocket.on('vote-received', (data: { userId: string; vote: number | string }) => {
-      setRoomState(prev => ({
-        ...prev,
-        users: prev.users.map(u =>
-          u.id === data.userId ? { ...u, vote: data.vote, hasVoted: true } : u
-        )
-      }))
     })
 
     newSocket.on('votes-revealed', () => {
@@ -165,24 +135,6 @@ export default function RoomPage() {
       setTimeout(() => setCopied(false), 2000)
     } catch (err) {
       console.error('Failed to copy:', err)
-      // Fallback for older browsers (deprecated but necessary for legacy support)
-      try {
-        const textArea = document.createElement('textarea')
-        textArea.value = inviteUrl
-        textArea.style.position = 'fixed'
-        textArea.style.opacity = '0'
-        document.body.appendChild(textArea)
-        textArea.select()
-        // @ts-ignore - Legacy API for older browser support
-        const success = document.execCommand('copy')
-        document.body.removeChild(textArea)
-        if (success) {
-          setCopied(true)
-          setTimeout(() => setCopied(false), 2000)
-        }
-      } catch (fallbackErr) {
-        console.error('Fallback copy also failed:', fallbackErr)
-      }
     }
   }
 
@@ -190,24 +142,23 @@ export default function RoomPage() {
 
   // Calculate vote distribution for pie chart
   const voteDistribution = useMemo(() => {
-    if (!roomState.revealed) return []
+    if (!roomState.revealed || roomState.users.length === 0) return []
     
     const voteCounts = new Map<number | string, number>()
-    roomState.users.forEach(user => {
-      if (user.vote !== null && user.vote !== undefined) {
-        const vote = user.vote
-        voteCounts.set(vote, (voteCounts.get(vote) || 0) + 1)
+    for (const user of roomState.users) {
+      if (user.vote != null) {
+        voteCounts.set(user.vote, (voteCounts.get(user.vote) ?? 0) + 1)
       }
-    })
+    }
 
+    const total = roomState.users.length
     return Array.from(voteCounts.entries())
       .map(([vote, count]) => ({
         name: String(vote),
         value: count,
-        percentage: ((count / roomState.users.length) * 100).toFixed(0)
+        percentage: Math.round((count / total) * 100).toString()
       }))
       .sort((a, b) => {
-        // Sort by vote value (numbers first, then '?')
         if (a.name === '?') return 1
         if (b.name === '?') return -1
         return Number(a.name) - Number(b.name)
