@@ -11,6 +11,9 @@ dist/
 build/
 .next/
 
+# TypeScript
+*.tsbuildinfo
+
 # Environment variables
 .env
 .env.local
@@ -37,4 +40,3 @@ lerna-debug.log*
 # OS
 .DS_Store
 Thumbs.db
-

@@ -19,7 +19,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     setMounted(true)
-    // Load theme from localStorage
     const savedTheme = localStorage.getItem('theme') as Theme | null
     if (savedTheme && ['light', 'dark', 'auto'].includes(savedTheme)) {
       setThemeState(savedTheme)
@@ -40,7 +39,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
     updateEffectiveTheme()
 
-    // Update when system preference changes (for auto mode)
     if (theme === 'auto') {
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
       const handler = () => updateEffectiveTheme()
@@ -79,7 +77,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 export function useTheme() {
   const context = useContext(ThemeContext)
   if (context === undefined) {
-    // Return default values during SSR
     return {
       theme: 'auto' as Theme,
       setTheme: () => {},

@@ -6,7 +6,10 @@
     "dev": "NODE_ENV=development node server.js",
     "build": "next build",
     "start": "NODE_ENV=production node server.js",
-    "lint": "next lint"
+    "lint": "next lint",
+    "clean": "rm -rf .next node_modules/.cache",
+    "dev:clean": "npm run clean && npm run dev",
+    "clean:all": "rm -rf .next node_modules/.cache .turbo"
   },
   "dependencies": {
     "next": "^14.0.4",

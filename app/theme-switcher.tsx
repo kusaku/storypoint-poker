@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 
 export function ThemeSwitcher() {
   const [mounted, setMounted] = useState(false)
+  const { theme, setTheme } = useTheme()
   
   useEffect(() => {
     setMounted(true)
@@ -13,12 +14,9 @@ export function ThemeSwitcher() {
   if (!mounted) {
     return (
       <div className="flex items-center gap-2 bg-white dark:bg-gray-800 rounded-lg p-1 shadow-md border border-gray-200 dark:border-gray-700 w-[120px] h-[40px]">
-        {/* Placeholder to prevent layout shift */}
       </div>
     )
   }
-
-  const { theme, setTheme } = useTheme()
 
   return (
     <div className="flex items-center gap-2 bg-white dark:bg-gray-800 rounded-lg p-1 shadow-md border border-gray-200 dark:border-gray-700">

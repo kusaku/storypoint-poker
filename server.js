@@ -1,5 +1,4 @@
 const { createServer } = require('http')
-const { parse } = require('url')
 const next = require('next')
 const { Server } = require('socket.io')
 
@@ -23,13 +22,22 @@ const io = new Server(httpServer, {
   }
 })
 
-// Socket.io room management
 const rooms = new Map()
-const disconnectTimers = new Map() // Track timers for disconnected users
-const roomDeleteTimers = new Map() // Track timers for empty room deletion
+const disconnectTimers = new Map()
+const roomDeleteTimers = new Map()
 
-const CLIENT_DISCONNECT_TIMEOUT = 60 * 1000 // 1 minute
-const ROOM_DELETE_TIMEOUT = 60 * 60 * 1000 // 1 hour
+const CLIENT_DISCONNECT_TIMEOUT = 60 * 1000
+const ROOM_DELETE_TIMEOUT = 60 * 60 * 1000
+
+function broadcastRoomState(roomId) {
+  const room = rooms.get(roomId)
+  if (room) {
+    io.to(roomId).emit('room-state', {
+      users: Array.from(room.users.values()),
+      revealed: room.revealed
+    })
+  }
+}
 
 io.on('connection', (socket) => {
   socket.on('join-room', ({ roomId, userName }) => {
@@ -43,13 +51,11 @@ io.on('connection', (socket) => {
 
     const room = rooms.get(roomId)
     
-    // Cancel any pending deletion timer for this room
     if (roomDeleteTimers.has(roomId)) {
       clearTimeout(roomDeleteTimers.get(roomId))
       roomDeleteTimers.delete(roomId)
     }
     
-    // Find existing user with same name and cancel their disconnect timer
     let existingUser = null
     for (const [userId, user] of room.users.entries()) {
       if (user.name === userName) {
@@ -66,18 +72,17 @@ io.on('connection', (socket) => {
     const user = {
       id: socket.id,
       name: userName,
+      isHost: existingUser?.isHost ?? false,
       vote: existingUser?.vote ?? null,
       hasVoted: existingUser?.hasVoted ?? false,
-      comment: existingUser?.comment ?? null
+      comment: existingUser?.comment ?? null,
+      wizardAnswers: existingUser?.wizardAnswers ?? null
     }
 
     room.users.set(socket.id, user)
     socket.join(roomId)
 
-    io.to(roomId).emit('room-state', {
-      users: Array.from(room.users.values()),
-      revealed: room.revealed
-    })
+    broadcastRoomState(roomId)
   })
 
   socket.on('vote', ({ roomId, vote }) => {
@@ -89,10 +94,7 @@ io.on('connection', (socket) => {
         user.hasVoted = vote !== null && vote !== undefined
         room.users.set(socket.id, user)
 
-        io.to(roomId).emit('room-state', {
-          users: Array.from(room.users.values()),
-          revealed: room.revealed
-        })
+        broadcastRoomState(roomId)
       }
     }
   })
@@ -105,10 +107,20 @@ io.on('connection', (socket) => {
         user.comment = comment
         room.users.set(socket.id, user)
 
-        io.to(roomId).emit('room-state', {
-          users: Array.from(room.users.values()),
-          revealed: room.revealed
-        })
+        broadcastRoomState(roomId)
+      }
+    }
+  })
+
+  socket.on('wizard-answers', ({ roomId, wizardAnswers }) => {
+    const room = rooms.get(roomId)
+    if (room) {
+      const user = room.users.get(socket.id)
+      if (user) {
+        user.wizardAnswers = wizardAnswers
+        room.users.set(socket.id, user)
+
+        broadcastRoomState(roomId)
       }
     }
   })
@@ -116,27 +128,52 @@ io.on('connection', (socket) => {
   socket.on('reveal-votes', ({ roomId }) => {
     const room = rooms.get(roomId)
     if (room) {
-      room.revealed = true
-      io.to(roomId).emit('room-state', {
-        users: Array.from(room.users.values()),
-        revealed: true
-      })
+      const user = room.users.get(socket.id)
+      if (user && user.isHost) {
+        room.revealed = true
+        broadcastRoomState(roomId)
+      }
     }
   })
 
   socket.on('reset-votes', ({ roomId }) => {
     const room = rooms.get(roomId)
     if (room) {
-      room.revealed = false
-      room.users.forEach(user => {
-        user.vote = null
-        user.hasVoted = false
-        user.comment = null
-      })
-      io.to(roomId).emit('room-state', {
-        users: Array.from(room.users.values()),
-        revealed: false
-      })
+      const user = room.users.get(socket.id)
+      if (user && user.isHost) {
+        room.revealed = false
+        room.users.forEach(user => {
+          user.vote = null
+          user.hasVoted = false
+          user.comment = null
+          user.wizardAnswers = null
+        })
+        broadcastRoomState(roomId)
+      }
+    }
+  })
+
+  socket.on('become-host', ({ roomId }) => {
+    const room = rooms.get(roomId)
+    if (room) {
+      const user = room.users.get(socket.id)
+      if (user) {
+        user.isHost = true
+        room.users.set(socket.id, user)
+        broadcastRoomState(roomId)
+      }
+    }
+  })
+
+  socket.on('remove-host', ({ roomId }) => {
+    const room = rooms.get(roomId)
+    if (room) {
+      const user = room.users.get(socket.id)
+      if (user) {
+        user.isHost = false
+        room.users.set(socket.id, user)
+        broadcastRoomState(roomId)
+      }
     }
   })
 
@@ -145,18 +182,13 @@ io.on('connection', (socket) => {
       if (room.users.has(socket.id)) {
         const user = room.users.get(socket.id)
         
-        // Set timer to remove user after 1 minute
         const timer = setTimeout(() => {
           if (room.users.has(socket.id)) {
             room.users.delete(socket.id)
             disconnectTimers.delete(socket.id)
             
-            io.to(roomId).emit('room-state', {
-              users: Array.from(room.users.values()),
-              revealed: room.revealed
-            })
+            broadcastRoomState(roomId)
             
-            // If room is now empty, set timer to delete it after 1 hour
             if (room.users.size === 0) {
               const roomTimer = setTimeout(() => {
                 if (rooms.get(roomId)?.users.size === 0) {
@@ -177,25 +209,32 @@ io.on('connection', (socket) => {
 
 app.prepare().then(() => {
   httpServer.on('request', async (req, res) => {
-    const parsedUrl = parse(req.url, true)
-    const { pathname } = parsedUrl
-
-    if (pathname === '/health') {
-      res.writeHead(200, { 'Content-Type': 'application/json' })
-      res.end(JSON.stringify({ 
-        status: 'ok', 
-        service: 'storypoint-poker',
-        timestamp: new Date().toISOString()
-      }))
-      return
-    }
-
-    if (pathname?.startsWith('/socket.io')) {
+    if (req.url?.startsWith('/socket.io')) {
       return
     }
 
     try {
-      await handle(req, res, parsedUrl)
+      const host = req.headers.host || `${hostname}:${port}`
+      const baseUrl = `http://${host}`
+      const parsedUrl = new URL(req.url || '/', baseUrl)
+      const pathname = parsedUrl.pathname
+
+      if (pathname === '/health') {
+        res.writeHead(200, { 'Content-Type': 'application/json' })
+        res.end(JSON.stringify({ 
+          status: 'ok', 
+          service: 'storypoint-poker',
+          timestamp: new Date().toISOString()
+        }))
+        return
+      }
+
+      const nextUrl = {
+        pathname: parsedUrl.pathname,
+        query: Object.fromEntries(parsedUrl.searchParams),
+        href: parsedUrl.href
+      }
+      await handle(req, res, nextUrl)
     } catch (err) {
       console.error('Error handling request:', err)
       if (!res.headersSent) {
