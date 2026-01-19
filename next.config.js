@@ -13,7 +13,7 @@ const nextConfig = {
     }
     return config
   },
-  pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
+  pageExtensions: ['ts', 'tsx', 'js', 'jsx'],
 }
 
 module.exports = nextConfig
