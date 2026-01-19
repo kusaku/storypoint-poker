@@ -14,7 +14,7 @@
 Render will auto-detect Node.js, but verify these settings:
 - **Name:** `storypoint-poker` (or your preferred name)
 - **Environment:** `Node`
-- **Build Command:** `npm install && npm run build`
+- **Build Command:** `npm run build`
 - **Start Command:** `npm start`
 - **Plan:** Free (or paid if you prefer)
 
@@ -51,18 +51,19 @@ Then open: http://localhost:3000
 ```
 storypoint-poker/
 ├── app/              # Next.js app directory
-│   ├── page.tsx     # Home page
-│   └── room/        # Room pages
-├── server.js         # Integrated server (Next.js + Socket.io)
-└── package.json      # Dependencies
+│   ├── page.tsx      # Home page
+│   └── room/         # Room pages
+├── public/           # Static assets (logo, favicon)
+├── server.js         # Custom server (Next.js + Socket.io)
+└── package.json
 ```
 
 ## 🔧 Tech Stack
 
 - **Frontend:** Next.js 14, React, TypeScript, Tailwind CSS
-- **Backend:** Socket.io (integrated in server.js)
+- **Backend:** Socket.io (in `server.js`)
 - **Hosting:** Render (single service)
 
-## ✅ That's It!
+## ✅ Done
 
-Everything runs in a single Render service - both frontend and backend together!
+Frontend and backend run in a single Render service.
