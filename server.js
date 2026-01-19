@@ -3,7 +3,7 @@ const next = require('next')
 const { Server } = require('socket.io')
 
 const dev = process.env.NODE_ENV !== 'production'
-const hostname = '0.0.0.0'
+const hostname = process.env.HOST || process.env.HOSTNAME || '0.0.0.0'
 const port = parseInt(process.env.PORT || '3000', 10)
 
 const app = next({ dev, hostname, port })
@@ -180,8 +180,6 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     rooms.forEach((room, roomId) => {
       if (room.users.has(socket.id)) {
-        const user = room.users.get(socket.id)
-        
         const timer = setTimeout(() => {
           if (room.users.has(socket.id)) {
             room.users.delete(socket.id)
@@ -207,48 +205,32 @@ io.on('connection', (socket) => {
   })
 })
 
+async function onRequest(req, res) {
+  if (req.url?.startsWith('/socket.io')) return
+
+  const host = req.headers.host || `${hostname}:${port}`
+  const parsed = new URL(req.url || '/', `http://${host}`)
+
+  if (parsed.pathname === '/health') {
+    res.writeHead(200, { 'Content-Type': 'application/json' })
+    return res.end(JSON.stringify({ status: 'ok', service: 'storypoint-poker', timestamp: new Date().toISOString() }))
+  }
+
+  try {
+    await handle(req, res, { pathname: parsed.pathname, query: Object.fromEntries(parsed.searchParams), href: parsed.href })
+  } catch (err) {
+    console.error('Error handling request:', err)
+    if (!res.headersSent) { res.statusCode = 500; res.end('internal server error') }
+  }
+}
+
 app.prepare().then(() => {
-  httpServer.on('request', async (req, res) => {
-    if (req.url?.startsWith('/socket.io')) {
-      return
-    }
-
-    try {
-      const host = req.headers.host || `${hostname}:${port}`
-      const baseUrl = `http://${host}`
-      const parsedUrl = new URL(req.url || '/', baseUrl)
-      const pathname = parsedUrl.pathname
-
-      if (pathname === '/health') {
-        res.writeHead(200, { 'Content-Type': 'application/json' })
-        res.end(JSON.stringify({ 
-          status: 'ok', 
-          service: 'storypoint-poker',
-          timestamp: new Date().toISOString()
-        }))
-        return
-      }
-
-      const nextUrl = {
-        pathname: parsedUrl.pathname,
-        query: Object.fromEntries(parsedUrl.searchParams),
-        href: parsedUrl.href
-      }
-      await handle(req, res, nextUrl)
-    } catch (err) {
-      console.error('Error handling request:', err)
-      if (!res.headersSent) {
-        res.statusCode = 500
-        res.end('internal server error')
-      }
-    }
-  })
-
-  httpServer.listen(port, hostname, (err) => {
-    if (err) throw err
-    console.log(`✅ Server ready on http://${hostname}:${port}`)
-    console.log(`🌐 Next.js frontend + Socket.io backend running together`)
-    console.log(`🔌 Socket.io available at /socket.io/`)
-  })
+  httpServer.on('request', onRequest)
+  httpServer.once('listening', () => console.log(`✅ Ready on http://${hostname}:${port}`))
+  httpServer.once('error', (err) => { console.error('Failed to listen:', err); process.exit(1) })
+  httpServer.listen(port, hostname)
+}).catch((err) => {
+  console.error('Failed to start server:', err)
+  process.exit(1)
 })
 
