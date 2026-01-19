@@ -31,7 +31,7 @@ export function CommentInput({ comment, onCommentChange, onRemoveComment }: Comm
           <div className="w-16 text-xs text-gray-500 dark:text-gray-400">
             {comment.length}/{COMMENT_MAX_LENGTH}
           </div>
-          <div className="flex items-center gap-1 flex-1 justify-center">
+          <div className="flex flex-wrap items-center justify-center gap-1 flex-1 min-w-0">
             {POPULAR_EMOJIS.map((emoji) => (
               <button
                 key={emoji}
