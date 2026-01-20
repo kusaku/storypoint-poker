@@ -3,7 +3,7 @@ const next = require('next')
 const { Server } = require('socket.io')
 
 const dev = process.env.NODE_ENV !== 'production'
-const hostname = process.env.HOST || process.env.HOSTNAME || '0.0.0.0'
+const hostname = '0.0.0.0'
 const port = parseInt(process.env.PORT || '3000', 10)
 
 const app = next({ dev, hostname, port })
@@ -226,7 +226,12 @@ async function onRequest(req, res) {
 
 app.prepare().then(() => {
   httpServer.on('request', onRequest)
-  httpServer.once('listening', () => console.log(`✅ Ready on http://${hostname}:${port}`))
+  httpServer.once('listening', () => {
+    console.log(`Server ready on http://${hostname}:${port}`)
+    if (process.env.RENDER_EXTERNAL_URL) {
+      console.log(`Available at ${process.env.RENDER_EXTERNAL_URL}`)
+    }
+  })
   httpServer.once('error', (err) => { console.error('Failed to listen:', err); process.exit(1) })
   httpServer.listen(port, hostname)
 }).catch((err) => {
