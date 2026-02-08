@@ -1,0 +1,65 @@
+name: Deploy to VDS
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
+
+      - name: Add host to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p "${{ secrets.DEPLOY_PORT || '22' }}" "${{ secrets.DEPLOY_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+
+      - name: Sync files
+        run: |
+          rsync -az --delete \
+            --exclude ".git" \
+            --exclude ".github" \
+            --exclude "node_modules" \
+            --exclude ".env.local" \
+            --exclude ".env*.local" \
+            -e "ssh -p ${{ secrets.DEPLOY_PORT || '22' }}" \
+            ./ ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.APP_DIR || '/opt/storypoint-poker' }}/
+
+      - name: Deploy and restart service
+        run: |
+          ssh -p "${{ secrets.DEPLOY_PORT || '22' }}" ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << EOF
+            set -e
+            cd "${{ secrets.APP_DIR || '/opt/storypoint-poker' }}"
+            
+            # Set environment variables
+            echo "GIT_SHA=${GITHUB_SHA}" > .env
+            echo "NODE_ENV=production" >> .env
+            echo "PORT=${PORT:-3000}" >> .env
+            
+            # Install only production dependencies
+            echo "Installing production dependencies..."
+            npm ci --production
+            
+            # Restart service
+            echo "Restarting service..."
+            sudo -n /usr/bin/systemctl restart storypoint-poker.service || true
+            sudo -n /usr/bin/systemctl status storypoint-poker.service --no-pager || true
+          EOF
