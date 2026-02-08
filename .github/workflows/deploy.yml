@@ -53,7 +53,8 @@ jobs:
             cd "${{ secrets.APP_DIR || '/opt/storypoint-poker' }}"
             
             # Set environment variables (for reference, build already includes these)
-            echo "GIT_SHA=${GITHUB_SHA}" > .env
+            echo "GIT_SHA=${{ github.sha }}" > .env
+            echo "REPO_URL=${{ github.server_url }}/${{ github.repository }}" >> .env
             echo "NODE_ENV=production" >> .env
             echo "PORT=${PORT:-3000}" >> .env
             

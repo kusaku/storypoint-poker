@@ -213,7 +213,13 @@ async function onRequest(req, res) {
 
   if (parsed.pathname === '/health') {
     res.writeHead(200, { 'Content-Type': 'application/json' })
-    return res.end(JSON.stringify({ status: 'ok', service: 'storypoint-poker', timestamp: new Date().toISOString() }))
+    return res.end(JSON.stringify({ 
+      status: 'ok', 
+      service: 'storypoint-poker', 
+      timestamp: new Date().toISOString(),
+      git_sha: process.env.GIT_SHA || 'unknown',
+      repo_url: process.env.REPO_URL || 'unknown'
+    }))
   }
 
   try {
