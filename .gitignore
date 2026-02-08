@@ -40,3 +40,6 @@ lerna-debug.log*
 # OS
 .DS_Store
 Thumbs.db
+
+# Deployment files (keep local, don't commit)
+deploy/

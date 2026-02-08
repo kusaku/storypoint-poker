@@ -14,6 +14,10 @@ const nextConfig = {
     return config
   },
   pageExtensions: ['ts', 'tsx', 'js', 'jsx'],
+  env: {
+    NEXT_PUBLIC_GIT_SHA: process.env.GIT_SHA || 'dev',
+    NEXT_PUBLIC_REPO_URL: process.env.REPO_URL || 'https://github.com/kusaku/storypoint-poker',
+  },
 }
 
 module.exports = nextConfig

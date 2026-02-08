@@ -228,9 +228,6 @@ app.prepare().then(() => {
   httpServer.on('request', onRequest)
   httpServer.once('listening', () => {
     console.log(`Server ready on http://${hostname}:${port}`)
-    if (process.env.RENDER_EXTERNAL_URL) {
-      console.log(`Available at ${process.env.RENDER_EXTERNAL_URL}`)
-    }
   })
   httpServer.once('error', (err) => { console.error('Failed to listen:', err); process.exit(1) })
   httpServer.listen(port, hostname)

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { ThemeSwitcher } from './theme-switcher'
+import { Footer } from './components/Footer'
 
 type Mode = 'create' | 'join'
 
@@ -48,12 +49,13 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex flex-col p-4">
       <div className="absolute top-4 right-4">
         <ThemeSwitcher />
       </div>
       
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl flex flex-col md:flex-row overflow-hidden">
+      <div className="flex-1 flex items-center justify-center">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl flex flex-col md:flex-row overflow-hidden">
         <div className="flex-shrink-0 pl-8 pr-4 py-8 flex items-center justify-center border-b md:border-b-0 border-gray-200 dark:border-gray-700">
           <Image
             src="/logo.webp"
@@ -171,7 +173,9 @@ export default function Home() {
             </button>
           </form>
         </div>
+        </div>
       </div>
+      <Footer />
     </div>
   )
 }

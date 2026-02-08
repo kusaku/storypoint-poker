@@ -14,6 +14,7 @@ import { RoomHeader } from './components/RoomHeader'
 import { VotingCards } from './components/VotingCards'
 import { CommentInput } from './components/CommentInput'
 import { ParticipantsPanel } from './components/ParticipantsPanel'
+import { Footer } from '../../components/Footer'
 
 interface RoomState {
   users: User[]
@@ -264,11 +265,11 @@ export default function RoomPage() {
   }, [roomState.revealed, roomState.users])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4 flex flex-col">
       <div className="fixed top-4 right-4 z-50">
         <ThemeSwitcher />
       </div>
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-6xl mx-auto flex-1">
         {showNameModal && (
           <NameModal
             nameInput={nameInput}
@@ -337,6 +338,7 @@ export default function RoomPage() {
           </>
         )}
       </div>
+      <Footer />
     </div>
   )
 }

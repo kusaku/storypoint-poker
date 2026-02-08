@@ -45,14 +45,14 @@ npm start
 
 ## 🚢 Deployment
 
-Deploy to Render (free tier available). See [DEPLOYMENT.md](./DEPLOYMENT.md) for details.
+Deploy to your VDS using GitHub Actions. See [DEPLOYMENT.md](./DEPLOYMENT.md) for details.
 
 ## 🛠️ Tech Stack
 
 - **Frontend:** Next.js 14, React, TypeScript, Tailwind CSS
 - **Real-time:** Socket.io (custom server, see `server.js`)
 - **Charts:** Recharts
-- **Hosting:** Render
+- **Hosting:** VDS with Nginx + systemd
 
 ## 📝 License
 

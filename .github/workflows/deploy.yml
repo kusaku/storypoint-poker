@@ -30,6 +30,9 @@ jobs:
         run: npm ci
 
       - name: Build application
+        env:
+          GIT_SHA: ${{ github.sha }}
+          REPO_URL: ${{ github.server_url }}/${{ github.repository }}
         run: npm run build
 
       - name: Sync files
@@ -49,7 +52,7 @@ jobs:
             set -e
             cd "${{ secrets.APP_DIR || '/opt/storypoint-poker' }}"
             
-            # Set environment variables
+            # Set environment variables (for reference, build already includes these)
             echo "GIT_SHA=${GITHUB_SHA}" > .env
             echo "NODE_ENV=production" >> .env
             echo "PORT=${PORT:-3000}" >> .env
