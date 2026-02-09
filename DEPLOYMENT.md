@@ -115,7 +115,7 @@ storypoint-poker/
 
 ## 🔧 Tech Stack
 
-- **Frontend:** Next.js 14, React, TypeScript, Tailwind CSS
+- **Frontend:** Next.js 16, React, TypeScript, Tailwind CSS
 - **Backend:** Socket.io (in `server.js`)
 - **Hosting:** VDS with Nginx + systemd
 

@@ -49,7 +49,7 @@ Deploy to your VDS using GitHub Actions. See [DEPLOYMENT.md](./DEPLOYMENT.md) fo
 
 ## 🛠️ Tech Stack
 
-- **Frontend:** Next.js 14, React, TypeScript, Tailwind CSS
+- **Frontend:** Next.js 16, React, TypeScript, Tailwind CSS
 - **Real-time:** Socket.io (custom server, see `server.js`)
 - **Charts:** Recharts
 - **Hosting:** VDS with Nginx + systemd

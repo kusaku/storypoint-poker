@@ -4,15 +4,6 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  webpack: (config, { isServer }) => {
-    if (!isServer) {
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        fs: false,
-      }
-    }
-    return config
-  },
   pageExtensions: ['ts', 'tsx', 'js', 'jsx'],
   env: {
     NEXT_PUBLIC_GIT_SHA: process.env.GIT_SHA,
