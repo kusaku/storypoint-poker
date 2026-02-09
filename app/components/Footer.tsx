@@ -8,7 +8,7 @@ export function Footer() {
   const shortSha = gitSha.length > 7 ? gitSha.substring(0, 7) : gitSha
 
   return (
-    <footer className="w-full py-2 mt-auto">
+    <footer className="w-full py-2 mt-auto flex-shrink-0">
       <div className="text-center text-xs text-gray-500 dark:text-gray-400">
         <span>by </span>
         <a 
