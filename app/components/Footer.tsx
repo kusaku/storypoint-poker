@@ -1,6 +1,8 @@
+'use client'
+
 export function Footer() {
-  const gitSha = process.env.GIT_SHA || 'master'
-  const repoUrl = process.env.REPO_URL || 'https://github.com/kusaku/storypoint-poker'
+  const gitSha = process.env.NEXT_PUBLIC_GIT_SHA || 'master'
+  const repoUrl = process.env.NEXT_PUBLIC_REPO_URL || 'https://github.com/kusaku/storypoint-poker'
   
   const commitLink = repoUrl ? `${repoUrl}/commit/${gitSha}` : '#'
   const shortSha = gitSha.length > 7 ? gitSha.substring(0, 7) : gitSha
