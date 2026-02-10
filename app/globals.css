@@ -39,6 +39,49 @@ body {
     rgb(var(--background-start-rgb));
 }
 
+/* RTL support */
+html[dir="rtl"] {
+  direction: rtl;
+}
+
+html[dir="rtl"] body {
+  direction: rtl;
+  text-align: right;
+}
+
+html[dir="ltr"] {
+  direction: ltr;
+}
+
+html[dir="ltr"] body {
+  direction: ltr;
+  text-align: left;
+}
+
+/* RTL positioning support - Tailwind uses logical properties for spacing (padding, margin) */
+/* For absolute/fixed positioning, we need to handle left/right manually */
+html[dir="rtl"] [class*="right-"] {
+  /* Tailwind's spacing utilities already use logical properties, so they work automatically */
+  /* This is mainly for custom positioning if needed */
+}
+
+/* Ensure text alignment works correctly */
+html[dir="rtl"] .text-left {
+  text-align: right;
+}
+
+html[dir="rtl"] .text-right {
+  text-align: left;
+}
+
+html[dir="ltr"] .text-left {
+  text-align: left;
+}
+
+html[dir="ltr"] .text-right {
+  text-align: right;
+}
+
 @keyframes spin-select {
   0% {
     transform: rotateY(0deg) scale(1);

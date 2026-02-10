@@ -3,8 +3,9 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import { ThemeSwitcher } from './theme-switcher'
+import { SettingsButton } from './components/SettingsButton'
 import { Footer } from './components/Footer'
+import { useLanguage } from './i18n/language-provider'
 
 type Mode = 'create' | 'join'
 
@@ -15,19 +16,20 @@ export default function Home() {
   const [userNameError, setUserNameError] = useState('')
   const [roomNameError, setRoomNameError] = useState('')
   const router = useRouter()
+  const { t } = useLanguage()
 
   const validateAndNavigate = (roomId: string, isHost: boolean) => {
     let isValid = true
     
     if (!userName.trim()) {
-      setUserNameError('Please enter your name')
+      setUserNameError(t('home.pleaseEnterName'))
       isValid = false
     } else {
       setUserNameError('')
     }
 
     if (mode === 'join' && !roomName.trim()) {
-      setRoomNameError('Please enter a room ID')
+      setRoomNameError(t('home.pleaseEnterRoomId'))
       isValid = false
     } else {
       setRoomNameError('')
@@ -51,7 +53,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex flex-col p-4">
       <div className="absolute top-4 right-4">
-        <ThemeSwitcher />
+        <SettingsButton />
       </div>
       
       <div className="flex-1 flex items-center justify-center">
@@ -59,7 +61,7 @@ export default function Home() {
         <div className="flex-shrink-0 pl-8 pr-4 py-8 flex items-center justify-center border-b md:border-b-0 border-gray-200 dark:border-gray-700">
           <Image
             src="/logo.webp"
-            alt="Story Point Poker"
+            alt={t('home.title')}
             width={400}
             height={400}
             className="object-contain max-w-[400px] max-h-[400px] md:h-full md:w-auto"
@@ -69,10 +71,10 @@ export default function Home() {
         
         <div className="flex-1 pl-4 pr-8 py-8">
           <h1 className="text-4xl font-bold mb-2 text-center text-indigo-600 dark:text-indigo-400">
-            Story Point Poker
+            {t('home.title')}
           </h1>
           <p className="text-center text-gray-600 dark:text-gray-300 mb-6">
-            Agile planning poker for your team
+            {t('home.subtitle')}
           </p>
 
           <div className="mb-6">
@@ -89,7 +91,7 @@ export default function Home() {
                     : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100'
                 }`}
               >
-                Create Room
+                {t('home.createRoom')}
               </button>
               <button
                 type="button"
@@ -103,7 +105,7 @@ export default function Home() {
                     : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100'
                 }`}
               >
-                Join Room
+                {t('home.joinRoom')}
               </button>
             </div>
           </div>
@@ -111,7 +113,7 @@ export default function Home() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label htmlFor="userName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Your Name
+                {t('home.yourName')}
               </label>
               <input
                 id="userName"
@@ -126,7 +128,7 @@ export default function Home() {
                     ? 'border-red-300 dark:border-red-600'
                     : 'border-gray-300 dark:border-gray-600'
                 }`}
-                placeholder="Enter your name"
+                placeholder={t('home.enterYourName')}
                 required
               />
               {userNameError && (
@@ -137,7 +139,7 @@ export default function Home() {
             {mode === 'join' && (
               <div>
                 <label htmlFor="roomName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Room ID
+                  {t('home.roomId')}
                 </label>
                 <input
                   id="roomName"
@@ -152,7 +154,7 @@ export default function Home() {
                       ? 'border-red-300 dark:border-red-600'
                       : 'border-gray-300 dark:border-gray-600'
                   }`}
-                  placeholder="Enter room ID"
+                  placeholder={t('home.enterRoomId')}
                   required
                 />
                 {roomNameError && (
@@ -169,7 +171,7 @@ export default function Home() {
                   : 'bg-green-600 dark:bg-green-500 hover:bg-green-700 dark:hover:bg-green-600'
               }`}
             >
-              {mode === 'create' ? 'Create & Join Room' : 'Join Room'}
+              {mode === 'create' ? t('home.createJoinRoom') : t('home.joinRoomButton')}
             </button>
           </form>
         </div>

@@ -3,7 +3,8 @@
 import { useEffect, useState, useMemo, useCallback, useRef } from 'react'
 import { useParams, useSearchParams, useRouter } from 'next/navigation'
 import { io, Socket } from 'socket.io-client'
-import { ThemeSwitcher } from '../../theme-switcher'
+import { SettingsButton } from '../../components/SettingsButton'
+import { useLanguage } from '../../i18n/language-provider'
 import { Wizard } from '../../wizard'
 import { WizardAnswers } from '../../wizard-data'
 import { roundToNearestCard, displayVote } from '../../fibonacci'
@@ -25,6 +26,7 @@ export default function RoomPage() {
   const params = useParams()
   const searchParams = useSearchParams()
   const router = useRouter()
+  const { t } = useLanguage()
   const roomId = params.roomId as string
   const urlUserName = searchParams.get('name')
   const urlIsHost = searchParams.get('host') === 'true'
@@ -267,7 +269,7 @@ export default function RoomPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4 flex flex-col">
       <div className="fixed top-4 right-4 z-50">
-        <ThemeSwitcher />
+        <SettingsButton />
       </div>
       <div className="max-w-6xl mx-auto grow shrink-0 w-full">
         {showNameModal && (
@@ -300,13 +302,13 @@ export default function RoomPage() {
                 ) : (
                   <>
                     <div className="flex items-center justify-between mb-4">
-                      <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">Select Your Vote</h2>
+                      <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">{t('room.selectYourVote')}</h2>
                       <button
                         onClick={() => setShowWizard(true)}
                         disabled={roomState.revealed}
                         className="px-4 py-2 text-sm bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors font-medium"
                       >
-                        🧙 Wizard
+                        {t('room.wizard')}
                       </button>
                     </div>
                     <VotingCards

@@ -12,6 +12,8 @@ import {
 import { roundToNearestCard } from './fibonacci'
 import { WizardHelpModal } from './wizard/components/WizardHelpModal'
 import { WizardResultPreview } from './wizard/components/WizardResultPreview'
+import { useLanguage } from './i18n/language-provider'
+import { getTranslatedWizardData } from './i18n/wizard-translations'
 
 interface WizardProps {
   onCalculate: (suggestedSp: number) => void
@@ -26,6 +28,8 @@ export function Wizard({ onCalculate, onBack, initialAnswers, onAnswersChange }:
     initialAnswers?.answers || {}
   )
   const [showHelpModal, setShowHelpModal] = useState(false)
+  const { t } = useLanguage()
+  const { translateLabel } = getTranslatedWizardData()
 
   const dropdowns = taskType === 'technical-implementation' ? TECHNICAL_IMPLEMENTATION_DROPDOWNS : taskType === 'content-communication' ? CONTENT_COMMUNICATION_DROPDOWNS : null
   const sections = dropdowns ? Object.keys(dropdowns) : []
@@ -92,26 +96,26 @@ export function Wizard({ onCalculate, onBack, initialAnswers, onAnswersChange }:
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">Story Point Helper</h2>
+        <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">{t('wizard.storyPointHelper')}</h2>
         <div className="flex gap-2">
           <button
             onClick={() => setShowHelpModal(true)}
             className="px-4 py-2 text-sm bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-medium"
           >
-ℹ️ How It Works
+            {t('wizard.howItWorks')}
           </button>
           <button
             onClick={onBack}
             className="px-4 py-2 text-sm bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-medium"
           >
-⬅️ Back to Cards
+            {t('wizard.backToCards')}
           </button>
         </div>
       </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-          Task Type
+          {t('wizard.taskType')}
         </label>
         <div className="flex justify-center">
           <div className="inline-flex items-center gap-1 bg-white dark:bg-gray-800 rounded-lg p-1 shadow-sm border border-gray-200 dark:border-gray-700">
@@ -130,7 +134,7 @@ export function Wizard({ onCalculate, onBack, initialAnswers, onAnswersChange }:
                   : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
               }`}
             >
-              {type === 'technical-implementation' ? 'Technical Implementation' : 'Content & Communication'}
+              {type === 'technical-implementation' ? t('wizard.technicalImplementation') : t('wizard.contentCommunication')}
             </button>
           ))}
           </div>
@@ -146,17 +150,17 @@ export function Wizard({ onCalculate, onBack, initialAnswers, onAnswersChange }:
           return (
             <div key={section} className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-700">
               <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                {sectionData.label}
+                {translateLabel(sectionData.label, t)}
               </label>
               <select
                 value={currentValue >= 0 ? currentValue : ''}
                 onChange={(e) => handleAnswerChange(section, e.target.value === '' ? '' : parseInt(e.target.value))}
                 className="w-full px-2.5 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               >
-                <option value="">Select...</option>
+                <option value="">{t('common.select')}</option>
                 {sectionData.options.map((option, index) => (
                   <option key={index} value={index}>
-                    {option.label}
+                    {translateLabel(option.label, t)}
                   </option>
                 ))}
               </select>
@@ -170,13 +174,13 @@ export function Wizard({ onCalculate, onBack, initialAnswers, onAnswersChange }:
         <div className="bg-indigo-50 dark:bg-indigo-900/30 rounded-lg p-4 border border-indigo-200 dark:border-indigo-800">
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-sm font-semibold text-indigo-800 dark:text-indigo-300">
-              Suggested Story Points
+              {t('wizard.suggestedStoryPoints')}
             </h3>
           </div>
           <div className="mt-2 p-2 bg-blue-100 dark:bg-blue-900/30 rounded text-xs text-blue-800 dark:text-blue-300">
             {!taskType 
-              ? '⚠️ Select a task type to begin'
-              : `⚠️ Answer all ${sections.length} questions to see your estimate (${answeredSections.length} of ${sections.length} answered)`
+              ? `⚠️ ${t('wizard.selectTaskTypeToBegin')}`
+              : `⚠️ ${t('wizard.answerAllQuestions', { total: sections.length, answered: answeredSections.length })}`
             }
           </div>
         </div>

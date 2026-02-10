@@ -3,6 +3,7 @@ import { Kurale } from 'next/font/google'
 import Script from 'next/script'
 import './globals.css'
 import { ThemeProvider } from './theme-provider'
+import { LanguageProvider } from './i18n/language-provider'
 
 const kurale = Kurale({
   weight: '400',
@@ -50,7 +51,9 @@ export default function RootLayout({
             ym(105986243, 'init', {ssr:true, webvisor:true, clickmap:true, accurateTrackBounce:true, trackLinks:true});
           `}
         </Script>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <LanguageProvider>{children}</LanguageProvider>
+        </ThemeProvider>
       </body>
     </html>
   )

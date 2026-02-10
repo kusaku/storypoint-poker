@@ -3,6 +3,7 @@
 import { ParticipantRow, type User } from './ParticipantRow'
 import { VoteDistributionChart } from './VoteDistributionChart'
 import { HostControls } from './HostControls'
+import { useLanguage } from '../../../i18n/language-provider'
 
 interface ParticipantsPanelProps {
   users: User[]
@@ -27,10 +28,11 @@ export function ParticipantsPanel({
   onBecomeHost,
   onRemoveHost
 }: ParticipantsPanelProps) {
+  const { t } = useLanguage()
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 flex flex-col h-full">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">Participants</h2>
+        <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">{t('room.participants')}</h2>
         <span className="text-sm text-gray-500 dark:text-gray-400">{users.length}</span>
       </div>
       <div className="space-y-3 flex-1">

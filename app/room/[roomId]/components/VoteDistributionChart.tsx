@@ -2,17 +2,19 @@
 
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts'
 import { CHART_COLORS } from '../../../constants'
+import { useLanguage } from '../../../i18n/language-provider'
 
 interface VoteDistributionChartProps {
   voteDistribution: Array<{ name: string; value: number }>
 }
 
 export function VoteDistributionChart({ voteDistribution }: VoteDistributionChartProps) {
+  const { t } = useLanguage()
   if (voteDistribution.length === 0) return null
 
   return (
     <div className="mt-4 p-3 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg">
-      <p className="text-sm font-semibold text-indigo-800 dark:text-indigo-300 mb-2">Vote Distribution:</p>
+      <p className="text-sm font-semibold text-indigo-800 dark:text-indigo-300 mb-2">{t('room.voteDistribution')}:</p>
       <ResponsiveContainer width="100%" height={250}>
         <PieChart>
           <Pie
@@ -42,7 +44,7 @@ export function VoteDistributionChart({ voteDistribution }: VoteDistributionChar
                   return (
                     <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-2 shadow-lg">
                       <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                        {`${data.name}: ${data.value} vote${data.value > 1 ? 's' : ''}`}
+                        {`${data.name}: ${data.value} ${data.value > 1 ? t('room.votes') : t('room.vote')}`}
                       </p>
                     </div>
                   )

@@ -1,6 +1,7 @@
 'use client'
 
 import { COMMENT_MAX_LENGTH, POPULAR_EMOJIS } from '../../../constants'
+import { useLanguage } from '../../../i18n/language-provider'
 
 interface CommentInputProps {
   comment: string
@@ -9,6 +10,7 @@ interface CommentInputProps {
 }
 
 export function CommentInput({ comment, onCommentChange, onRemoveComment }: CommentInputProps) {
+  const { t } = useLanguage()
   const handleInsertEmoji = (emoji: string) => {
     if (comment.length + emoji.length <= COMMENT_MAX_LENGTH) {
       const newComment = comment + emoji
@@ -18,11 +20,11 @@ export function CommentInput({ comment, onCommentChange, onRemoveComment }: Comm
 
   return (
     <div className="pt-4">
-      <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Add Comment</p>
+      <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('comment.addComment')}</p>
       <textarea
         value={comment}
         onChange={(e) => onCommentChange(e.target.value)}
-        placeholder="Type your comment here..."
+        placeholder={t('comment.typeCommentHere')}
         maxLength={COMMENT_MAX_LENGTH}
         rows={2}
         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 resize-none text-sm"
@@ -39,7 +41,7 @@ export function CommentInput({ comment, onCommentChange, onRemoveComment }: Comm
                 onClick={() => handleInsertEmoji(emoji)}
                 disabled={comment.length + emoji.length > COMMENT_MAX_LENGTH}
                 className="text-lg hover:scale-125 transition-transform disabled:opacity-30 disabled:cursor-not-allowed"
-                title={`Insert ${emoji}`}
+                title={t('comment.insert', { emoji })}
               >
                 {emoji}
               </button>
@@ -50,9 +52,9 @@ export function CommentInput({ comment, onCommentChange, onRemoveComment }: Comm
               <button
                 onClick={onRemoveComment}
                 className="text-xs text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium flex items-center gap-1"
-                title="Remove comment"
+                title={t('comment.removeComment')}
               >
-                <span>×</span> Remove
+                <span>×</span> {t('common.remove')}
               </button>
             )}
           </div>
