@@ -114,7 +114,16 @@
     "from": "van: {labels}",
     "estimationDetails": "Schattingsdetails",
     "minSpRequirement": "Minimale SP-vereiste: {value}",
-    "scoreIndicatesTooLarge": "De score geeft aan dat deze taak te groot is en moet worden opgesplitst"
+    "scoreIndicatesTooLarge": "De score geeft aan dat deze taak te groot is en moet worden opgesplitst",
+    "decompose": "Taak vereist opsplitsing",
+    "noSignificantFactors": "Geen significante factoren",
+    "score": "Score",
+    "bucket": "Bereik",
+    "baseSp": "Basis SP",
+    "minSpGate": "Min SP",
+    "breadthBump": "Breedte verhoging",
+    "finalSpEquals": "{formula} = {value}",
+    "maxFormula": "max({baseSp}: {baseSpValue}, {other}: {otherValue})"
   },
   "wizardHelp": {
     "title": "Hoe Story Point Schatting Werkt",

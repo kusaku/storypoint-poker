@@ -114,7 +114,16 @@
     "from": "из: {labels}",
     "estimationDetails": "Детали оценки",
     "minSpRequirement": "Минимальное требование SP: {value}",
-    "scoreIndicatesTooLarge": "Оценка указывает, что эта задача слишком большая и должна быть декомпозирована"
+    "scoreIndicatesTooLarge": "Оценка указывает, что эта задача слишком большая и должна быть декомпозирована",
+    "decompose": "Задача требует декомпозиции",
+    "noSignificantFactors": "Нет значимых факторов",
+    "score": "Балл",
+    "bucket": "Диапазон",
+    "baseSp": "Базовый SP",
+    "minSpGate": "Минимальный SP",
+    "breadthBump": "Увеличение за широту",
+    "finalSpEquals": "{formula} = {value}",
+    "maxFormula": "max({baseSp}: {baseSpValue}, {other}: {otherValue})"
   },
   "wizardHelp": {
     "title": "Как работает оценка Story Points",

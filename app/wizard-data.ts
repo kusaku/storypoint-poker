@@ -256,7 +256,7 @@ export function calculateStoryPoints(answers: WizardAnswers): WizardResult {
     score,
     baseSp,
     minSpFromGates: minSp,
-    reasons: reasons.length > 0 ? reasons : ['No significant factors'],
+    reasons: reasons.length > 0 ? reasons : ['wizard.noSignificantFactors'],
     flags,
     contributingValues,
     breadth,

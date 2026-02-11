@@ -114,7 +114,16 @@
     "from": "de : {labels}",
     "estimationDetails": "Détails de l'Estimation",
     "minSpRequirement": "Exigence SP minimale : {value}",
-    "scoreIndicatesTooLarge": "Le score indique que cette tâche est trop grande et doit être décomposée"
+    "scoreIndicatesTooLarge": "Le score indique que cette tâche est trop grande et doit être décomposée",
+    "decompose": "La tâche nécessite une décomposition",
+    "noSignificantFactors": "Aucun facteur significatif",
+    "score": "Score",
+    "bucket": "Plage",
+    "baseSp": "SP de base",
+    "minSpGate": "SP minimum",
+    "breadthBump": "Bonus d'ampleur",
+    "finalSpEquals": "{formula} = {value}",
+    "maxFormula": "max({baseSp}: {baseSpValue}, {other}: {otherValue})"
   },
   "wizardHelp": {
     "title": "Comment Fonctionne l'Estimation de Story Points",

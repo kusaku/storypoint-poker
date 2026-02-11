@@ -114,7 +114,16 @@
     "from": "から：{labels}",
     "estimationDetails": "見積もり詳細",
     "minSpRequirement": "最小 SP 要件：{value}",
-    "scoreIndicatesTooLarge": "スコアは、このタスクが大きすぎて分解する必要があることを示しています"
+    "scoreIndicatesTooLarge": "スコアは、このタスクが大きすぎて分解する必要があることを示しています",
+    "decompose": "タスクは分解が必要です",
+    "noSignificantFactors": "重要な要因なし",
+    "score": "スコア",
+    "bucket": "範囲",
+    "baseSp": "ベース SP",
+    "minSpGate": "最小 SP",
+    "breadthBump": "幅の増加",
+    "finalSpEquals": "{formula} = {value}",
+    "maxFormula": "max({baseSp}: {baseSpValue}, {other}: {otherValue})"
   },
   "wizardHelp": {
     "title": "Story Point 見積もりの仕組み",

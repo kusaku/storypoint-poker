@@ -114,7 +114,16 @@
     "from": "에서: {labels}",
     "estimationDetails": "추정 세부사항",
     "minSpRequirement": "최소 SP 요구사항: {value}",
-    "scoreIndicatesTooLarge": "점수가 이 작업이 너무 크며 분해되어야 함을 나타냅니다"
+    "scoreIndicatesTooLarge": "점수가 이 작업이 너무 크며 분해되어야 함을 나타냅니다",
+    "decompose": "작업 분해가 필요합니다",
+    "noSignificantFactors": "중요한 요인 없음",
+    "score": "점수",
+    "bucket": "범위",
+    "baseSp": "기본 SP",
+    "minSpGate": "최소 SP",
+    "breadthBump": "폭 증가",
+    "finalSpEquals": "{formula} = {value}",
+    "maxFormula": "max({baseSp}: {baseSpValue}, {other}: {otherValue})"
   },
   "wizardHelp": {
     "title": "Story Point 추정 작동 방식",

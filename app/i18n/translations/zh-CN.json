@@ -114,7 +114,16 @@
     "from": "来自：{labels}",
     "estimationDetails": "估算详情",
     "minSpRequirement": "最低 SP 要求：{value}",
-    "scoreIndicatesTooLarge": "分数表明此任务太大，应该分解"
+    "scoreIndicatesTooLarge": "分数表明此任务太大，应该分解",
+    "decompose": "任务需要分解",
+    "noSignificantFactors": "无显著因素",
+    "score": "分数",
+    "bucket": "区间",
+    "baseSp": "基准 SP",
+    "minSpGate": "最小 SP",
+    "breadthBump": "广度加成",
+    "finalSpEquals": "{formula} = {value}",
+    "maxFormula": "max({baseSp}: {baseSpValue}, {other}: {otherValue})"
   },
   "wizardHelp": {
     "title": "Story Point 估算的工作原理",

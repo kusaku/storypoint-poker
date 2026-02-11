@@ -114,7 +114,16 @@
     "from": "da: {labels}",
     "estimationDetails": "Dettagli della Stima",
     "minSpRequirement": "Requisito SP minimo: {value}",
-    "scoreIndicatesTooLarge": "Il punteggio indica che questa attività è troppo grande e deve essere scomposta"
+    "scoreIndicatesTooLarge": "Il punteggio indica che questa attività è troppo grande e deve essere scomposta",
+    "decompose": "L'attività richiede scomposizione",
+    "noSignificantFactors": "Nessun fattore significativo",
+    "score": "Punteggio",
+    "bucket": "Intervallo",
+    "baseSp": "SP base",
+    "minSpGate": "SP minimo",
+    "breadthBump": "Aumento per ampiezza",
+    "finalSpEquals": "{formula} = {value}",
+    "maxFormula": "max({baseSp}: {baseSpValue}, {other}: {otherValue})"
   },
   "wizardHelp": {
     "title": "Come Funziona la Stima degli Story Points",

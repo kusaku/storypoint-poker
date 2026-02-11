@@ -114,7 +114,16 @@
     "from": "з: {labels}",
     "estimationDetails": "Деталі оцінки",
     "minSpRequirement": "Мінімальна вимога SP: {value}",
-    "scoreIndicatesTooLarge": "Оцінка вказує, що це завдання занадто велике і має бути декомпозировано"
+    "scoreIndicatesTooLarge": "Оцінка вказує, що це завдання занадто велике і має бути декомпозировано",
+    "decompose": "Завдання потребує декомпозиції",
+    "noSignificantFactors": "Немає значних факторів",
+    "score": "Бал",
+    "bucket": "Діапазон",
+    "baseSp": "Базовий SP",
+    "minSpGate": "Мінімальний SP",
+    "breadthBump": "Збільшення за широту",
+    "finalSpEquals": "{formula} = {value}",
+    "maxFormula": "max({baseSp}: {baseSpValue}, {other}: {otherValue})"
   },
   "wizardHelp": {
     "title": "Як працює оцінка Story Points",

@@ -114,7 +114,16 @@
     "from": "de: {labels}",
     "estimationDetails": "Detalhes da Estimativa",
     "minSpRequirement": "Requisito mínimo de SP: {value}",
-    "scoreIndicatesTooLarge": "A pontuação indica que esta tarefa é muito grande e deve ser decomposta"
+    "scoreIndicatesTooLarge": "A pontuação indica que esta tarefa é muito grande e deve ser decomposta",
+    "decompose": "A tarefa requer decomposição",
+    "noSignificantFactors": "Nenhum fator significativo",
+    "score": "Pontuação",
+    "bucket": "Intervalo",
+    "baseSp": "SP base",
+    "minSpGate": "SP mínimo",
+    "breadthBump": "Aumento por amplitude",
+    "finalSpEquals": "{formula} = {value}",
+    "maxFormula": "max({baseSp}: {baseSpValue}, {other}: {otherValue})"
   },
   "wizardHelp": {
     "title": "Como Funciona a Estimativa de Story Points",

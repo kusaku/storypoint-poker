@@ -114,7 +114,16 @@
     "from": "kaynak: {labels}",
     "estimationDetails": "Tahmin Detayları",
     "minSpRequirement": "Minimum SP gereksinimi: {value}",
-    "scoreIndicatesTooLarge": "Puan, bu görevin çok büyük olduğunu ve ayrıştırılması gerektiğini gösterir"
+    "scoreIndicatesTooLarge": "Puan, bu görevin çok büyük olduğunu ve ayrıştırılması gerektiğini gösterir",
+    "decompose": "Görev ayrıştırma gerektirir",
+    "noSignificantFactors": "Önemli faktör yok",
+    "score": "Puan",
+    "bucket": "Aralık",
+    "baseSp": "Temel SP",
+    "minSpGate": "Min SP",
+    "breadthBump": "Genişlik artışı",
+    "finalSpEquals": "{formula} = {value}",
+    "maxFormula": "max({baseSp}: {baseSpValue}, {other}: {otherValue})"
   },
   "wizardHelp": {
     "title": "Story Point Tahmini Nasıl Çalışır",

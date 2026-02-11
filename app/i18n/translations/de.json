@@ -114,7 +114,16 @@
     "from": "von: {labels}",
     "estimationDetails": "Schätzungsdetails",
     "minSpRequirement": "Mindest-SP-Anforderung: {value}",
-    "scoreIndicatesTooLarge": "Die Punktzahl deutet darauf hin, dass diese Aufgabe zu groß ist und zerlegt werden sollte"
+    "scoreIndicatesTooLarge": "Die Punktzahl deutet darauf hin, dass diese Aufgabe zu groß ist und zerlegt werden sollte",
+    "decompose": "Aufgabe erfordert Zerlegung",
+    "noSignificantFactors": "Keine signifikanten Faktoren",
+    "score": "Punktzahl",
+    "bucket": "Bereich",
+    "baseSp": "Basis-SP",
+    "minSpGate": "Min SP",
+    "breadthBump": "Breiten-Bonus",
+    "finalSpEquals": "{formula} = {value}",
+    "maxFormula": "max({baseSp}: {baseSpValue}, {other}: {otherValue})"
   },
   "wizardHelp": {
     "title": "Wie Story-Point-Schätzung funktioniert",

@@ -114,7 +114,16 @@
     "from": "سے: {labels}",
     "estimationDetails": "تخمینہ کی تفصیلات",
     "minSpRequirement": "کم از کم SP ضرورت: {value}",
-    "scoreIndicatesTooLarge": "اسکور بتاتا ہے کہ یہ کام بہت بڑا ہے اور اسے تقسیم کیا جانا چاہیے"
+    "scoreIndicatesTooLarge": "اسکور بتاتا ہے کہ یہ کام بہت بڑا ہے اور اسے تقسیم کیا جانا چاہیے",
+    "decompose": "کام تقسیم کا تقاضا کرتا ہے",
+    "noSignificantFactors": "کوئی اہم عوامل نہیں",
+    "score": "اسکور",
+    "bucket": "حد",
+    "baseSp": "بنیادی SP",
+    "minSpGate": "کم از کم SP",
+    "breadthBump": "وسعت بڑھانا",
+    "finalSpEquals": "{formula} = {value}",
+    "maxFormula": "max({baseSp}: {baseSpValue}, {other}: {otherValue})"
   },
   "wizardHelp": {
     "title": "Story Point تخمینہ کیسے کام کرتا ہے",

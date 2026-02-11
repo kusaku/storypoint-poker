@@ -114,7 +114,16 @@
     "from": "từ: {labels}",
     "estimationDetails": "Chi tiết Ước tính",
     "minSpRequirement": "Yêu cầu SP tối thiểu: {value}",
-    "scoreIndicatesTooLarge": "Điểm số cho thấy nhiệm vụ này quá lớn và cần được phân tích"
+    "scoreIndicatesTooLarge": "Điểm số cho thấy nhiệm vụ này quá lớn và cần được phân tích",
+    "decompose": "Nhiệm vụ yêu cầu phân tích",
+    "noSignificantFactors": "Không có yếu tố đáng kể",
+    "score": "Điểm số",
+    "bucket": "Phạm vi",
+    "baseSp": "SP cơ sở",
+    "minSpGate": "SP tối thiểu",
+    "breadthBump": "Tăng độ rộng",
+    "finalSpEquals": "{formula} = {value}",
+    "maxFormula": "max({baseSp}: {baseSpValue}, {other}: {otherValue})"
   },
   "wizardHelp": {
     "title": "Cách Hoạt động của Ước tính Story Point",

@@ -114,7 +114,16 @@
     "from": "z: {labels}",
     "estimationDetails": "Szczegóły Estymacji",
     "minSpRequirement": "Minimalne wymaganie SP: {value}",
-    "scoreIndicatesTooLarge": "Wynik wskazuje, że to zadanie jest zbyt duże i powinno zostać rozłożone"
+    "scoreIndicatesTooLarge": "Wynik wskazuje, że to zadanie jest zbyt duże i powinno zostać rozłożone",
+    "decompose": "Zadanie wymaga rozłożenia",
+    "noSignificantFactors": "Brak istotnych czynników",
+    "score": "Wynik",
+    "bucket": "Zakres",
+    "baseSp": "SP bazowy",
+    "minSpGate": "Min SP",
+    "breadthBump": "Zwiększenie za szerokość",
+    "finalSpEquals": "{formula} = {value}",
+    "maxFormula": "max({baseSp}: {baseSpValue}, {other}: {otherValue})"
   },
   "wizardHelp": {
     "title": "Jak Działa Estymacja Story Points",

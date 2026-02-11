@@ -114,7 +114,16 @@
     "from": "من: {labels}",
     "estimationDetails": "تفاصيل التقدير",
     "minSpRequirement": "الحد الأدنى لمتطلبات SP: {value}",
-    "scoreIndicatesTooLarge": "تشير النتيجة إلى أن هذه المهمة كبيرة جدًا ويجب تقسيمها"
+    "scoreIndicatesTooLarge": "تشير النتيجة إلى أن هذه المهمة كبيرة جدًا ويجب تقسيمها",
+    "decompose": "المهمة تتطلب التقسيم",
+    "noSignificantFactors": "لا توجد عوامل مهمة",
+    "score": "النتيجة",
+    "bucket": "النطاق",
+    "baseSp": "SP الأساسي",
+    "minSpGate": "الحد الأدنى SP",
+    "breadthBump": "زيادة العرض",
+    "finalSpEquals": "{formula} = {value}",
+    "maxFormula": "max({baseSp}: {baseSpValue}, {other}: {otherValue})"
   },
   "wizardHelp": {
     "title": "كيف يعمل تقدير Story Points",

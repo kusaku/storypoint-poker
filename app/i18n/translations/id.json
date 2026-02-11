@@ -114,7 +114,16 @@
     "from": "dari: {labels}",
     "estimationDetails": "Detail Perkiraan",
     "minSpRequirement": "Persyaratan SP minimum: {value}",
-    "scoreIndicatesTooLarge": "Skor menunjukkan bahwa tugas ini terlalu besar dan harus diuraikan"
+    "scoreIndicatesTooLarge": "Skor menunjukkan bahwa tugas ini terlalu besar dan harus diuraikan",
+    "decompose": "Tugas memerlukan penguraian",
+    "noSignificantFactors": "Tidak ada faktor signifikan",
+    "score": "Skor",
+    "bucket": "Rentang",
+    "baseSp": "SP dasar",
+    "minSpGate": "SP minimum",
+    "breadthBump": "Peningkatan luas",
+    "finalSpEquals": "{formula} = {value}",
+    "maxFormula": "max({baseSp}: {baseSpValue}, {other}: {otherValue})"
   },
   "wizardHelp": {
     "title": "Cara Kerja Perkiraan Story Point",

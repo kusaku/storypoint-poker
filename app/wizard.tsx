@@ -177,8 +177,8 @@ export function Wizard({ onCalculate, onBack, initialAnswers, onAnswersChange }:
           </div>
           <div className="mt-2 p-2 bg-blue-100 dark:bg-blue-900/30 rounded text-xs text-blue-800 dark:text-blue-300">
             {!taskType 
-              ? `⚠️ ${t('wizard.selectTaskTypeToBegin')}`
-              : `⚠️ ${t('wizard.answerAllQuestions', { total: sections.length, answered: answeredSections.length })}`
+              ? t('wizard.selectTaskTypeToBegin')
+              : t('wizard.answerAllQuestions', { total: sections.length, answered: answeredSections.length })
             }
           </div>
         </div>

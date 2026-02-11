@@ -114,7 +114,16 @@
     "from": "से: {labels}",
     "estimationDetails": "अनुमान विवरण",
     "minSpRequirement": "न्यूनतम SP आवश्यकता: {value}",
-    "scoreIndicatesTooLarge": "स्कोर इंगित करता है कि यह कार्य बहुत बड़ा है और इसे विघटित किया जाना चाहिए"
+    "scoreIndicatesTooLarge": "स्कोर इंगित करता है कि यह कार्य बहुत बड़ा है और इसे विघटित किया जाना चाहिए",
+    "decompose": "कार्य को विघटन की आवश्यकता है",
+    "noSignificantFactors": "कोई महत्वपूर्ण कारक नहीं",
+    "score": "स्कोर",
+    "bucket": "सीमा",
+    "baseSp": "आधार SP",
+    "minSpGate": "न्यूनतम SP",
+    "breadthBump": "चौड़ाई वृद्धि",
+    "finalSpEquals": "{formula} = {value}",
+    "maxFormula": "max({baseSp}: {baseSpValue}, {other}: {otherValue})"
   },
   "wizardHelp": {
     "title": "Story Point अनुमान कैसे काम करता है",

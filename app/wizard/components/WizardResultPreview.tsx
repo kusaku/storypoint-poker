@@ -33,7 +33,7 @@ export function WizardResultPreview({ result, canCalculate, onCalculate }: Wizar
       </div>
       {isDecompose && (
         <div className="mt-2 p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded text-sm text-yellow-800 dark:text-yellow-300">
-          ⚠️ {t('wizard.likelyNotSingleStory')}
+          {t('wizard.likelyNotSingleStory')}
         </div>
       )}
       <div className="mt-3 pt-3 border-t border-indigo-200 dark:border-indigo-700">
@@ -65,7 +65,7 @@ export function WizardResultPreview({ result, canCalculate, onCalculate }: Wizar
             <div>
               <span className="font-medium">{t('wizard.step3')}:</span> {t('wizard.baseSpFromScoreBucket')}:
               <div className="ml-3 mt-0.5 text-xs">
-                Score {result.score} → Bucket {result.score <= 2 ? '[0-2]' : result.score <= 5 ? '[3-5]' : result.score <= 9 ? '[6-9]' : result.score <= 14 ? '[10-14]' : result.score <= 20 ? '[15-20]' : '[21+]'} → Base SP = <span className="font-medium">{result.baseSp}</span>
+                {t('wizard.score')} {result.score} → {t('wizard.bucket')} {result.score <= 2 ? '[0-2]' : result.score <= 5 ? '[3-5]' : result.score <= 9 ? '[6-9]' : result.score <= 14 ? '[10-14]' : result.score <= 20 ? '[15-20]' : '[21+]'} → {t('wizard.baseSp')} = <span className="font-medium">{result.baseSp}</span>
               </div>
             </div>
           )}
@@ -90,10 +90,10 @@ export function WizardResultPreview({ result, canCalculate, onCalculate }: Wizar
           
           <div className="pt-1 font-medium border-t border-indigo-200 dark:border-indigo-700 mt-1">
             → {t('wizard.finalSp')} = {result.minSpFromGates > 0 
-              ? `max(Base SP: ${result.baseSp}, Min SP gate: ${result.minSpFromGates})`
+              ? t('wizard.maxFormula', { baseSp: t('wizard.baseSp'), baseSpValue: result.baseSp, other: t('wizard.minSpGate'), otherValue: result.minSpFromGates })
               : result.breadthBumpApplied
-              ? `max(Base SP: ${result.baseSp}, Breadth bump: 5)`
-              : `Base SP: ${result.baseSp}`} = <span className="text-indigo-700 dark:text-indigo-300">{result.suggestedSp}</span>
+              ? t('wizard.maxFormula', { baseSp: t('wizard.baseSp'), baseSpValue: result.baseSp, other: t('wizard.breadthBump'), otherValue: 5 })
+              : `${t('wizard.baseSp')}: ${result.baseSp}`} = <span className="text-indigo-700 dark:text-indigo-300">{result.suggestedSp}</span>
           </div>
         </div>
       </div>
@@ -112,6 +112,10 @@ export function WizardResultPreview({ result, canCalculate, onCalculate }: Wizar
                 } else {
                   return <li key={idx}>{t(parts[0])}: {t(parts[1])}</li>
                 }
+              }
+              // Handle single key reasons
+              if (reason === 'decompose') {
+                return <li key={idx}>{t('wizard.decompose')}</li>
               }
               return <li key={idx}>{t(reason)}</li>
             })}
