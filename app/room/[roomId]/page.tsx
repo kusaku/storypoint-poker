@@ -287,6 +287,7 @@ export default function RoomPage() {
               userName={userName}
               isConnected={isConnected}
               copied={copied}
+              revealed={roomState.revealed}
               onCopyInviteLink={handleCopyInviteLink}
             />
 

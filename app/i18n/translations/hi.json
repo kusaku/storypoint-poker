@@ -63,7 +63,9 @@
     "host": "हो",
     "voteDistribution": "वोट वितरण",
     "vote": "वोट",
-    "votes": "वोट"
+    "votes": "वोट",
+    "votingOpen": "मतदान खुला है",
+    "votesRevealedStatus": "वोट प्रकट किए गए"
   },
   "nameModal": {
     "enterYourName": "अपना नाम दर्ज करें",

@@ -63,7 +63,9 @@
     "host": "CT",
     "voteDistribution": "Phân bổ Phiếu bầu",
     "vote": "phiếu",
-    "votes": "phiếu"
+    "votes": "phiếu",
+    "votingOpen": "Đang bỏ phiếu",
+    "votesRevealedStatus": "Phiếu bầu đã được tiết lộ"
   },
   "nameModal": {
     "enterYourName": "Nhập Tên của Bạn",

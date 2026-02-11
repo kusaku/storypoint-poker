@@ -63,7 +63,9 @@
     "host": "H",
     "voteDistribution": "Distribusi Suara",
     "vote": "suara",
-    "votes": "suara"
+    "votes": "suara",
+    "votingOpen": "Pemungutan suara terbuka",
+    "votesRevealedStatus": "Suara diungkapkan"
   },
   "nameModal": {
     "enterYourName": "Masukkan Nama Anda",

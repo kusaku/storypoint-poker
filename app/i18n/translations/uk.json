@@ -63,7 +63,9 @@
     "host": "В",
     "voteDistribution": "Розподіл голосів",
     "vote": "голос",
-    "votes": "голосів"
+    "votes": "голосів",
+    "votingOpen": "Йде голосування",
+    "votesRevealedStatus": "Голоси показано"
   },
   "nameModal": {
     "enterYourName": "Введіть ваше ім'я",

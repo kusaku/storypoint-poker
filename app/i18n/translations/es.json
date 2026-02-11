@@ -63,7 +63,9 @@
     "host": "A",
     "voteDistribution": "Distribución de Votos",
     "vote": "voto",
-    "votes": "votos"
+    "votes": "votos",
+    "votingOpen": "Votación abierta",
+    "votesRevealedStatus": "Votos revelados"
   },
   "nameModal": {
     "enterYourName": "Ingresa Tu Nombre",

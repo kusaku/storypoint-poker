@@ -63,7 +63,9 @@
     "host": "H",
     "voteDistribution": "Stimmenverteilung",
     "vote": "Stimme",
-    "votes": "Stimmen"
+    "votes": "Stimmen",
+    "votingOpen": "Abstimmung läuft",
+    "votesRevealedStatus": "Stimmen angezeigt"
   },
   "nameModal": {
     "enterYourName": "Geben Sie Ihren Namen ein",

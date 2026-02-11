@@ -9,10 +9,11 @@ interface RoomHeaderProps {
   userName: string
   isConnected: boolean
   copied: boolean
+  revealed: boolean
   onCopyInviteLink: () => void
 }
 
-export function RoomHeader({ roomId, userName, isConnected, copied, onCopyInviteLink }: RoomHeaderProps) {
+export function RoomHeader({ roomId, userName, isConnected, copied, revealed, onCopyInviteLink }: RoomHeaderProps) {
   const { t } = useLanguage()
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 mb-4">
@@ -35,6 +36,15 @@ export function RoomHeader({ roomId, userName, isConnected, copied, onCopyInvite
               <span className="text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded">🟢 {t('common.connected')}</span>
             ) : (
               <span className="text-xs bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 px-2 py-1 rounded">🔴 {t('common.disconnected')}</span>
+            )}
+            {revealed ? (
+              <span className="text-xs bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 px-2 py-1 rounded font-medium">
+                📊 {t('room.votesRevealedStatus')}
+              </span>
+            ) : (
+              <span className="text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded font-medium">
+                ✋ {t('room.votingOpen')}
+              </span>
             )}
             <button
               onClick={onCopyInviteLink}

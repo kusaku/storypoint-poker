@@ -63,7 +63,9 @@
     "host": "H",
     "voteDistribution": "Stemverdeling",
     "vote": "stem",
-    "votes": "stemmen"
+    "votes": "stemmen",
+    "votingOpen": "Stemmen open",
+    "votesRevealedStatus": "Stemmen onthuld"
   },
   "nameModal": {
     "enterYourName": "Voer Uw Naam In",

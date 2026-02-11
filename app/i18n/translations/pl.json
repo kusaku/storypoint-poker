@@ -63,7 +63,9 @@
     "host": "G",
     "voteDistribution": "Rozkład Głosów",
     "vote": "głos",
-    "votes": "głosów"
+    "votes": "głosów",
+    "votingOpen": "Głosowanie otwarte",
+    "votesRevealedStatus": "Głosy ujawnione"
   },
   "nameModal": {
     "enterYourName": "Wpisz Swoje Imię",

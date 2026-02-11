@@ -63,7 +63,9 @@
     "host": "主",
     "voteDistribution": "投票分布",
     "vote": "票",
-    "votes": "票"
+    "votes": "票",
+    "votingOpen": "投票进行中",
+    "votesRevealedStatus": "投票已显示"
   },
   "nameModal": {
     "enterYourName": "输入您的姓名",

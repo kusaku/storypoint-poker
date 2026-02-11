@@ -63,7 +63,9 @@
     "host": "م",
     "voteDistribution": "توزيع الأصوات",
     "vote": "صوت",
-    "votes": "أصوات"
+    "votes": "أصوات",
+    "votingOpen": "التصويت مفتوح",
+    "votesRevealedStatus": "تم الكشف عن الأصوات"
   },
   "nameModal": {
     "enterYourName": "أدخل اسمك",

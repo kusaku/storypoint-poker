@@ -56,6 +56,12 @@ io.on('connection', (socket) => {
       roomDeleteTimers.delete(roomId)
     }
     
+    // Auto-reset room if it's empty and in revealed state
+    // This prevents stale state when someone rejoins after everyone left
+    if (room.users.size === 0 && room.revealed) {
+      room.revealed = false
+    }
+    
     let existingUser = null
     for (const [userId, user] of room.users.entries()) {
       if (user.name === userName) {

@@ -63,7 +63,9 @@
     "host": "م",
     "voteDistribution": "ووٹ کی تقسیم",
     "vote": "ووٹ",
-    "votes": "ووٹس"
+    "votes": "ووٹس",
+    "votingOpen": "ووٹنگ کھلی ہے",
+    "votesRevealedStatus": "ووٹس ظاہر کر دیے گئے"
   },
   "nameModal": {
     "enterYourName": "اپنا نام درج کریں",

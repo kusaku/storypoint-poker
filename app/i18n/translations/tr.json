@@ -63,7 +63,9 @@
     "host": "S",
     "voteDistribution": "Oy Dağılımı",
     "vote": "oy",
-    "votes": "oy"
+    "votes": "oy",
+    "votingOpen": "Oylama açık",
+    "votesRevealedStatus": "Oylar açıklandı"
   },
   "nameModal": {
     "enterYourName": "Adınızı Girin",

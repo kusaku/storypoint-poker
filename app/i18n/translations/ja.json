@@ -63,7 +63,9 @@
     "host": "ホ",
     "voteDistribution": "投票分布",
     "vote": "票",
-    "votes": "票"
+    "votes": "票",
+    "votingOpen": "投票中",
+    "votesRevealedStatus": "投票が表示されました"
   },
   "nameModal": {
     "enterYourName": "お名前を入力",

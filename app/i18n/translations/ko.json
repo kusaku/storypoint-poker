@@ -63,7 +63,9 @@
     "host": "호",
     "voteDistribution": "투표 분포",
     "vote": "표",
-    "votes": "표"
+    "votes": "표",
+    "votingOpen": "투표 진행 중",
+    "votesRevealedStatus": "투표 공개됨"
   },
   "nameModal": {
     "enterYourName": "이름 입력",
