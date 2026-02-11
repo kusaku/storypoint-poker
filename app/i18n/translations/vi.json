@@ -1,4 +1,12 @@
 {
+  "_meta": {
+    "code": "vi",
+    "name": "Vietnamese",
+    "nativeName": "Tiếng Việt",
+    "flag": "🇻🇳",
+    "rtl": false,
+    "popularity": 18
+  },
   "common": {
     "settings": "Cài đặt",
     "close": "Đóng",
@@ -102,7 +110,9 @@
     "likelyNotSingleStory": "⚠️ Điều này có thể không phải là một câu chuyện đơn lẻ. Hãy xem xét phân tích.",
     "categoriesWithValues": "{count} danh mục có giá trị ≥ 1, do đó SP tối thiểu = 5",
     "from": "từ: {labels}",
-    "estimationDetails": "Chi tiết Ước tính"
+    "estimationDetails": "Chi tiết Ước tính",
+    "minSpRequirement": "Yêu cầu SP tối thiểu: {value}",
+    "scoreIndicatesTooLarge": "Điểm số cho thấy nhiệm vụ này quá lớn và cần được phân tích"
   },
   "wizardHelp": {
     "title": "Cách Hoạt động của Ước tính Story Point",

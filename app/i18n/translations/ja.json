@@ -1,4 +1,12 @@
 {
+  "_meta": {
+    "code": "ja",
+    "name": "Japanese",
+    "nativeName": "日本語",
+    "flag": "🇯🇵",
+    "rtl": false,
+    "popularity": 8
+  },
   "common": {
     "settings": "設定",
     "close": "閉じる",
@@ -102,7 +110,9 @@
     "likelyNotSingleStory": "⚠️ これは単一のストーリーではない可能性があります。分解を検討してください。",
     "categoriesWithValues": "値 ≥ 1 の {count} カテゴリ、したがって最小 SP = 5",
     "from": "から：{labels}",
-    "estimationDetails": "見積もり詳細"
+    "estimationDetails": "見積もり詳細",
+    "minSpRequirement": "最小 SP 要件：{value}",
+    "scoreIndicatesTooLarge": "スコアは、このタスクが大きすぎて分解する必要があることを示しています"
   },
   "wizardHelp": {
     "title": "Story Point 見積もりの仕組み",

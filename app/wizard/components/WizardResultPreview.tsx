@@ -3,7 +3,6 @@
 import { WizardResult } from '../../wizard-data'
 import { roundToNearestCard, displayVote } from '../../fibonacci'
 import { useLanguage } from '../../i18n/language-provider'
-import { getTranslatedWizardData } from '../../i18n/wizard-translations'
 
 interface WizardResultPreviewProps {
   result: WizardResult
@@ -13,7 +12,6 @@ interface WizardResultPreviewProps {
 
 export function WizardResultPreview({ result, canCalculate, onCalculate }: WizardResultPreviewProps) {
   const { t } = useLanguage()
-  const { translateLabel } = getTranslatedWizardData()
   const isDecompose = result.flags.includes('DECOMPOSE_REQUIRED')
   const roundedSp = isDecompose ? result.suggestedSp : roundToNearestCard(result.suggestedSp)
   const needsRounding = !isDecompose && roundedSp !== result.suggestedSp
@@ -47,7 +45,7 @@ export function WizardResultPreview({ result, canCalculate, onCalculate }: Wizar
               {result.contributingValues.length > 0 ? (
                 result.contributingValues.map((item, idx) => (
                   <div key={idx} className="text-xs">
-                    • {translateLabel(item.label, t)}: <span className="font-medium">+{item.value}</span>
+                    • {t(item.label)}: <span className="font-medium">+{item.value}</span>
                     {item.minSp && <span className="text-indigo-500 dark:text-indigo-300"> (min SP: {item.minSp})</span>}
                   </div>
                 ))
@@ -76,7 +74,7 @@ export function WizardResultPreview({ result, canCalculate, onCalculate }: Wizar
             <div>
               <span className="font-medium">{t('wizard.step4')}:</span> {t('wizard.minSpGate')} = <span className="font-medium">{result.minSpFromGates}</span>
               <div className="ml-3 mt-0.5 text-xs">
-                ({t('wizard.from', { labels: result.contributingValues.filter(v => v.minSp === result.minSpFromGates).map(v => translateLabel(v.label, t)).join(', ') })})
+                ({t('wizard.from', { labels: result.contributingValues.filter(v => v.minSp === result.minSpFromGates).map(v => t(v.label)).join(', ') })})
               </div>
             </div>
           )}
@@ -103,9 +101,20 @@ export function WizardResultPreview({ result, canCalculate, onCalculate }: Wizar
         <div className="mt-2">
           <p className="text-xs font-medium text-indigo-700 dark:text-indigo-400 mb-1">{t('wizard.topFactors')}:</p>
           <ul className="text-xs text-indigo-600 dark:text-indigo-400 list-disc list-inside space-y-1">
-            {result.reasons.slice(0, 3).map((reason, idx) => (
-              <li key={idx}>{reason}</li>
-            ))}
+            {result.reasons.slice(0, 3).map((reason, idx) => {
+              // Parse reason format: "key1:key2" or "key:value" or just "key"
+              const parts = reason.split(':')
+              if (parts.length === 2) {
+                if (parts[0] === 'minSp') {
+                  return <li key={idx}>{t('wizard.minSpRequirement', { value: parts[1] })}</li>
+                } else if (parts[0] === 'decompose') {
+                  return <li key={idx}>{t('wizard.scoreIndicatesTooLarge')}</li>
+                } else {
+                  return <li key={idx}>{t(parts[0])}: {t(parts[1])}</li>
+                }
+              }
+              return <li key={idx}>{t(reason)}</li>
+            })}
           </ul>
         </div>
       )}

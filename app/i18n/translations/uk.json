@@ -1,4 +1,12 @@
 {
+  "_meta": {
+    "code": "uk",
+    "name": "Ukrainian",
+    "nativeName": "Українська",
+    "flag": "🇺🇦",
+    "rtl": false,
+    "popularity": 14
+  },
   "common": {
     "settings": "Налаштування",
     "close": "Закрити",
@@ -102,7 +110,9 @@
     "likelyNotSingleStory": "⚠️ Це, ймовірно, не одна історія. Розгляньте декомпозицію.",
     "categoriesWithValues": "{count} категорій зі значеннями ≥ 1, тому мінімальний SP = 5",
     "from": "з: {labels}",
-    "estimationDetails": "Деталі оцінки"
+    "estimationDetails": "Деталі оцінки",
+    "minSpRequirement": "Мінімальна вимога SP: {value}",
+    "scoreIndicatesTooLarge": "Оцінка вказує, що це завдання занадто велике і має бути декомпозировано"
   },
   "wizardHelp": {
     "title": "Як працює оцінка Story Points",

@@ -1,4 +1,12 @@
 {
+  "_meta": {
+    "code": "de",
+    "name": "German",
+    "nativeName": "Deutsch",
+    "flag": "🇩🇪",
+    "rtl": false,
+    "popularity": 9
+  },
   "common": {
     "settings": "Einstellungen",
     "close": "Schließen",
@@ -102,7 +110,9 @@
     "likelyNotSingleStory": "⚠️ Dies ist wahrscheinlich keine einzelne Story. Zerlegung in Betracht ziehen.",
     "categoriesWithValues": "{count} Kategorien mit Werten ≥ 1, daher Mindest-SP = 5",
     "from": "von: {labels}",
-    "estimationDetails": "Schätzungsdetails"
+    "estimationDetails": "Schätzungsdetails",
+    "minSpRequirement": "Mindest-SP-Anforderung: {value}",
+    "scoreIndicatesTooLarge": "Die Punktzahl deutet darauf hin, dass diese Aufgabe zu groß ist und zerlegt werden sollte"
   },
   "wizardHelp": {
     "title": "Wie Story-Point-Schätzung funktioniert",

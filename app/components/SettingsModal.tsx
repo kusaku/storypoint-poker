@@ -2,6 +2,7 @@
 
 import { useTheme } from '../theme-provider'
 import { useLanguage } from '../i18n/language-provider'
+import { getLanguages } from '../i18n/translations'
 
 interface SettingsModalProps {
   isOpen: boolean
@@ -11,6 +12,7 @@ interface SettingsModalProps {
 export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   const { theme, setTheme } = useTheme()
   const { language, setLanguage, t } = useLanguage()
+  const languages = getLanguages()
 
   if (!isOpen) return null
 
@@ -85,227 +87,20 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             </h3>
             <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-1 max-h-64 overflow-y-auto">
               <div className="grid grid-cols-5 gap-1">
-                {/* Ordered by popularity */}
-                <button
-                  onClick={() => setLanguage('en')}
-                  className={`px-2 py-2 rounded text-sm font-medium transition-colors flex items-center justify-center ${
-                    language === 'en'
-                      ? 'bg-indigo-600 text-white'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
-                  title="English"
-                >
-                  <span className="text-xl">🇬🇧</span>
-                </button>
-                <button
-                  onClick={() => setLanguage('zh-CN')}
-                  className={`px-2 py-2 rounded text-sm font-medium transition-colors flex items-center justify-center ${
-                    language === 'zh-CN'
-                      ? 'bg-indigo-600 text-white'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
-                  title="简体中文"
-                >
-                  <span className="text-xl">🇨🇳</span>
-                </button>
-                <button
-                  onClick={() => setLanguage('es')}
-                  className={`px-2 py-2 rounded text-sm font-medium transition-colors flex items-center justify-center ${
-                    language === 'es'
-                      ? 'bg-indigo-600 text-white'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
-                  title="Español"
-                >
-                  <span className="text-xl">🇪🇸</span>
-                </button>
-                <button
-                  onClick={() => setLanguage('hi')}
-                  className={`px-2 py-2 rounded text-sm font-medium transition-colors flex items-center justify-center ${
-                    language === 'hi'
-                      ? 'bg-indigo-600 text-white'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
-                  title="हिन्दी"
-                >
-                  <span className="text-xl">🇮🇳</span>
-                </button>
-                <button
-                  onClick={() => setLanguage('ar')}
-                  className={`px-2 py-2 rounded text-sm font-medium transition-colors flex items-center justify-center ${
-                    language === 'ar'
-                      ? 'bg-indigo-600 text-white'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
-                  title="العربية"
-                >
-                  <span className="text-xl">🇸🇦</span>
-                </button>
-                <button
-                  onClick={() => setLanguage('pt')}
-                  className={`px-2 py-2 rounded text-sm font-medium transition-colors flex items-center justify-center ${
-                    language === 'pt'
-                      ? 'bg-indigo-600 text-white'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
-                  title="Português"
-                >
-                  <span className="text-xl">🇵🇹</span>
-                </button>
-                <button
-                  onClick={() => setLanguage('ru')}
-                  className={`px-2 py-2 rounded text-sm font-medium transition-colors flex items-center justify-center ${
-                    language === 'ru'
-                      ? 'bg-indigo-600 text-white'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
-                  title="Русский"
-                >
-                  <span className="text-xl">🇷🇺</span>
-                </button>
-                <button
-                  onClick={() => setLanguage('ja')}
-                  className={`px-2 py-2 rounded text-sm font-medium transition-colors flex items-center justify-center ${
-                    language === 'ja'
-                      ? 'bg-indigo-600 text-white'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
-                  title="日本語"
-                >
-                  <span className="text-xl">🇯🇵</span>
-                </button>
-                <button
-                  onClick={() => setLanguage('de')}
-                  className={`px-2 py-2 rounded text-sm font-medium transition-colors flex items-center justify-center ${
-                    language === 'de'
-                      ? 'bg-indigo-600 text-white'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
-                  title="Deutsch"
-                >
-                  <span className="text-xl">🇩🇪</span>
-                </button>
-                <button
-                  onClick={() => setLanguage('fr')}
-                  className={`px-2 py-2 rounded text-sm font-medium transition-colors flex items-center justify-center ${
-                    language === 'fr'
-                      ? 'bg-indigo-600 text-white'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
-                  title="Français"
-                >
-                  <span className="text-xl">🇫🇷</span>
-                </button>
-                <button
-                  onClick={() => setLanguage('ko')}
-                  className={`px-2 py-2 rounded text-sm font-medium transition-colors flex items-center justify-center ${
-                    language === 'ko'
-                      ? 'bg-indigo-600 text-white'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
-                  title="한국어"
-                >
-                  <span className="text-xl">🇰🇷</span>
-                </button>
-                <button
-                  onClick={() => setLanguage('it')}
-                  className={`px-2 py-2 rounded text-sm font-medium transition-colors flex items-center justify-center ${
-                    language === 'it'
-                      ? 'bg-indigo-600 text-white'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
-                  title="Italiano"
-                >
-                  <span className="text-xl">🇮🇹</span>
-                </button>
-                <button
-                  onClick={() => setLanguage('tr')}
-                  className={`px-2 py-2 rounded text-sm font-medium transition-colors flex items-center justify-center ${
-                    language === 'tr'
-                      ? 'bg-indigo-600 text-white'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
-                  title="Türkçe"
-                >
-                  <span className="text-xl">🇹🇷</span>
-                </button>
-                <button
-                  onClick={() => setLanguage('vi')}
-                  className={`px-2 py-2 rounded text-sm font-medium transition-colors flex items-center justify-center ${
-                    language === 'vi'
-                      ? 'bg-indigo-600 text-white'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
-                  title="Tiếng Việt"
-                >
-                  <span className="text-xl">🇻🇳</span>
-                </button>
-                <button
-                  onClick={() => setLanguage('id')}
-                  className={`px-2 py-2 rounded text-sm font-medium transition-colors flex items-center justify-center ${
-                    language === 'id'
-                      ? 'bg-indigo-600 text-white'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
-                  title="Bahasa Indonesia"
-                >
-                  <span className="text-xl">🇮🇩</span>
-                </button>
-                <button
-                  onClick={() => setLanguage('uk')}
-                  className={`px-2 py-2 rounded text-sm font-medium transition-colors flex items-center justify-center ${
-                    language === 'uk'
-                      ? 'bg-indigo-600 text-white'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
-                  title="Українська"
-                >
-                  <span className="text-xl">🇺🇦</span>
-                </button>
-                <button
-                  onClick={() => setLanguage('nl')}
-                  className={`px-2 py-2 rounded text-sm font-medium transition-colors flex items-center justify-center ${
-                    language === 'nl'
-                      ? 'bg-indigo-600 text-white'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
-                  title="Nederlands"
-                >
-                  <span className="text-xl">🇳🇱</span>
-                </button>
-                <button
-                  onClick={() => setLanguage('pl')}
-                  className={`px-2 py-2 rounded text-sm font-medium transition-colors flex items-center justify-center ${
-                    language === 'pl'
-                      ? 'bg-indigo-600 text-white'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
-                  title="Polski"
-                >
-                  <span className="text-xl">🇵🇱</span>
-                </button>
-                <button
-                  onClick={() => setLanguage('ur')}
-                  className={`px-2 py-2 rounded text-sm font-medium transition-colors flex items-center justify-center ${
-                    language === 'ur'
-                      ? 'bg-indigo-600 text-white'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
-                  title="اردو"
-                >
-                  <span className="text-xl">🇵🇰</span>
-                </button>
-                <button
-                  onClick={() => setLanguage('zh-TW')}
-                  className={`px-2 py-2 rounded text-sm font-medium transition-colors flex items-center justify-center ${
-                    language === 'zh-TW'
-                      ? 'bg-indigo-600 text-white'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
-                  title="繁體中文"
-                >
-                  <span className="text-xl">🇹🇼</span>
-                </button>
+                {languages.map((langMeta) => (
+                  <button
+                    key={langMeta.code}
+                    onClick={() => setLanguage(langMeta.code as any)}
+                    className={`px-2 py-2 rounded text-sm font-medium transition-colors flex items-center justify-center ${
+                      language === langMeta.code
+                        ? 'bg-indigo-600 text-white'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                    }`}
+                    title={langMeta.nativeName}
+                  >
+                    <span className="text-xl">{langMeta.flag}</span>
+                  </button>
+                ))}
               </div>
             </div>
           </div>

@@ -1,4 +1,12 @@
 {
+  "_meta": {
+    "code": "hi",
+    "name": "Hindi",
+    "nativeName": "हिन्दी",
+    "flag": "🇮🇳",
+    "rtl": false,
+    "popularity": 4
+  },
   "common": {
     "settings": "सेटिंग्स",
     "close": "बंद करें",
@@ -102,7 +110,9 @@
     "likelyNotSingleStory": "⚠️ यह शायद एक एकल कहानी नहीं है। विघटन पर विचार करें।",
     "categoriesWithValues": "{count} श्रेणियां मान ≥ 1 के साथ, इसलिए न्यूनतम SP = 5",
     "from": "से: {labels}",
-    "estimationDetails": "अनुमान विवरण"
+    "estimationDetails": "अनुमान विवरण",
+    "minSpRequirement": "न्यूनतम SP आवश्यकता: {value}",
+    "scoreIndicatesTooLarge": "स्कोर इंगित करता है कि यह कार्य बहुत बड़ा है और इसे विघटित किया जाना चाहिए"
   },
   "wizardHelp": {
     "title": "Story Point अनुमान कैसे काम करता है",

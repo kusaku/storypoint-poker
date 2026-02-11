@@ -1,4 +1,12 @@
 {
+  "_meta": {
+    "code": "fr",
+    "name": "French",
+    "nativeName": "Français",
+    "flag": "🇫🇷",
+    "rtl": false,
+    "popularity": 10
+  },
   "common": {
     "settings": "Paramètres",
     "close": "Fermer",
@@ -102,7 +110,9 @@
     "likelyNotSingleStory": "⚠️ Ce n'est probablement pas une seule histoire. Envisagez la décomposition.",
     "categoriesWithValues": "{count} catégories avec valeurs ≥ 1, donc SP minimum = 5",
     "from": "de : {labels}",
-    "estimationDetails": "Détails de l'Estimation"
+    "estimationDetails": "Détails de l'Estimation",
+    "minSpRequirement": "Exigence SP minimale : {value}",
+    "scoreIndicatesTooLarge": "Le score indique que cette tâche est trop grande et doit être décomposée"
   },
   "wizardHelp": {
     "title": "Comment Fonctionne l'Estimation de Story Points",

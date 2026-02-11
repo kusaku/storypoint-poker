@@ -1,4 +1,12 @@
 {
+  "_meta": {
+    "code": "nl",
+    "name": "Dutch",
+    "nativeName": "Nederlands",
+    "flag": "🇳🇱",
+    "rtl": false,
+    "popularity": 16
+  },
   "common": {
     "settings": "Instellingen",
     "close": "Sluiten",
@@ -102,7 +110,9 @@
     "likelyNotSingleStory": "⚠️ Dit is waarschijnlijk geen enkel verhaal. Overweeg ontleding.",
     "categoriesWithValues": "{count} categorieën met waarden ≥ 1, dus min SP = 5",
     "from": "van: {labels}",
-    "estimationDetails": "Schattingsdetails"
+    "estimationDetails": "Schattingsdetails",
+    "minSpRequirement": "Minimale SP-vereiste: {value}",
+    "scoreIndicatesTooLarge": "De score geeft aan dat deze taak te groot is en moet worden opgesplitst"
   },
   "wizardHelp": {
     "title": "Hoe Story Point Schatting Werkt",

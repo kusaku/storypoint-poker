@@ -1,4 +1,12 @@
 {
+  "_meta": {
+    "code": "ar",
+    "name": "Arabic",
+    "nativeName": "العربية",
+    "flag": "🇸🇦",
+    "rtl": true,
+    "popularity": 5
+  },
   "common": {
     "settings": "الإعدادات",
     "close": "إغلاق",
@@ -102,7 +110,9 @@
     "likelyNotSingleStory": "⚠️ هذا على الأرجح ليس قصة واحدة. فكر في التفكيك.",
     "categoriesWithValues": "{count} فئات بقيم ≥ 1، لذلك الحد الأدنى SP = 5",
     "from": "من: {labels}",
-    "estimationDetails": "تفاصيل التقدير"
+    "estimationDetails": "تفاصيل التقدير",
+    "minSpRequirement": "الحد الأدنى لمتطلبات SP: {value}",
+    "scoreIndicatesTooLarge": "تشير النتيجة إلى أن هذه المهمة كبيرة جدًا ويجب تقسيمها"
   },
   "wizardHelp": {
     "title": "كيف يعمل تقدير Story Points",

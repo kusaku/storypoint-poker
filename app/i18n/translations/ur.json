@@ -1,4 +1,12 @@
 {
+  "_meta": {
+    "code": "ur",
+    "name": "Urdu",
+    "nativeName": "اردو",
+    "flag": "🇵🇰",
+    "rtl": true,
+    "popularity": 20
+  },
   "common": {
     "settings": "ترتیبات",
     "close": "بند کریں",
@@ -102,7 +110,9 @@
     "likelyNotSingleStory": "⚠️ یہ شاید ایک کہانی نہیں ہے۔ تقسیم پر غور کریں۔",
     "categoriesWithValues": "{count} زمرے ≥ 1 اقدار کے ساتھ، لہذا کم از کم SP = 5",
     "from": "سے: {labels}",
-    "estimationDetails": "تخمینہ کی تفصیلات"
+    "estimationDetails": "تخمینہ کی تفصیلات",
+    "minSpRequirement": "کم از کم SP ضرورت: {value}",
+    "scoreIndicatesTooLarge": "اسکور بتاتا ہے کہ یہ کام بہت بڑا ہے اور اسے تقسیم کیا جانا چاہیے"
   },
   "wizardHelp": {
     "title": "Story Point تخمینہ کیسے کام کرتا ہے",

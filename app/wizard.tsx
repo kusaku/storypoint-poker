@@ -13,7 +13,6 @@ import { roundToNearestCard } from './fibonacci'
 import { WizardHelpModal } from './wizard/components/WizardHelpModal'
 import { WizardResultPreview } from './wizard/components/WizardResultPreview'
 import { useLanguage } from './i18n/language-provider'
-import { getTranslatedWizardData } from './i18n/wizard-translations'
 
 interface WizardProps {
   onCalculate: (suggestedSp: number) => void
@@ -29,7 +28,6 @@ export function Wizard({ onCalculate, onBack, initialAnswers, onAnswersChange }:
   )
   const [showHelpModal, setShowHelpModal] = useState(false)
   const { t } = useLanguage()
-  const { translateLabel } = getTranslatedWizardData()
 
   const dropdowns = taskType === 'technical-implementation' ? TECHNICAL_IMPLEMENTATION_DROPDOWNS : taskType === 'content-communication' ? CONTENT_COMMUNICATION_DROPDOWNS : null
   const sections = dropdowns ? Object.keys(dropdowns) : []
@@ -150,7 +148,7 @@ export function Wizard({ onCalculate, onBack, initialAnswers, onAnswersChange }:
           return (
             <div key={section} className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-700">
               <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                {translateLabel(sectionData.label, t)}
+                {t(sectionData.label)}
               </label>
               <select
                 value={currentValue >= 0 ? currentValue : ''}
@@ -160,7 +158,7 @@ export function Wizard({ onCalculate, onBack, initialAnswers, onAnswersChange }:
                 <option value="">{t('common.select')}</option>
                 {sectionData.options.map((option, index) => (
                   <option key={index} value={index}>
-                    {translateLabel(option.label, t)}
+                    {t(option.label)}
                   </option>
                 ))}
               </select>

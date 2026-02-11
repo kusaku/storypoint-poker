@@ -1,4 +1,12 @@
 {
+  "_meta": {
+    "code": "ru",
+    "name": "Russian",
+    "nativeName": "Русский",
+    "flag": "🇷🇺",
+    "rtl": false,
+    "popularity": 7
+  },
   "common": {
     "settings": "Настройки",
     "close": "Закрыть",
@@ -102,7 +110,9 @@
     "likelyNotSingleStory": "⚠️ Это, вероятно, не одна история. Рассмотрите декомпозицию.",
     "categoriesWithValues": "{count} категорий со значениями ≥ 1, поэтому минимальный SP = 5",
     "from": "из: {labels}",
-    "estimationDetails": "Детали оценки"
+    "estimationDetails": "Детали оценки",
+    "minSpRequirement": "Минимальное требование SP: {value}",
+    "scoreIndicatesTooLarge": "Оценка указывает, что эта задача слишком большая и должна быть декомпозирована"
   },
   "wizardHelp": {
     "title": "Как работает оценка Story Points",

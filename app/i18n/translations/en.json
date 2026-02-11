@@ -1,4 +1,12 @@
 {
+  "_meta": {
+    "code": "en",
+    "name": "English",
+    "nativeName": "English",
+    "flag": "🇬🇧",
+    "rtl": false,
+    "popularity": 1
+  },
   "common": {
     "settings": "Settings",
     "close": "Close",
@@ -102,7 +110,9 @@
     "likelyNotSingleStory": "⚠️ This is likely not a single story. Consider decomposition.",
     "categoriesWithValues": "{count} categories with values ≥ 1, so minimum SP = 5",
     "from": "from: {labels}",
-    "estimationDetails": "Estimation Details"
+    "estimationDetails": "Estimation Details",
+    "minSpRequirement": "Minimum SP requirement: {value}",
+    "scoreIndicatesTooLarge": "Score indicates this task is too large and should be decomposed"
   },
   "wizardHelp": {
     "title": "How Story Point Estimation Works",

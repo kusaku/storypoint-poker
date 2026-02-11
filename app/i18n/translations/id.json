@@ -1,4 +1,12 @@
 {
+  "_meta": {
+    "code": "id",
+    "name": "Indonesian",
+    "nativeName": "Bahasa Indonesia",
+    "flag": "🇮🇩",
+    "rtl": false,
+    "popularity": 17
+  },
   "common": {
     "settings": "Pengaturan",
     "close": "Tutup",
@@ -102,7 +110,9 @@
     "likelyNotSingleStory": "⚠️ Ini kemungkinan bukan cerita tunggal. Pertimbangkan dekomposisi.",
     "categoriesWithValues": "{count} kategori dengan nilai ≥ 1, jadi SP min = 5",
     "from": "dari: {labels}",
-    "estimationDetails": "Detail Perkiraan"
+    "estimationDetails": "Detail Perkiraan",
+    "minSpRequirement": "Persyaratan SP minimum: {value}",
+    "scoreIndicatesTooLarge": "Skor menunjukkan bahwa tugas ini terlalu besar dan harus diuraikan"
   },
   "wizardHelp": {
     "title": "Cara Kerja Perkiraan Story Point",

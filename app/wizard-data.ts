@@ -27,126 +27,126 @@ export interface WizardResult {
 
 export const TECHNICAL_IMPLEMENTATION_DROPDOWNS = {
   scope: {
-    label: 'Scope',
+    label: 'wizardData.scope',
     options: [
-      { label: 'Single file or trivial change', value: 0 },
-      { label: 'Multiple files in one area', value: 1 },
-      { label: 'Multiple layers (API + service + DB)', value: 2, minSp: 3 },
-      { label: 'Multiple services or repositories', value: 4, minSp: 5 },
-      { label: 'Core or critical-path system', value: 5, minSp: 8 },
+      { label: 'wizardData.singleFileOrTrivialChange', value: 0 },
+      { label: 'wizardData.multipleFilesInOneArea', value: 1 },
+      { label: 'wizardData.multipleLayers', value: 2, minSp: 3 },
+      { label: 'wizardData.multipleServicesOrRepositories', value: 4, minSp: 5 },
+      { label: 'wizardData.coreOrCriticalPathSystem', value: 5, minSp: 8 },
     ],
   },
   complexity: {
-    label: 'Complexity',
+    label: 'wizardData.complexity',
     options: [
-      { label: 'No logic change (rename, config)', value: 0 },
-      { label: 'Simple new logic, linear flow', value: 1 },
-      { label: 'Branching logic or edge cases', value: 2 },
-      { label: 'Stateful or multi-step logic', value: 3 },
-      { label: 'Concurrency, retries, or failure handling', value: 5, minSp: 5 },
+      { label: 'wizardData.noLogicChange', value: 0 },
+      { label: 'wizardData.simpleNewLogic', value: 1 },
+      { label: 'wizardData.branchingLogicOrEdgeCases', value: 2 },
+      { label: 'wizardData.statefulOrMultiStepLogic', value: 3 },
+      { label: 'wizardData.concurrencyRetriesOrFailureHandling', value: 5, minSp: 5 },
     ],
   },
   uncertainty: {
-    label: 'Uncertainty',
+    label: 'wizardData.uncertainty',
     options: [
-      { label: 'Fully understood, no unknowns', value: 0 },
-      { label: 'Minor lookup or docs check', value: 1 },
-      { label: 'Some investigation or spike needed', value: 3, minSp: 3 },
-      { label: 'Implementation approach unclear', value: 4, minSp: 3 },
-      { label: 'Design likely to change during work', value: 5, minSp: 5 },
+      { label: 'wizardData.fullyUnderstood', value: 0 },
+      { label: 'wizardData.minorLookupOrDocsCheck', value: 1 },
+      { label: 'wizardData.someInvestigationOrSpikeNeeded', value: 3, minSp: 3 },
+      { label: 'wizardData.implementationApproachUnclear', value: 4, minSp: 3 },
+      { label: 'wizardData.designLikelyToChangeDuringWork', value: 5, minSp: 5 },
     ],
   },
   dataImpact: {
-    label: 'Data Impact',
+    label: 'wizardData.dataImpact',
     options: [
-      { label: 'No data impact', value: 0 },
-      { label: 'Schema change only', value: 2 },
-      { label: 'Small migration, easy rollback', value: 3 },
-      { label: 'Large migration or backfill', value: 5, minSp: 5 },
-      { label: 'Irreversible or high-risk data change', value: 6, minSp: 8 },
+      { label: 'wizardData.noDataImpact', value: 0 },
+      { label: 'wizardData.schemaChangeOnly', value: 2 },
+      { label: 'wizardData.smallMigrationEasyRollback', value: 3 },
+      { label: 'wizardData.largeMigrationOrBackfill', value: 5, minSp: 5 },
+      { label: 'wizardData.irreversibleOrHighRiskDataChange', value: 6, minSp: 8 },
     ],
   },
   coordinationDependencies: {
-    label: 'Coordination & Dependencies',
+    label: 'wizardData.coordinationDependencies',
     options: [
-      { label: 'Solo work', value: 0 },
-      { label: 'Needs review from another developer', value: 1 },
-      { label: 'Needs alignment within the team', value: 2 },
-      { label: 'Cross-team dependency', value: 4, minSp: 3 },
-      { label: 'External dependency (vendor/infra)', value: 5, minSp: 5 },
+      { label: 'wizardData.soloWork', value: 0 },
+      { label: 'wizardData.needsReviewFromAnotherDeveloper', value: 1 },
+      { label: 'wizardData.needsAlignmentWithinTeam', value: 2 },
+      { label: 'wizardData.crossTeamDependency', value: 4, minSp: 3 },
+      { label: 'wizardData.externalDependency', value: 5, minSp: 5 },
     ],
   },
   testing: {
-    label: 'Testing',
+    label: 'wizardData.testing',
     options: [
-      { label: 'No tests or trivial validation', value: 0 },
-      { label: 'Unit tests only', value: 1 },
-      { label: 'Integration tests', value: 3, minSp: 3 },
-      { label: 'End-to-end or staging validation', value: 4, minSp: 5 },
-      { label: 'Rollout, monitoring, or manual verification', value: 5, minSp: 8 },
+      { label: 'wizardData.noTestsOrTrivialValidation', value: 0 },
+      { label: 'wizardData.unitTestsOnly', value: 1 },
+      { label: 'wizardData.integrationTests', value: 3, minSp: 3 },
+      { label: 'wizardData.endToEndOrStagingValidation', value: 4, minSp: 5 },
+      { label: 'wizardData.rolloutMonitoringOrManualVerification', value: 5, minSp: 8 },
     ],
   },
 }
 
 export const CONTENT_COMMUNICATION_DROPDOWNS = {
   scope: {
-    label: 'Scope',
+    label: 'wizardData.scope',
     options: [
-      { label: 'Small edit or note', value: 0 },
-      { label: 'One complete document', value: 1 },
-      { label: 'Multiple documents', value: 3 },
-      { label: 'Documentation set or section', value: 4, minSp: 3 },
-      { label: 'Living document that defines behavior', value: 5, minSp: 5 },
+      { label: 'wizardData.smallEditOrNote', value: 0 },
+      { label: 'wizardData.oneCompleteDocument', value: 1 },
+      { label: 'wizardData.multipleDocuments', value: 3 },
+      { label: 'wizardData.documentationSetOrSection', value: 4, minSp: 3 },
+      { label: 'wizardData.livingDocumentThatDefinesBehavior', value: 5, minSp: 5 },
     ],
   },
   structureComplexity: {
-    label: 'Structure & Complexity',
+    label: 'wizardData.structureComplexity',
     options: [
-      { label: 'Structure is obvious', value: 0 },
-      { label: 'Light structuring needed', value: 1 },
-      { label: 'Careful narrative or ordering required', value: 2 },
-      { label: 'Conceptual model or abstraction needed', value: 4, minSp: 3 },
-      { label: 'New terminology or rules must be defined', value: 5, minSp: 5 },
+      { label: 'wizardData.structureIsObvious', value: 0 },
+      { label: 'wizardData.lightStructuringNeeded', value: 1 },
+      { label: 'wizardData.carefulNarrativeOrOrderingRequired', value: 2 },
+      { label: 'wizardData.conceptualModelOrAbstractionNeeded', value: 4, minSp: 3 },
+      { label: 'wizardData.newTerminologyOrRulesMustBeDefined', value: 5, minSp: 5 },
     ],
   },
   uncertainty: {
-    label: 'Uncertainty',
+    label: 'wizardData.uncertainty',
     options: [
-      { label: 'Everything is known', value: 0 },
-      { label: 'Minor clarification needed', value: 1 },
-      { label: 'Requires asking questions or interviews', value: 3 },
-      { label: 'Requires exploration or investigation', value: 4, minSp: 3 },
-      { label: 'Assumptions likely to change mid-work', value: 5, minSp: 5 },
+      { label: 'wizardData.everythingIsKnown', value: 0 },
+      { label: 'wizardData.minorClarificationNeeded', value: 1 },
+      { label: 'wizardData.requiresAskingQuestionsOrInterviews', value: 3 },
+      { label: 'wizardData.requiresExplorationOrInvestigation', value: 4, minSp: 3 },
+      { label: 'wizardData.assumptionsLikelyToChangeMidWork', value: 5, minSp: 5 },
     ],
   },
   sourceMaterial: {
-    label: 'Source Material',
+    label: 'wizardData.sourceMaterial',
     options: [
-      { label: 'Pure rewrite or formatting', value: 0 },
-      { label: 'Summarizing a single clear source', value: 1 },
-      { label: 'Reconciling multiple sources', value: 3 },
-      { label: 'Information is missing or contradictory', value: 4, minSp: 3 },
-      { label: 'Source of truth must be created', value: 5, minSp: 5 },
+      { label: 'wizardData.pureRewriteOrFormatting', value: 0 },
+      { label: 'wizardData.summarizingSingleClearSource', value: 1 },
+      { label: 'wizardData.reconcilingMultipleSources', value: 3 },
+      { label: 'wizardData.informationIsMissingOrContradictory', value: 4, minSp: 3 },
+      { label: 'wizardData.sourceOfTruthMustBeCreated', value: 5, minSp: 5 },
     ],
   },
   reviewConsensus: {
-    label: 'Review & Consensus',
+    label: 'wizardData.reviewConsensus',
     options: [
-      { label: 'No review needed', value: 0 },
-      { label: 'One reviewer', value: 1 },
-      { label: 'Multiple reviewers', value: 2 },
-      { label: 'Conflicting opinions expected', value: 4, minSp: 3 },
-      { label: 'Consensus or decision-making required', value: 5, minSp: 5 },
+      { label: 'wizardData.noReviewNeeded', value: 0 },
+      { label: 'wizardData.oneReviewer', value: 1 },
+      { label: 'wizardData.multipleReviewers', value: 2 },
+      { label: 'wizardData.conflictingOpinionsExpected', value: 4, minSp: 3 },
+      { label: 'wizardData.consensusOrDecisionMakingRequired', value: 5, minSp: 5 },
     ],
   },
   impact: {
-    label: 'Impact',
+    label: 'wizardData.impact',
     options: [
-      { label: 'Low-impact internal note', value: 0 },
-      { label: 'Team reference material', value: 1 },
-      { label: 'Onboarding or guidance', value: 2 },
-      { label: 'Process-defining document', value: 4, minSp: 5 },
-      { label: 'Policy or contract-level document', value: 6, minSp: 8 },
+      { label: 'wizardData.lowImpactInternalNote', value: 0 },
+      { label: 'wizardData.teamReferenceMaterial', value: 1 },
+      { label: 'wizardData.onboardingOrGuidance', value: 2 },
+      { label: 'wizardData.processDefiningDocument', value: 4, minSp: 5 },
+      { label: 'wizardData.policyOrContractLevelDocument', value: 6, minSp: 8 },
     ],
   },
 }
@@ -168,7 +168,8 @@ export function calculateStoryPoints(answers: WizardAnswers): WizardResult {
     }
     if (answer.value > 0) {
       breadth++
-      const sectionLabel = dropdowns[section as keyof typeof dropdowns]?.label || section
+      const sectionData = dropdowns[section as keyof typeof dropdowns]
+      const sectionLabel = sectionData?.label || `wizardData.${section}`
       contributingSignals.push({
         section,
         label: sectionLabel,
@@ -226,17 +227,17 @@ export function calculateStoryPoints(answers: WizardAnswers): WizardResult {
   contributingSignals.sort((a, b) => b.value - a.value)
   const reasons = contributingSignals.slice(0, 4).map(s => {
     const answer = answers.answers[s.section]
-    return `${s.label}: ${answer.option}`
+    return `${s.label}:${answer.option}`
   })
   
   if (minSp > baseSp) {
-        reasons.unshift(`Minimum SP requirement: ${minSp}`)
+    reasons.unshift(`minSp:${minSp}`)
   }
   
   const flags: string[] = []
   if (needsDecomposition) {
     flags.push('DECOMPOSE_REQUIRED')
-    reasons.unshift('Score indicates this task is too large and should be decomposed')
+    reasons.unshift('decompose')
   }
   
   const contributingValues = contributingSignals.map(s => {

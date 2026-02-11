@@ -1,4 +1,12 @@
 {
+  "_meta": {
+    "code": "pl",
+    "name": "Polish",
+    "nativeName": "Polski",
+    "flag": "🇵🇱",
+    "rtl": false,
+    "popularity": 15
+  },
   "common": {
     "settings": "Ustawienia",
     "close": "Zamknij",
@@ -102,7 +110,9 @@
     "likelyNotSingleStory": "⚠️ To prawdopodobnie nie jest pojedyncza historia. Rozważ dekompozycję.",
     "categoriesWithValues": "{count} kategorie z wartościami ≥ 1, więc min SP = 5",
     "from": "z: {labels}",
-    "estimationDetails": "Szczegóły Estymacji"
+    "estimationDetails": "Szczegóły Estymacji",
+    "minSpRequirement": "Minimalne wymaganie SP: {value}",
+    "scoreIndicatesTooLarge": "Wynik wskazuje, że to zadanie jest zbyt duże i powinno zostać rozłożone"
   },
   "wizardHelp": {
     "title": "Jak Działa Estymacja Story Points",

@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { WizardAnswers, TECHNICAL_IMPLEMENTATION_DROPDOWNS, CONTENT_COMMUNICATION_DROPDOWNS } from '../../../wizard-data'
 import { displayVote } from '../../../fibonacci'
 import { useLanguage } from '../../../i18n/language-provider'
-import { getTranslatedWizardData } from '../../../i18n/wizard-translations'
 
 export interface User {
   id: string
@@ -24,7 +23,6 @@ interface ParticipantRowProps {
 export function ParticipantRow({ user, revealed }: ParticipantRowProps) {
   const [showWizardPopup, setShowWizardPopup] = useState(false)
   const { t } = useLanguage()
-  const { translateLabel } = getTranslatedWizardData()
   
   const hasWizardAnswers = user.wizardAnswers?.taskType != null
   const canShowPopup = revealed && hasWizardAnswers
@@ -73,11 +71,11 @@ export function ParticipantRow({ user, revealed }: ParticipantRowProps) {
               <div><span className="font-medium">{t('wizard.taskType')}:</span> {user.wizardAnswers.taskType === 'technical-implementation' ? t('wizard.technicalImplementation') : t('wizard.contentCommunication')}</div>
               {hasAnswers && dropdowns ? (
                 Object.entries(user.wizardAnswers.answers).map(([section, answer]) => {
-                  const sectionLabel = dropdowns[section as keyof typeof dropdowns]?.label || section
+                  const sectionLabel = dropdowns[section as keyof typeof dropdowns]?.label || `wizardData.${section}`
                   return (
                     <div key={section} className="border-t border-indigo-200 dark:border-indigo-700 pt-1 mt-1">
-                      <div className="font-medium text-indigo-700 dark:text-indigo-300">{translateLabel(sectionLabel, t)}:</div>
-                      <div className="text-indigo-600 dark:text-indigo-400">{translateLabel(answer.option, t)}</div>
+                      <div className="font-medium text-indigo-700 dark:text-indigo-300">{t(sectionLabel)}:</div>
+                      <div className="text-indigo-600 dark:text-indigo-400">{t(answer.option)}</div>
                     </div>
                   )
                 })

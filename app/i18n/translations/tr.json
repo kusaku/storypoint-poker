@@ -1,4 +1,12 @@
 {
+  "_meta": {
+    "code": "tr",
+    "name": "Turkish",
+    "nativeName": "Türkçe",
+    "flag": "🇹🇷",
+    "rtl": false,
+    "popularity": 13
+  },
   "common": {
     "settings": "Ayarlar",
     "close": "Kapat",
@@ -102,7 +110,9 @@
     "likelyNotSingleStory": "⚠️ Bu muhtemelen tek bir hikaye değil. Ayrıştırmayı düşünün.",
     "categoriesWithValues": "{count} kategori ≥ 1 değerine sahip, bu yüzden minimum SP = 5",
     "from": "kaynak: {labels}",
-    "estimationDetails": "Tahmin Detayları"
+    "estimationDetails": "Tahmin Detayları",
+    "minSpRequirement": "Minimum SP gereksinimi: {value}",
+    "scoreIndicatesTooLarge": "Puan, bu görevin çok büyük olduğunu ve ayrıştırılması gerektiğini gösterir"
   },
   "wizardHelp": {
     "title": "Story Point Tahmini Nasıl Çalışır",

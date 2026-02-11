@@ -1,4 +1,12 @@
 {
+  "_meta": {
+    "code": "it",
+    "name": "Italian",
+    "nativeName": "Italiano",
+    "flag": "🇮🇹",
+    "rtl": false,
+    "popularity": 11
+  },
   "common": {
     "settings": "Impostazioni",
     "close": "Chiudi",
@@ -102,7 +110,9 @@
     "likelyNotSingleStory": "⚠️ Questo probabilmente non è una singola storia. Considera la decomposizione.",
     "categoriesWithValues": "{count} categorie con valori ≥ 1, quindi SP minimo = 5",
     "from": "da: {labels}",
-    "estimationDetails": "Dettagli della Stima"
+    "estimationDetails": "Dettagli della Stima",
+    "minSpRequirement": "Requisito SP minimo: {value}",
+    "scoreIndicatesTooLarge": "Il punteggio indica che questa attività è troppo grande e deve essere scomposta"
   },
   "wizardHelp": {
     "title": "Come Funziona la Stima degli Story Points",

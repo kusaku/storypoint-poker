@@ -1,4 +1,12 @@
 {
+  "_meta": {
+    "code": "zh-CN",
+    "name": "Chinese Simplified",
+    "nativeName": "简体中文",
+    "flag": "🇨🇳",
+    "rtl": false,
+    "popularity": 2
+  },
   "common": {
     "settings": "设置",
     "close": "关闭",
@@ -102,7 +110,9 @@
     "likelyNotSingleStory": "⚠️ 这可能不是单个故事。请考虑分解。",
     "categoriesWithValues": "{count} 个类别的值 ≥ 1，因此最小 SP = 5",
     "from": "来自：{labels}",
-    "estimationDetails": "估算详情"
+    "estimationDetails": "估算详情",
+    "minSpRequirement": "最低 SP 要求：{value}",
+    "scoreIndicatesTooLarge": "分数表明此任务太大，应该分解"
   },
   "wizardHelp": {
     "title": "Story Point 估算的工作原理",
