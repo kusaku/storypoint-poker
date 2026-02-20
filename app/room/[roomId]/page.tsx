@@ -126,7 +126,7 @@ export default function RoomPage() {
 
     newSocket.on('connect', () => {
       setIsConnected(true)
-      newSocket.emit(SOCKET_EVENTS.JOIN_ROOM, { roomId, userName })
+      newSocket.emit(SOCKET_EVENTS.JOIN_ROOM, { roomId, userName, clientId: userName })
       if (prevUrlIsHostRef.current) {
         newSocket.emit(SOCKET_EVENTS.BECOME_HOST, { roomId })
       }
@@ -142,7 +142,7 @@ export default function RoomPage() {
 
     newSocket.on(SOCKET_EVENTS.ROOM_STATE, (state: RoomState) => {
       setRoomState(state)
-      const currentUser = state.users.find(u => u.name === userName)
+      const currentUser = state.users.find(u => u.id === userName)
       setSelectedCard(currentUser?.vote ?? null)
       const serverComment = currentUser?.comment ?? ''
       setComment(serverComment)
@@ -251,7 +251,7 @@ export default function RoomPage() {
 
   useEffect(() => {
     if (!roomState.revealed && roomState.users.length > 0 && wizardAnswers) {
-      const currentUser = roomState.users.find(u => u.name === userName)
+      const currentUser = roomState.users.find(u => u.id === userName)
       if (currentUser && !currentUser.wizardAnswers) {
         setWizardAnswers(null)
       }

@@ -26,6 +26,7 @@ const io = new Server(httpServer, {
 const rooms = new Map()
 const disconnectTimers = new Map()
 const roomDeleteTimers = new Map()
+const socketSessions = new Map()
 
 const CLIENT_DISCONNECT_TIMEOUT = 60 * 1000
 const ROOM_DELETE_TIMEOUT = 60 * 60 * 1000
@@ -41,6 +42,7 @@ function getOrCreateRoom(roomId) {
     rooms.set(roomId, {
       id: roomId,
       users: new Map(),
+      userSockets: new Map(),
       revealed: false
     })
   }
@@ -57,33 +59,33 @@ function broadcastRoomState(roomId) {
   }
 }
 
-function findUserByName(room, userName) {
-  for (const [userId, user] of room.users.entries()) {
-    if (user.name === userName) {
-      return { userId, user }
-    }
-  }
-  return null
+function getDisconnectKey(roomId, clientId) {
+  return `${roomId}:${clientId}`
 }
 
 function updateRoomUser(roomId, socketId, updateFn) {
+  const session = socketSessions.get(socketId)
+  if (!session || session.roomId !== roomId) return false
+
   const room = rooms.get(roomId)
   if (!room) return false
-
-  const user = room.users.get(socketId)
+  const user = room.users.get(session.clientId)
   if (!user) return false
 
   updateFn(user, room)
-  room.users.set(socketId, user)
+  room.users.set(session.clientId, user)
   broadcastRoomState(roomId)
   return true
 }
 
 function runHostAction(roomId, socketId, actionFn) {
+  const session = socketSessions.get(socketId)
+  if (!session || session.roomId !== roomId) return false
+
   const room = rooms.get(roomId)
   if (!room) return false
 
-  const user = room.users.get(socketId)
+  const user = room.users.get(session.clientId)
   if (!user || !user.isHost) return false
 
   actionFn(room, user)
@@ -116,9 +118,13 @@ function scheduleRoomDeleteIfEmpty(roomId) {
 }
 
 io.on('connection', (socket) => {
-  socket.on(SOCKET_EVENTS.JOIN_ROOM, ({ roomId, userName }) => {
+  socket.on(SOCKET_EVENTS.JOIN_ROOM, ({ roomId, userName, clientId }) => {
+    const normalizedClientId = (typeof clientId === 'string' && clientId.trim()) || socket.id
+    const disconnectKey = getDisconnectKey(roomId, normalizedClientId)
     const room = getOrCreateRoom(roomId)
+    const userSockets = room.userSockets
     clearTimer(roomDeleteTimers, roomId)
+    clearTimer(disconnectTimers, disconnectKey)
 
     // Auto-reset room if it's empty and in revealed state
     // This prevents stale state when someone rejoins after everyone left
@@ -126,23 +132,24 @@ io.on('connection', (socket) => {
       room.revealed = false
     }
 
-    const existingEntry = findUserByName(room, userName)
-    if (existingEntry) {
-      clearTimer(disconnectTimers, existingEntry.userId)
-      room.users.delete(existingEntry.userId)
-    }
+    const existingUser = room.users.get(normalizedClientId)
 
     const user = {
-      id: socket.id,
+      id: normalizedClientId,
       name: userName,
-      isHost: existingEntry?.user?.isHost ?? false,
-      vote: existingEntry?.user?.vote ?? null,
-      hasVoted: existingEntry?.user?.hasVoted ?? false,
-      comment: existingEntry?.user?.comment ?? null,
-      wizardAnswers: existingEntry?.user?.wizardAnswers ?? null
+      isHost: existingUser?.isHost ?? false,
+      vote: existingUser?.vote ?? null,
+      hasVoted: existingUser?.hasVoted ?? false,
+      comment: existingUser?.comment ?? null,
+      wizardAnswers: existingUser?.wizardAnswers ?? null
     }
 
-    room.users.set(socket.id, user)
+    room.users.set(normalizedClientId, user)
+    if (!userSockets.has(normalizedClientId)) {
+      userSockets.set(normalizedClientId, new Set())
+    }
+    userSockets.get(normalizedClientId).add(socket.id)
+    socketSessions.set(socket.id, { roomId, clientId: normalizedClientId })
     socket.join(roomId)
 
     broadcastRoomState(roomId)
@@ -192,23 +199,39 @@ io.on('connection', (socket) => {
   })
 
   socket.on('disconnect', () => {
-    const roomEntry = Array.from(rooms.entries()).find(([, room]) => room.users.has(socket.id))
-    if (!roomEntry) return
+    const session = socketSessions.get(socket.id)
+    if (!session) return
 
-    const [roomId, room] = roomEntry
-    clearTimer(disconnectTimers, socket.id)
+    const { roomId, clientId } = session
+    socketSessions.delete(socket.id)
+    const room = rooms.get(roomId)
+    if (!room) return
+
+    const clientSockets = room.userSockets.get(clientId)
+    if (!clientSockets) return
+    clientSockets.delete(socket.id)
+
+    if (clientSockets.size > 0) {
+      return
+    }
+
+    room.userSockets.delete(clientId)
+    const disconnectKey = getDisconnectKey(roomId, clientId)
+    clearTimer(disconnectTimers, disconnectKey)
 
     // Keep disconnected users for a short grace window to support refresh/reconnect.
     const timer = setTimeout(() => {
-      if (!room.users.has(socket.id)) return
+      const latestRoom = rooms.get(roomId)
+      if (!latestRoom) return
+      if (latestRoom.userSockets.get(clientId)?.size) return
 
-      room.users.delete(socket.id)
-      disconnectTimers.delete(socket.id)
+      latestRoom.users.delete(clientId)
+      disconnectTimers.delete(disconnectKey)
       broadcastRoomState(roomId)
       scheduleRoomDeleteIfEmpty(roomId)
     }, CLIENT_DISCONNECT_TIMEOUT)
 
-    disconnectTimers.set(socket.id, timer)
+    disconnectTimers.set(disconnectKey, timer)
   })
 })
 
