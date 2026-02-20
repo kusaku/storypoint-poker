@@ -1,8 +1,8 @@
 'use client'
 
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts'
-import { CHART_COLORS } from '../../../constants'
-import { useLanguage } from '../../../i18n/language-provider'
+import { CHART_COLORS } from '@/app/constants'
+import { useLanguage } from '@/app/i18n/language-provider'
 
 interface VoteDistributionChartProps {
   voteDistribution: Array<{ name: string; value: number }>

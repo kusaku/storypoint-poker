@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState, useMemo, useCallback } from 'react'
-import { translations, languageCodes, getLanguageMeta, isRTL as checkRTL, findLanguageVariant, type Language } from './translations/index'
+import { translations, languageCodes, getLanguageMeta, isRTL as checkRTL, findLanguageVariant, type Language } from '@/app/i18n/translations'
 
 export type { Language }
 export { checkRTL as isRTL, getLanguageMeta }
@@ -30,7 +30,7 @@ const languageMapCache: Record<string, Language> = (() => {
 function getBrowserLanguage(): Language {
   if (typeof window === 'undefined') return 'en'
   
-  const browserLang = navigator.language || (navigator as any).userLanguage || 'en'
+  const browserLang = navigator.language || navigator.languages?.[0] || 'en'
   const langCode = browserLang.split('-')[0].toLowerCase()
   
   // Check for language variants (e.g., zh-TW, zh-CN, pt-BR, etc.)
@@ -78,18 +78,18 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   // Memoize translation function
   const t = useCallback((key: string, params?: Record<string, string | number>): string => {
     const keys = key.split('.')
-    let value: any = translations[language]
+    let value: unknown = translations[language]
     
     // Try to get value from current language
     for (const k of keys) {
-      if (value && typeof value === 'object' && k in value) {
-        value = value[k]
+      if (value && typeof value === 'object' && !Array.isArray(value) && k in value) {
+        value = (value as Record<string, unknown>)[k]
       } else {
         // Fallback to English
         value = translations.en
         for (const k2 of keys) {
-          if (value && typeof value === 'object' && k2 in value) {
-            value = value[k2]
+          if (value && typeof value === 'object' && !Array.isArray(value) && k2 in value) {
+            value = (value as Record<string, unknown>)[k2]
           } else {
             return key
           }

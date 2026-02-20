@@ -1,0 +1,11 @@
+{
+  "JOIN_ROOM": "join-room",
+  "ROOM_STATE": "room-state",
+  "VOTE": "vote",
+  "COMMENT": "comment",
+  "WIZARD_ANSWERS": "wizard-answers",
+  "REVEAL_VOTES": "reveal-votes",
+  "RESET_VOTES": "reset-votes",
+  "BECOME_HOST": "become-host",
+  "REMOVE_HOST": "remove-host"
+}

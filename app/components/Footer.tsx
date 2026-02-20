@@ -1,6 +1,6 @@
 'use client'
 
-import { useLanguage } from '../i18n/language-provider'
+import { useLanguage } from '@/app/i18n/language-provider'
 
 export function Footer() {
   const { t } = useLanguage()

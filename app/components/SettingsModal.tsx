@@ -1,8 +1,9 @@
 'use client'
 
-import { useTheme } from '../theme-provider'
-import { useLanguage } from '../i18n/language-provider'
-import { getLanguages } from '../i18n/translations'
+import { useTheme } from '@/app/theme-provider'
+import { useLanguage } from '@/app/i18n/language-provider'
+import { getLanguages, isLanguageCode } from '@/app/i18n/translations'
+import { PRIMARY_BUTTON_CLASS } from '@/app/constants'
 
 interface SettingsModalProps {
   isOpen: boolean
@@ -13,6 +14,11 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   const { theme, setTheme } = useTheme()
   const { language, setLanguage, t } = useLanguage()
   const languages = getLanguages()
+  const handleLanguageChange = (code: string) => {
+    if (isLanguageCode(code)) {
+      setLanguage(code)
+    }
+  }
 
   if (!isOpen) return null
 
@@ -90,7 +96,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 {languages.map((langMeta) => (
                   <button
                     key={langMeta.code}
-                    onClick={() => setLanguage(langMeta.code as any)}
+                    onClick={() => handleLanguageChange(langMeta.code)}
                     className={`px-2 py-2 rounded text-sm font-medium transition-colors flex items-center justify-center ${
                       language === langMeta.code
                         ? 'bg-indigo-600 text-white'
@@ -109,7 +115,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         <div className="mt-6 flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-indigo-600 dark:bg-indigo-500 text-white rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors font-medium"
+            className={PRIMARY_BUTTON_CLASS}
           >
             {t('common.close')}
           </button>

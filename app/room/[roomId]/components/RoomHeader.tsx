@@ -2,7 +2,8 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { useLanguage } from '../../../i18n/language-provider'
+import { useLanguage } from '@/app/i18n/language-provider'
+import { PANEL_CARD_CLASS } from '@/app/constants'
 
 interface RoomHeaderProps {
   roomId: string
@@ -16,7 +17,7 @@ interface RoomHeaderProps {
 export function RoomHeader({ roomId, userName, isConnected, copied, revealed, onCopyInviteLink }: RoomHeaderProps) {
   const { t } = useLanguage()
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 mb-4">
+    <div className={`${PANEL_CARD_CLASS} mb-4`}>
       <div className="flex items-center gap-4">
         <Link href="/" className="flex-shrink-0">
           <Image

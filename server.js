@@ -1,6 +1,7 @@
 const { createServer } = require('http')
 const next = require('next')
 const { Server } = require('socket.io')
+const SOCKET_EVENTS = require('./shared/socket-events.json')
 
 const dev = process.env.NODE_ENV !== 'production'
 const hostname = '0.0.0.0'
@@ -29,60 +30,116 @@ const roomDeleteTimers = new Map()
 const CLIENT_DISCONNECT_TIMEOUT = 60 * 1000
 const ROOM_DELETE_TIMEOUT = 60 * 60 * 1000
 
+function clearTimer(timerMap, key) {
+  if (!timerMap.has(key)) return
+  clearTimeout(timerMap.get(key))
+  timerMap.delete(key)
+}
+
+function getOrCreateRoom(roomId) {
+  if (!rooms.has(roomId)) {
+    rooms.set(roomId, {
+      id: roomId,
+      users: new Map(),
+      revealed: false
+    })
+  }
+  return rooms.get(roomId)
+}
+
 function broadcastRoomState(roomId) {
   const room = rooms.get(roomId)
   if (room) {
-    io.to(roomId).emit('room-state', {
+    io.to(roomId).emit(SOCKET_EVENTS.ROOM_STATE, {
       users: Array.from(room.users.values()),
       revealed: room.revealed
     })
   }
 }
 
-io.on('connection', (socket) => {
-  socket.on('join-room', ({ roomId, userName }) => {
-    if (!rooms.has(roomId)) {
-      rooms.set(roomId, {
-        id: roomId,
-        users: new Map(),
-        revealed: false
-      })
+function findUserByName(room, userName) {
+  for (const [userId, user] of room.users.entries()) {
+    if (user.name === userName) {
+      return { userId, user }
     }
+  }
+  return null
+}
 
-    const room = rooms.get(roomId)
-    
-    if (roomDeleteTimers.has(roomId)) {
-      clearTimeout(roomDeleteTimers.get(roomId))
+function updateRoomUser(roomId, socketId, updateFn) {
+  const room = rooms.get(roomId)
+  if (!room) return false
+
+  const user = room.users.get(socketId)
+  if (!user) return false
+
+  updateFn(user, room)
+  room.users.set(socketId, user)
+  broadcastRoomState(roomId)
+  return true
+}
+
+function runHostAction(roomId, socketId, actionFn) {
+  const room = rooms.get(roomId)
+  if (!room) return false
+
+  const user = room.users.get(socketId)
+  if (!user || !user.isHost) return false
+
+  actionFn(room, user)
+  broadcastRoomState(roomId)
+  return true
+}
+
+function resetRoomVotes(room) {
+  room.revealed = false
+  room.users.forEach((user) => {
+    user.vote = null
+    user.hasVoted = false
+    user.comment = null
+    user.wizardAnswers = null
+  })
+}
+
+function scheduleRoomDeleteIfEmpty(roomId) {
+  const room = rooms.get(roomId)
+  if (!room || room.users.size !== 0 || roomDeleteTimers.has(roomId)) return
+
+  const roomTimer = setTimeout(() => {
+    if (rooms.get(roomId)?.users.size === 0) {
+      rooms.delete(roomId)
       roomDeleteTimers.delete(roomId)
     }
-    
+  }, ROOM_DELETE_TIMEOUT)
+
+  roomDeleteTimers.set(roomId, roomTimer)
+}
+
+io.on('connection', (socket) => {
+  socket.on(SOCKET_EVENTS.JOIN_ROOM, ({ roomId, userName }) => {
+    const room = getOrCreateRoom(roomId)
+    clearTimer(roomDeleteTimers, roomId)
+
     // Auto-reset room if it's empty and in revealed state
     // This prevents stale state when someone rejoins after everyone left
     if (room.users.size === 0 && room.revealed) {
       room.revealed = false
     }
-    
-    let existingUser = null
-    for (const [userId, user] of room.users.entries()) {
-      if (user.name === userName) {
-        existingUser = user
-        if (disconnectTimers.has(userId)) {
-          clearTimeout(disconnectTimers.get(userId))
-          disconnectTimers.delete(userId)
-        }
-        room.users.delete(userId)
-        break
-      }
+
+    const existingEntry = findUserByName(room, userName)
+    if (existingEntry) {
+      clearTimer(disconnectTimers, existingEntry.userId)
+      room.users.delete(existingEntry.userId)
     }
 
     const user = {
       id: socket.id,
       name: userName,
-      isHost: existingUser?.isHost ?? false,
-      vote: existingUser?.vote ?? null,
-      hasVoted: existingUser?.hasVoted ?? false,
-      comment: existingUser?.comment ?? null,
-      wizardAnswers: existingUser?.wizardAnswers ?? null
+      isHost: existingEntry?.user?.isHost ?? false,
+      vote: existingEntry?.user?.vote ?? null,
+      hasVoted: existingEntry?.user?.hasVoted ?? false,
+      comment: existingEntry?.user?.comment ?? null,
+      wizardAnswers: existingEntry?.user?.wizardAnswers ?? null
     }
 
     room.users.set(socket.id, user)
@@ -91,123 +148,67 @@ io.on('connection', (socket) => {
     broadcastRoomState(roomId)
   })
 
-  socket.on('vote', ({ roomId, vote }) => {
-    const room = rooms.get(roomId)
-    if (room) {
-      const user = room.users.get(socket.id)
-      if (user) {
-        user.vote = vote
-        user.hasVoted = vote !== null && vote !== undefined
-        room.users.set(socket.id, user)
-
-        broadcastRoomState(roomId)
-      }
-    }
+  socket.on(SOCKET_EVENTS.VOTE, ({ roomId, vote }) => {
+    updateRoomUser(roomId, socket.id, (user) => {
+      user.vote = vote
+      user.hasVoted = vote !== null && vote !== undefined
+    })
   })
 
-  socket.on('comment', ({ roomId, comment }) => {
-    const room = rooms.get(roomId)
-    if (room) {
-      const user = room.users.get(socket.id)
-      if (user) {
-        user.comment = comment
-        room.users.set(socket.id, user)
-
-        broadcastRoomState(roomId)
-      }
-    }
+  socket.on(SOCKET_EVENTS.COMMENT, ({ roomId, comment }) => {
+    updateRoomUser(roomId, socket.id, (user) => {
+      user.comment = comment
+    })
   })
 
-  socket.on('wizard-answers', ({ roomId, wizardAnswers }) => {
-    const room = rooms.get(roomId)
-    if (room) {
-      const user = room.users.get(socket.id)
-      if (user) {
-        user.wizardAnswers = wizardAnswers
-        room.users.set(socket.id, user)
-
-        broadcastRoomState(roomId)
-      }
-    }
+  socket.on(SOCKET_EVENTS.WIZARD_ANSWERS, ({ roomId, wizardAnswers }) => {
+    updateRoomUser(roomId, socket.id, (user) => {
+      user.wizardAnswers = wizardAnswers
+    })
   })
 
-  socket.on('reveal-votes', ({ roomId }) => {
-    const room = rooms.get(roomId)
-    if (room) {
-      const user = room.users.get(socket.id)
-      if (user && user.isHost) {
-        room.revealed = true
-        broadcastRoomState(roomId)
-      }
-    }
+  socket.on(SOCKET_EVENTS.REVEAL_VOTES, ({ roomId }) => {
+    runHostAction(roomId, socket.id, (room) => {
+      room.revealed = true
+    })
   })
 
-  socket.on('reset-votes', ({ roomId }) => {
-    const room = rooms.get(roomId)
-    if (room) {
-      const user = room.users.get(socket.id)
-      if (user && user.isHost) {
-        room.revealed = false
-        room.users.forEach(user => {
-          user.vote = null
-          user.hasVoted = false
-          user.comment = null
-          user.wizardAnswers = null
-        })
-        broadcastRoomState(roomId)
-      }
-    }
+  socket.on(SOCKET_EVENTS.RESET_VOTES, ({ roomId }) => {
+    runHostAction(roomId, socket.id, (room) => {
+      resetRoomVotes(room)
+    })
   })
 
-  socket.on('become-host', ({ roomId }) => {
-    const room = rooms.get(roomId)
-    if (room) {
-      const user = room.users.get(socket.id)
-      if (user) {
-        user.isHost = true
-        room.users.set(socket.id, user)
-        broadcastRoomState(roomId)
-      }
-    }
+  socket.on(SOCKET_EVENTS.BECOME_HOST, ({ roomId }) => {
+    updateRoomUser(roomId, socket.id, (user) => {
+      user.isHost = true
+    })
   })
 
-  socket.on('remove-host', ({ roomId }) => {
-    const room = rooms.get(roomId)
-    if (room) {
-      const user = room.users.get(socket.id)
-      if (user) {
-        user.isHost = false
-        room.users.set(socket.id, user)
-        broadcastRoomState(roomId)
-      }
-    }
+  socket.on(SOCKET_EVENTS.REMOVE_HOST, ({ roomId }) => {
+    updateRoomUser(roomId, socket.id, (user) => {
+      user.isHost = false
+    })
   })
 
   socket.on('disconnect', () => {
-    rooms.forEach((room, roomId) => {
-      if (room.users.has(socket.id)) {
-        const timer = setTimeout(() => {
-          if (room.users.has(socket.id)) {
-            room.users.delete(socket.id)
-            disconnectTimers.delete(socket.id)
-            
-            broadcastRoomState(roomId)
-            
-            if (room.users.size === 0) {
-              const roomTimer = setTimeout(() => {
-                if (rooms.get(roomId)?.users.size === 0) {
-                  rooms.delete(roomId)
-                  roomDeleteTimers.delete(roomId)
-                }
-              }, ROOM_DELETE_TIMEOUT)
-              roomDeleteTimers.set(roomId, roomTimer)
-            }
-          }
-        }, CLIENT_DISCONNECT_TIMEOUT)
-        
-        disconnectTimers.set(socket.id, timer)
-      }
-    })
+    const roomEntry = Array.from(rooms.entries()).find(([, room]) => room.users.has(socket.id))
+    if (!roomEntry) return
+
+    const [roomId, room] = roomEntry
+    clearTimer(disconnectTimers, socket.id)
+
+    // Keep disconnected users for a short grace window to support refresh/reconnect.
+    const timer = setTimeout(() => {
+      if (!room.users.has(socket.id)) return
+
+      room.users.delete(socket.id)
+      disconnectTimers.delete(socket.id)
+      broadcastRoomState(roomId)
+      scheduleRoomDeleteIfEmpty(roomId)
+    }, CLIENT_DISCONNECT_TIMEOUT)
+
+    disconnectTimers.set(socket.id, timer)
   })
 })
 

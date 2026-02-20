@@ -1,8 +1,8 @@
 'use client'
 
-import { WizardResult } from '../../wizard-data'
-import { roundToNearestCard, displayVote } from '../../fibonacci'
-import { useLanguage } from '../../i18n/language-provider'
+import type { WizardResult } from '@/app/wizard-data'
+import { roundToNearestCard, displayVote } from '@/app/fibonacci'
+import { useLanguage } from '@/app/i18n/language-provider'
 
 interface WizardResultPreviewProps {
   result: WizardResult

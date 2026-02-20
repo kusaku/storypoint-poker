@@ -25,6 +25,19 @@ export interface WizardResult {
   breadthBumpApplied: boolean
 }
 
+export interface WizardDropdownOption {
+  label: string
+  value: number
+  minSp?: number
+}
+
+export interface WizardDropdownSection {
+  label: string
+  options: WizardDropdownOption[]
+}
+
+export type WizardDropdowns = Record<string, WizardDropdownSection>
+
 export const TECHNICAL_IMPLEMENTATION_DROPDOWNS = {
   scope: {
     label: 'wizardData.scope',
@@ -151,8 +164,28 @@ export const CONTENT_COMMUNICATION_DROPDOWNS = {
   },
 }
 
+export function getDropdownsByTaskType(taskType: TaskType): WizardDropdowns {
+  return taskType === 'technical-implementation'
+    ? TECHNICAL_IMPLEMENTATION_DROPDOWNS
+    : CONTENT_COMMUNICATION_DROPDOWNS
+}
+
+export function getWizardSectionData(
+  dropdowns: WizardDropdowns,
+  section: string
+): WizardDropdownSection | undefined {
+  return dropdowns[section]
+}
+
+export function getWizardSectionLabel(
+  dropdowns: WizardDropdowns,
+  section: string
+): string {
+  return getWizardSectionData(dropdowns, section)?.label || `wizardData.${section}`
+}
+
 export function calculateStoryPoints(answers: WizardAnswers): WizardResult {
-  const dropdowns = answers.taskType === 'technical-implementation' ? TECHNICAL_IMPLEMENTATION_DROPDOWNS : CONTENT_COMMUNICATION_DROPDOWNS
+  const dropdowns = getDropdownsByTaskType(answers.taskType)
   const sections = Object.keys(dropdowns)
   
   let score = 0
@@ -168,8 +201,7 @@ export function calculateStoryPoints(answers: WizardAnswers): WizardResult {
     }
     if (answer.value > 0) {
       breadth++
-      const sectionData = dropdowns[section as keyof typeof dropdowns]
-      const sectionLabel = sectionData?.label || `wizardData.${section}`
+      const sectionLabel = getWizardSectionLabel(dropdowns, section)
       contributingSignals.push({
         section,
         label: sectionLabel,

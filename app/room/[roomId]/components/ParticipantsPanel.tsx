@@ -1,9 +1,11 @@
 'use client'
 
-import { ParticipantRow, type User } from './ParticipantRow'
-import { VoteDistributionChart } from './VoteDistributionChart'
-import { HostControls } from './HostControls'
-import { useLanguage } from '../../../i18n/language-provider'
+import { ParticipantRow } from '@/app/room/[roomId]/components/ParticipantRow'
+import { VoteDistributionChart } from '@/app/room/[roomId]/components/VoteDistributionChart'
+import { HostControls } from '@/app/room/[roomId]/components/HostControls'
+import { useLanguage } from '@/app/i18n/language-provider'
+import type { User } from '@/app/types/room'
+import { PANEL_CARD_CLASS } from '@/app/constants'
 
 interface ParticipantsPanelProps {
   users: User[]
@@ -30,7 +32,7 @@ export function ParticipantsPanel({
 }: ParticipantsPanelProps) {
   const { t } = useLanguage()
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 flex flex-col h-full">
+    <div className={`${PANEL_CARD_CLASS} flex flex-col h-full`}>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">{t('room.participants')}</h2>
         <span className="text-sm text-gray-500 dark:text-gray-400">{users.length}</span>

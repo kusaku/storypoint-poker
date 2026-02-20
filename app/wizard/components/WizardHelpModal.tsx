@@ -1,6 +1,6 @@
 'use client'
 
-import { useLanguage } from '../../i18n/language-provider'
+import { useLanguage } from '@/app/i18n/language-provider'
 
 interface WizardHelpModalProps {
   onClose: () => void

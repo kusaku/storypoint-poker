@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { SettingsModal } from './SettingsModal'
-import { useLanguage } from '../i18n/language-provider'
+import { SettingsModal } from '@/app/components/SettingsModal'
+import { useLanguage } from '@/app/i18n/language-provider'
 
 export function SettingsButton() {
   const [mounted, setMounted] = useState(false)

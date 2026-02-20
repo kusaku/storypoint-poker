@@ -3,18 +3,19 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import { SettingsButton } from './components/SettingsButton'
-import { Footer } from './components/Footer'
-import { useLanguage } from './i18n/language-provider'
+import { SettingsButton } from '@/app/components/SettingsButton'
+import { Footer } from '@/app/components/Footer'
+import { useLanguage } from '@/app/i18n/language-provider'
+import { PAGE_SHELL_CLASS } from '@/app/constants'
 
 type Mode = 'create' | 'join'
 
 export default function Home() {
   const [mode, setMode] = useState<Mode>('create')
-  const [roomName, setRoomName] = useState('')
+  const [roomIdInput, setRoomIdInput] = useState('')
   const [userName, setUserName] = useState('')
   const [userNameError, setUserNameError] = useState('')
-  const [roomNameError, setRoomNameError] = useState('')
+  const [roomIdError, setRoomIdError] = useState('')
   const router = useRouter()
   const { t } = useLanguage()
 
@@ -28,11 +29,11 @@ export default function Home() {
       setUserNameError('')
     }
 
-    if (mode === 'join' && !roomName.trim()) {
-      setRoomNameError(t('home.pleaseEnterRoomId'))
+    if (mode === 'join' && !roomIdInput.trim()) {
+      setRoomIdError(t('home.pleaseEnterRoomId'))
       isValid = false
     } else {
-      setRoomNameError('')
+      setRoomIdError('')
     }
 
     if (!isValid) return
@@ -46,12 +47,12 @@ export default function Home() {
       const roomId = Math.random().toString(36).substring(2, 9)
       validateAndNavigate(roomId, true)
     } else {
-      validateAndNavigate(roomName.trim(), false)
+      validateAndNavigate(roomIdInput.trim(), false)
     }
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex flex-col p-4">
+    <div className={PAGE_SHELL_CLASS}>
       <div className="absolute top-4 right-4">
         <SettingsButton />
       </div>
@@ -83,7 +84,7 @@ export default function Home() {
                 type="button"
                 onClick={() => {
                   setMode('create')
-                  setRoomNameError('')
+                  setRoomIdError('')
                 }}
                 className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
                   mode === 'create'
@@ -97,7 +98,7 @@ export default function Home() {
                 type="button"
                 onClick={() => {
                   setMode('join')
-                  setRoomNameError('')
+                  setRoomIdError('')
                 }}
                 className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
                   mode === 'join'
@@ -138,27 +139,27 @@ export default function Home() {
 
             {mode === 'join' && (
               <div>
-                <label htmlFor="roomName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label htmlFor="roomIdInput" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   {t('home.roomId')}
                 </label>
                 <input
-                  id="roomName"
+                  id="roomIdInput"
                   type="text"
-                  value={roomName}
+                  value={roomIdInput}
                   onChange={(e) => {
-                    setRoomName(e.target.value)
-                    setRoomNameError('')
+                    setRoomIdInput(e.target.value)
+                    setRoomIdError('')
                   }}
                   className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 ${
-                    roomNameError
+                    roomIdError
                       ? 'border-red-300 dark:border-red-600'
                       : 'border-gray-300 dark:border-gray-600'
                   }`}
                   placeholder={t('home.enterRoomId')}
                   required
                 />
-                {roomNameError && (
-                  <p className="mt-1 text-xs text-red-600 dark:text-red-400">{roomNameError}</p>
+                {roomIdError && (
+                  <p className="mt-1 text-xs text-red-600 dark:text-red-400">{roomIdError}</p>
                 )}
               </div>
             )}

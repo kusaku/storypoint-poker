@@ -1,19 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import { WizardAnswers, TECHNICAL_IMPLEMENTATION_DROPDOWNS, CONTENT_COMMUNICATION_DROPDOWNS } from '../../../wizard-data'
-import { displayVote } from '../../../fibonacci'
-import { useLanguage } from '../../../i18n/language-provider'
-
-export interface User {
-  id: string
-  name: string
-  isHost: boolean
-  vote: number | null
-  hasVoted: boolean
-  comment: string | null
-  wizardAnswers: WizardAnswers | null
-}
+import {
+  getDropdownsByTaskType,
+  getWizardSectionLabel,
+} from '@/app/wizard-data'
+import { displayVote } from '@/app/fibonacci'
+import { useLanguage } from '@/app/i18n/language-provider'
+import type { User } from '@/app/types/room'
 
 interface ParticipantRowProps {
   user: User
@@ -29,7 +23,7 @@ export function ParticipantRow({ user, revealed }: ParticipantRowProps) {
   const hasAnswers = user.wizardAnswers && Object.keys(user.wizardAnswers.answers).length > 0
   
   const dropdowns = showWizardPopup && user.wizardAnswers?.taskType
-    ? (user.wizardAnswers.taskType === 'technical-implementation' ? TECHNICAL_IMPLEMENTATION_DROPDOWNS : CONTENT_COMMUNICATION_DROPDOWNS)
+    ? getDropdownsByTaskType(user.wizardAnswers.taskType)
     : null
   
   return (
@@ -71,7 +65,7 @@ export function ParticipantRow({ user, revealed }: ParticipantRowProps) {
               <div><span className="font-medium">{t('wizard.taskType')}:</span> {user.wizardAnswers.taskType === 'technical-implementation' ? t('wizard.technicalImplementation') : t('wizard.contentCommunication')}</div>
               {hasAnswers && dropdowns ? (
                 Object.entries(user.wizardAnswers.answers).map(([section, answer]) => {
-                  const sectionLabel = dropdowns[section as keyof typeof dropdowns]?.label || `wizardData.${section}`
+                  const sectionLabel = getWizardSectionLabel(dropdowns, section)
                   return (
                     <div key={section} className="border-t border-indigo-200 dark:border-indigo-700 pt-1 mt-1">
                       <div className="font-medium text-indigo-700 dark:text-indigo-300">{t(sectionLabel)}:</div>

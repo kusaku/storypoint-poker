@@ -3,23 +3,48 @@
 import { useEffect, useState, useMemo, useCallback, useRef } from 'react'
 import { useParams, useSearchParams, useRouter } from 'next/navigation'
 import { io, Socket } from 'socket.io-client'
-import { SettingsButton } from '../../components/SettingsButton'
-import { useLanguage } from '../../i18n/language-provider'
-import { Wizard } from '../../wizard'
-import { WizardAnswers } from '../../wizard-data'
-import { roundToNearestCard, displayVote } from '../../fibonacci'
-import { COMMENT_MAX_LENGTH, COPY_FEEDBACK_DURATION } from '../../constants'
-import { type User } from './components/ParticipantRow'
-import { NameModal } from './components/NameModal'
-import { RoomHeader } from './components/RoomHeader'
-import { VotingCards } from './components/VotingCards'
-import { CommentInput } from './components/CommentInput'
-import { ParticipantsPanel } from './components/ParticipantsPanel'
-import { Footer } from '../../components/Footer'
+import { SettingsButton } from '@/app/components/SettingsButton'
+import { useLanguage } from '@/app/i18n/language-provider'
+import { Wizard } from '@/app/wizard'
+import type { WizardAnswers } from '@/app/wizard-data'
+import { roundToNearestCard, displayVote } from '@/app/fibonacci'
+import {
+  COMMENT_MAX_LENGTH,
+  COPY_FEEDBACK_DURATION,
+  PAGE_SHELL_CLASS,
+  SECONDARY_BUTTON_CLASS,
+  PANEL_CARD_CLASS,
+  SOCKET_CLIENT_OPTIONS,
+} from '@/app/constants'
+import type { RoomState } from '@/app/types/room'
+import SOCKET_EVENTS from '@/shared/socket-events.json'
+import { NameModal } from '@/app/room/[roomId]/components/NameModal'
+import { RoomHeader } from '@/app/room/[roomId]/components/RoomHeader'
+import { VotingCards } from '@/app/room/[roomId]/components/VotingCards'
+import { CommentInput } from '@/app/room/[roomId]/components/CommentInput'
+import { ParticipantsPanel } from '@/app/room/[roomId]/components/ParticipantsPanel'
+import { Footer } from '@/app/components/Footer'
 
-interface RoomState {
-  users: User[]
-  revealed: boolean
+function getVoteDistribution(state: RoomState) {
+  if (!state.revealed) return []
+
+  const voteCounts = new Map<number, number>()
+  state.users.forEach((user) => {
+    if (user.vote != null) {
+      voteCounts.set(user.vote, (voteCounts.get(user.vote) ?? 0) + 1)
+    }
+  })
+
+  return Array.from(voteCounts.entries())
+    .sort(([a], [b]) => {
+      if (a === 0) return -1
+      if (b === 0) return 1
+      return a - b
+    })
+    .map(([vote, count]) => ({
+      name: displayVote(vote),
+      value: count,
+    }))
 }
 
 export default function RoomPage() {
@@ -49,6 +74,14 @@ export default function RoomPage() {
   const prevUrlIsHostRef = useRef<boolean>(urlIsHost)
   const isUpdatingUrlRef = useRef<boolean>(false)
 
+  const emitRoomEvent = useCallback(
+    (event: string, payload: Record<string, unknown> = {}) => {
+      if (!socket) return
+      socket.emit(event, { roomId, ...payload })
+    },
+    [socket, roomId]
+  )
+
   useEffect(() => {
     if (!socket || !userName?.trim() || showNameModal) return
     
@@ -62,13 +95,13 @@ export default function RoomPage() {
       prevUrlIsHostRef.current = urlIsHost
       
       if (urlIsHost && !isHost) {
-        socket.emit('become-host', { roomId })
+        emitRoomEvent(SOCKET_EVENTS.BECOME_HOST)
       }
       else if (!urlIsHost && isHost) {
-        socket.emit('remove-host', { roomId })
+        emitRoomEvent(SOCKET_EVENTS.REMOVE_HOST)
       }
     }
-  }, [urlIsHost, socket, userName, showNameModal, roomId, isHost])
+  }, [urlIsHost, userName, showNameModal, isHost, emitRoomEvent])
 
   const updateHostStatusInUrl = useCallback((hostStatus: boolean) => {
     const currentUrl = new URL(window.location.href)
@@ -89,19 +122,13 @@ export default function RoomPage() {
   useEffect(() => {
     if (!userName?.trim() || showNameModal) return
 
-    const newSocket = io(window.location.origin, {
-      transports: ['polling', 'websocket'],
-      reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
-      timeout: 20000
-    })
+    const newSocket = io(window.location.origin, SOCKET_CLIENT_OPTIONS)
 
     newSocket.on('connect', () => {
       setIsConnected(true)
-      newSocket.emit('join-room', { roomId, userName })
-      if (urlIsHost) {
-        newSocket.emit('become-host', { roomId })
+      newSocket.emit(SOCKET_EVENTS.JOIN_ROOM, { roomId, userName })
+      if (prevUrlIsHostRef.current) {
+        newSocket.emit(SOCKET_EVENTS.BECOME_HOST, { roomId })
       }
     })
 
@@ -113,7 +140,7 @@ export default function RoomPage() {
       setIsConnected(false)
     })
 
-    newSocket.on('room-state', (state: RoomState) => {
+    newSocket.on(SOCKET_EVENTS.ROOM_STATE, (state: RoomState) => {
       setRoomState(state)
       const currentUser = state.users.find(u => u.name === userName)
       setSelectedCard(currentUser?.vote ?? null)
@@ -124,10 +151,8 @@ export default function RoomPage() {
       }
       if (currentUser) {
         const newHostStatus = currentUser.isHost
-        if (isHost !== newHostStatus) {
-          setIsHost(newHostStatus)
-          updateHostStatusInUrl(newHostStatus)
-        }
+        setIsHost(newHostStatus)
+        updateHostStatusInUrl(newHostStatus)
       }
     })
 
@@ -136,25 +161,25 @@ export default function RoomPage() {
     return () => {
       newSocket.close()
     }
-  }, [roomId, userName, showNameModal, urlIsHost, updateHostStatusInUrl])
+  }, [roomId, userName, showNameModal, updateHostStatusInUrl])
 
   const handleVote = (card: number) => {
-    if (!socket || roomState.revealed) return
+    if (roomState.revealed) return
     
     const isCancelling = selectedCard === card
     setSelectedCard(isCancelling ? null : card)
-    socket.emit('vote', { roomId, vote: isCancelling ? null : card })
+    emitRoomEvent(SOCKET_EVENTS.VOTE, { vote: isCancelling ? null : card })
   }
 
   const handleReveal = () => {
-    if (socket && isHost) {
-      socket.emit('reveal-votes', { roomId })
+    if (isHost) {
+      emitRoomEvent(SOCKET_EVENTS.REVEAL_VOTES)
     }
   }
 
   const handleReset = () => {
-    if (socket && isHost) {
-      socket.emit('reset-votes', { roomId })
+    if (isHost) {
+      emitRoomEvent(SOCKET_EVENTS.RESET_VOTES)
     }
   }
 
@@ -168,18 +193,18 @@ export default function RoomPage() {
   }
 
   const handleBecomeHost = useCallback(() => {
-    if (socket && !isHost) {
-      socket.emit('become-host', { roomId })
+    if (!isHost) {
+      emitRoomEvent(SOCKET_EVENTS.BECOME_HOST)
       updateHostStatusInUrl(true)
     }
-  }, [socket, isHost, roomId, updateHostStatusInUrl])
+  }, [isHost, emitRoomEvent, updateHostStatusInUrl])
 
   const handleRemoveHost = useCallback(() => {
-    if (socket && isHost) {
-      socket.emit('remove-host', { roomId })
+    if (isHost) {
+      emitRoomEvent(SOCKET_EVENTS.REMOVE_HOST)
       updateHostStatusInUrl(false)
     }
-  }, [socket, isHost, roomId, updateHostStatusInUrl])
+  }, [isHost, emitRoomEvent, updateHostStatusInUrl])
 
   const handleCopyInviteLink = async () => {
     try {
@@ -193,24 +218,20 @@ export default function RoomPage() {
   const handleCommentChange = (value: string) => {
     if (value.length <= COMMENT_MAX_LENGTH) {
       setComment(value)
-      if (socket) {
-        socket.emit('comment', { roomId, comment: value.trim() || null })
-      }
+      emitRoomEvent(SOCKET_EVENTS.COMMENT, { comment: value.trim() || null })
     }
   }
 
   const handleRemoveComment = () => {
     setComment('')
-    if (socket) {
-      socket.emit('comment', { roomId, comment: null })
-    }
+    emitRoomEvent(SOCKET_EVENTS.COMMENT, { comment: null })
   }
 
   const handleWizardCalculate = (suggestedSp: number) => {
     const roundedSp = roundToNearestCard(suggestedSp)
-    if (!socket || roomState.revealed) return
+    if (roomState.revealed) return
     setSelectedCard(roundedSp)
-    socket.emit('vote', { roomId, vote: roundedSp })
+    emitRoomEvent(SOCKET_EVENTS.VOTE, { vote: roundedSp })
   }
 
   const handleWizardBack = () => {
@@ -219,9 +240,7 @@ export default function RoomPage() {
 
   const handleWizardAnswersChange = (answers: WizardAnswers) => {
     setWizardAnswers(answers)
-    if (socket) {
-      socket.emit('wizard-answers', { roomId, wizardAnswers: answers })
-    }
+    emitRoomEvent(SOCKET_EVENTS.WIZARD_ANSWERS, { wizardAnswers: answers })
   }
 
   useEffect(() => {
@@ -244,30 +263,10 @@ export default function RoomPage() {
     [roomState.users]
   )
 
-  const voteDistribution = useMemo(() => {
-    if (!roomState.revealed) return []
-    
-    const voteCounts = new Map<number, number>()
-    roomState.users.forEach(user => {
-      if (user.vote != null) {
-        voteCounts.set(user.vote, (voteCounts.get(user.vote) ?? 0) + 1)
-      }
-    })
-
-    return Array.from(voteCounts.entries())
-      .sort(([a], [b]) => {
-        if (a === 0) return -1
-        if (b === 0) return 1
-        return a - b
-      })
-      .map(([vote, count]) => ({ 
-        name: displayVote(vote), 
-        value: count 
-      }))
-  }, [roomState.revealed, roomState.users])
+  const voteDistribution = useMemo(() => getVoteDistribution(roomState), [roomState])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4 flex flex-col">
+    <div className={PAGE_SHELL_CLASS}>
       <div className="fixed top-4 right-4 z-50">
         <SettingsButton />
       </div>
@@ -292,7 +291,7 @@ export default function RoomPage() {
             />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-stretch">
-              <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+              <div className={`lg:col-span-2 ${PANEL_CARD_CLASS}`}>
                 {showWizard ? (
                   <Wizard
                     onCalculate={handleWizardCalculate}
@@ -307,7 +306,7 @@ export default function RoomPage() {
                       <button
                         onClick={() => setShowWizard(true)}
                         disabled={roomState.revealed}
-                        className="px-4 py-2 text-sm bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors font-medium"
+                        className={`${SECONDARY_BUTTON_CLASS} disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed`}
                       >
                         {t('room.wizard')}
                       </button>

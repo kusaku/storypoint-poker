@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { FIBONACCI_CARDS, displayVote } from '../../../fibonacci'
+import { FIBONACCI_CARDS, displayVote } from '@/app/fibonacci'
 
 interface VotingCardsProps {
   selectedCard: number | null

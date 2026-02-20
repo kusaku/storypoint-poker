@@ -4,26 +4,26 @@
 // 2. Add _meta object with: code, name, nativeName, flag, rtl, popularity
 // 3. Add import statement below and add it to allTranslations object
 
-import enTranslations from './en.json'
-import ruTranslations from './ru.json'
-import deTranslations from './de.json'
-import trTranslations from './tr.json'
-import ukTranslations from './uk.json'
-import urTranslations from './ur.json'
-import esTranslations from './es.json'
-import frTranslations from './fr.json'
-import ptTranslations from './pt.json'
-import zhCNTranslations from './zh-CN.json'
-import jaTranslations from './ja.json'
-import itTranslations from './it.json'
-import plTranslations from './pl.json'
-import nlTranslations from './nl.json'
-import koTranslations from './ko.json'
-import arTranslations from './ar.json'
-import hiTranslations from './hi.json'
-import idTranslations from './id.json'
-import viTranslations from './vi.json'
-import zhTWTranslations from './zh-TW.json'
+import enTranslations from '@/app/i18n/translations/en.json'
+import ruTranslations from '@/app/i18n/translations/ru.json'
+import deTranslations from '@/app/i18n/translations/de.json'
+import trTranslations from '@/app/i18n/translations/tr.json'
+import ukTranslations from '@/app/i18n/translations/uk.json'
+import urTranslations from '@/app/i18n/translations/ur.json'
+import esTranslations from '@/app/i18n/translations/es.json'
+import frTranslations from '@/app/i18n/translations/fr.json'
+import ptTranslations from '@/app/i18n/translations/pt.json'
+import zhCNTranslations from '@/app/i18n/translations/zh-CN.json'
+import jaTranslations from '@/app/i18n/translations/ja.json'
+import itTranslations from '@/app/i18n/translations/it.json'
+import plTranslations from '@/app/i18n/translations/pl.json'
+import nlTranslations from '@/app/i18n/translations/nl.json'
+import koTranslations from '@/app/i18n/translations/ko.json'
+import arTranslations from '@/app/i18n/translations/ar.json'
+import hiTranslations from '@/app/i18n/translations/hi.json'
+import idTranslations from '@/app/i18n/translations/id.json'
+import viTranslations from '@/app/i18n/translations/vi.json'
+import zhTWTranslations from '@/app/i18n/translations/zh-TW.json'
 
 export interface LanguageMeta {
   code: string
@@ -36,7 +36,7 @@ export interface LanguageMeta {
 
 export interface TranslationFile {
   _meta: LanguageMeta
-  [key: string]: any
+  [key: string]: unknown
 }
 
 // All translations with their metadata
@@ -63,26 +63,30 @@ const allTranslations: Record<string, TranslationFile> = {
   'zh-TW': zhTWTranslations as TranslationFile,
 }
 
+// Type for language codes
+export type Language = keyof typeof allTranslations
+
 // Extract metadata from all translations
 export const languagesMeta: LanguageMeta[] = Object.values(allTranslations)
   .map(t => t._meta)
-  .filter(meta => meta !== undefined)
+  .filter((meta): meta is LanguageMeta => meta !== undefined)
   .sort((a, b) => a.popularity - b.popularity)
 
 // Get all language codes
-export const languageCodes = languagesMeta.map(meta => meta.code) as string[]
+export const languageCodes = Object.keys(allTranslations) as Language[]
 
-// Type for language codes
-export type Language = typeof languageCodes[number]
+export function isLanguageCode(code: string): code is Language {
+  return languageCodes.includes(code as Language)
+}
 
 // Get translations without metadata
-export const translations: Record<string, Omit<TranslationFile, '_meta'>> = Object.entries(allTranslations).reduce(
+export const translations: Record<Language, Omit<TranslationFile, '_meta'>> = Object.entries(allTranslations).reduce(
   (acc, [code, translation]) => {
     const { _meta, ...rest } = translation
-    acc[code] = rest
+    acc[code as Language] = rest
     return acc
   },
-  {} as Record<string, Omit<TranslationFile, '_meta'>>
+  {} as Record<Language, Omit<TranslationFile, '_meta'>>
 )
 
 // Create Map for O(1) metadata lookup

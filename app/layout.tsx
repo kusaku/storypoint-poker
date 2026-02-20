@@ -1,9 +1,9 @@
 import type { Metadata } from 'next'
 import { Kurale } from 'next/font/google'
 import Script from 'next/script'
-import './globals.css'
-import { ThemeProvider } from './theme-provider'
-import { LanguageProvider } from './i18n/language-provider'
+import '@/app/globals.css'
+import { ThemeProvider } from '@/app/theme-provider'
+import { LanguageProvider } from '@/app/i18n/language-provider'
 
 const kurale = Kurale({
   weight: '400',

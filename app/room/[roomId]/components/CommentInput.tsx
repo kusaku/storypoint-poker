@@ -1,7 +1,7 @@
 'use client'
 
-import { COMMENT_MAX_LENGTH, POPULAR_EMOJIS } from '../../../constants'
-import { useLanguage } from '../../../i18n/language-provider'
+import { COMMENT_MAX_LENGTH, POPULAR_EMOJIS } from '@/app/constants'
+import { useLanguage } from '@/app/i18n/language-provider'
 
 interface CommentInputProps {
   comment: string

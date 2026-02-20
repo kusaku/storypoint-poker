@@ -1,6 +1,11 @@
 'use client'
 
-import { useLanguage } from '../../../i18n/language-provider'
+import { useLanguage } from '@/app/i18n/language-provider'
+import {
+  SMALL_SECONDARY_BUTTON_CLASS,
+  SUCCESS_ACTION_BUTTON_CLASS,
+  WARNING_ACTION_BUTTON_CLASS,
+} from '@/app/constants'
 
 interface HostControlsProps {
   isHost: boolean
@@ -29,14 +34,14 @@ export function HostControls({
           <button
             onClick={onReveal}
             disabled={revealed || !hasAtLeastOneVote}
-            className="flex-1 bg-green-600 dark:bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-700 dark:hover:bg-green-600 disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed font-medium"
+            className={SUCCESS_ACTION_BUTTON_CLASS}
           >
             {revealed ? t('room.votesRevealed') : t('room.revealVotes')}
           </button>
           <button
             onClick={onReset}
             disabled={!revealed}
-            className="flex-1 bg-orange-600 dark:bg-orange-500 text-white py-2 px-4 rounded-lg hover:bg-orange-700 dark:hover:bg-orange-600 disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed font-medium"
+            className={WARNING_ACTION_BUTTON_CLASS}
           >
             {t('room.reset')}
           </button>
@@ -52,7 +57,7 @@ export function HostControls({
       ) : (
         <button
           onClick={onRemoveHost}
-          className="w-full px-3 py-2 text-sm bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-medium"
+          className={SMALL_SECONDARY_BUTTON_CLASS}
         >
           {t('room.removeHostStatus')}
         </button>
