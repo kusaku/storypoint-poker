@@ -1,13 +1,15 @@
-export const FIBONACCI_CARDS = [0, 1, 2, 3, 5, 8] as const
+import { FIBONACCI_CARDS } from '@/shared/room'
 
-export function roundToNearestCard(suggestedSp: number): number {
-  return FIBONACCI_CARDS.reduce((prev, curr) => 
-    Math.abs(curr - suggestedSp) < Math.abs(prev - suggestedSp) ? curr : prev
+export { FIBONACCI_CARDS }
+export type CardValue = typeof FIBONACCI_CARDS[number]
+
+export function roundToNearestCard(suggestedSp: number): CardValue {
+  return FIBONACCI_CARDS.reduce((closest, card) =>
+    Math.abs(card - suggestedSp) < Math.abs(closest - suggestedSp) ? card : closest,
   )
 }
 
-export function displayVote(vote: number | null): string {
+export function displayVote(vote: CardValue | null): string {
   if (vote === null) return '—'
-  if (vote === 0) return 'J'
-  return String(vote)
+  return vote === 0 ? 'J' : String(vote)
 }

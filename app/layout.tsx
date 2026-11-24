@@ -1,23 +1,25 @@
 import type { Metadata } from 'next'
-import { Kurale } from 'next/font/google'
 import Script from 'next/script'
 import '@/app/globals.css'
 import { ThemeProvider } from '@/app/theme-provider'
+import { DEFAULT_PALETTE, PALETTE_STORAGE_KEY, TABLE_PALETTES } from '@/app/appearance'
 import { LanguageProvider } from '@/app/i18n/language-provider'
+import { SiteHeader } from '@/app/components/SiteHeader'
+import { Footer } from '@/app/components/Footer'
 
-const kurale = Kurale({
-  weight: '400',
-  subsets: ['latin'],
-  display: 'swap',
-})
+const initializeAppearance = `
+  try {
+    const root = document.documentElement
+    const theme = localStorage.getItem('theme')
+    const palette = localStorage.getItem(${JSON.stringify(PALETTE_STORAGE_KEY)})
+    if (theme === 'light' || theme === 'dark') root.dataset.theme = theme
+    if (${JSON.stringify(TABLE_PALETTES)}.includes(palette)) root.dataset.palette = palette
+  } catch {}
+`
 
 export const metadata: Metadata = {
   title: 'Story Point Poker',
-  description: 'Agile planning poker for our team',
-  icons: {
-    icon: '/favicon.ico',
-    apple: '/favicon.ico',
-  },
+  description: 'A shared table for real-time story point estimates',
 }
 
 export default function RootLayout({
@@ -26,8 +28,9 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={kurale.className}>
+    <html lang="en" data-palette={DEFAULT_PALETTE} suppressHydrationWarning>
+      <head><script dangerouslySetInnerHTML={{ __html: initializeAppearance }} /></head>
+      <body>
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-J8N1Q1GVVB"
           strategy="afterInteractive"
@@ -52,7 +55,11 @@ export default function RootLayout({
           `}
         </Script>
         <ThemeProvider>
-          <LanguageProvider>{children}</LanguageProvider>
+          <LanguageProvider>
+            <SiteHeader />
+            {children}
+            <Footer />
+          </LanguageProvider>
         </ThemeProvider>
       </body>
     </html>

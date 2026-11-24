@@ -1,184 +1,105 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, type FormEvent } from 'react'
 import Image from 'next/image'
-import { SettingsButton } from '@/app/components/SettingsButton'
-import { Footer } from '@/app/components/Footer'
+import { useRouter } from 'next/navigation'
+import { Icon } from '@/app/components/Icon'
 import { useLanguage } from '@/app/i18n/language-provider'
-import { PAGE_SHELL_CLASS } from '@/app/constants'
+import { createRoomId, parseRoomId, playerRoomPath } from '@/app/room-url'
+import { NAME_MAX_LENGTH, normalizeName } from '@/shared/room'
 
 type Mode = 'create' | 'join'
 
 export default function Home() {
   const [mode, setMode] = useState<Mode>('create')
-  const [roomIdInput, setRoomIdInput] = useState('')
-  const [userName, setUserName] = useState('')
-  const [userNameError, setUserNameError] = useState('')
-  const [roomIdError, setRoomIdError] = useState('')
+  const [name, setName] = useState('')
+  const [roomInput, setRoomInput] = useState('')
+  const [nameError, setNameError] = useState(false)
+  const [roomError, setRoomError] = useState<'missing' | 'invalid' | null>(null)
   const router = useRouter()
   const { t } = useLanguage()
 
-  const validateAndNavigate = (roomId: string, isHost: boolean) => {
-    let isValid = true
-    
-    if (!userName.trim()) {
-      setUserNameError(t('home.pleaseEnterName'))
-      isValid = false
-    } else {
-      setUserNameError('')
-    }
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    const normalizedName = normalizeName(name)
+    const roomId = mode === 'create' ? createRoomId() : parseRoomId(roomInput)
 
-    if (mode === 'join' && !roomIdInput.trim()) {
-      setRoomIdError(t('home.pleaseEnterRoomId'))
-      isValid = false
-    } else {
-      setRoomIdError('')
-    }
+    setNameError(!normalizedName)
+    setRoomError(roomId ? null : roomInput.trim() ? 'invalid' : 'missing')
+    if (!normalizedName || !roomId) return
 
-    if (!isValid) return
-
-    router.push(`/room/${roomId}?name=${encodeURIComponent(userName)}${isHost ? '&host=true' : ''}`)
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (mode === 'create') {
-      const roomId = Math.random().toString(36).substring(2, 9)
-      validateAndNavigate(roomId, true)
-    } else {
-      validateAndNavigate(roomIdInput.trim(), false)
-    }
+    router.push(playerRoomPath(roomId, normalizedName, mode === 'create'))
   }
 
   return (
-    <div className={PAGE_SHELL_CLASS}>
-      <div className="absolute top-4 right-4">
-        <SettingsButton />
+    <main className="container lobby">
+      <div className="lobby-art table-felt">
+        <Image src="/casino-deck.webp" alt="" fill sizes="(max-width: 520px) 100vw, (max-width: 760px) 490px, 55vw" priority />
       </div>
-      
-      <div className="flex-1 flex items-center justify-center">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl flex flex-col md:flex-row overflow-hidden">
-        <div className="flex-shrink-0 pl-8 pr-4 py-8 flex items-center justify-center border-b md:border-b-0 border-gray-200 dark:border-gray-700">
-          <Image
-            src="/logo.webp"
-            alt={t('home.title')}
-            width={400}
-            height={400}
-            className="object-contain max-w-[400px] max-h-[400px] md:h-full md:w-auto"
-            priority
-          />
+      <div className="lobby-content">
+        <h1>{t('home.headline')}</h1>
+        <p className="lobby-subtitle">{t('home.subtitle')}</p>
+
+        <div className="segmented lobby-switch">
+          {(['create', 'join'] as const).map((value) => (
+            <button
+              key={value}
+              type="button"
+              aria-pressed={mode === value}
+              onClick={() => { setMode(value); setRoomError(null) }}
+            >
+              {t(value === 'create' ? 'home.createRoom' : 'home.joinRoom')}
+            </button>
+          ))}
         </div>
-        
-        <div className="flex-1 pl-4 pr-8 py-8">
-          <h1 className="text-4xl font-bold mb-2 text-center text-indigo-600 dark:text-indigo-400">
-            {t('home.title')}
-          </h1>
-          <p className="text-center text-gray-600 dark:text-gray-300 mb-6">
-            {t('home.subtitle')}
-          </p>
 
-          <div className="mb-6">
-            <div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
-              <button
-                type="button"
-                onClick={() => {
-                  setMode('create')
-                  setRoomIdError('')
-                }}
-                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                  mode === 'create'
-                    ? 'bg-white dark:bg-gray-600 text-indigo-600 dark:text-indigo-400 shadow-sm'
-                    : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100'
-                }`}
-              >
-                {t('home.createRoom')}
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setMode('join')
-                  setRoomIdError('')
-                }}
-                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                  mode === 'join'
-                    ? 'bg-white dark:bg-gray-600 text-green-600 dark:text-green-400 shadow-sm'
-                    : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100'
-                }`}
-              >
-                {t('home.joinRoom')}
-              </button>
-            </div>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label htmlFor="userName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                {t('home.yourName')}
-              </label>
+        <form className="access-form" onSubmit={handleSubmit} noValidate>
+          <label className="field" htmlFor="display-name">
+            {t('home.yourName')}
+            <input
+              id="display-name"
+              className="input"
+              autoComplete="nickname"
+              value={name}
+              onChange={(event) => { setName(event.target.value); setNameError(false) }}
+              maxLength={NAME_MAX_LENGTH}
+              placeholder={t('home.enterYourName')}
+              aria-invalid={nameError}
+              aria-describedby={nameError ? 'display-name-error' : undefined}
+              required
+            />
+          </label>
+          {nameError && <p className="form-error" id="display-name-error" role="alert">{t('home.pleaseEnterName')}</p>}
+          {mode === 'join' && (
+            <div className="field">
+              <label htmlFor="room-link">{t('home.roomCodeOrLink')}</label>
               <input
-                id="userName"
-                type="text"
-                value={userName}
-                onChange={(e) => {
-                  setUserName(e.target.value)
-                  setUserNameError('')
-                }}
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 ${
-                  userNameError
-                    ? 'border-red-300 dark:border-red-600'
-                    : 'border-gray-300 dark:border-gray-600'
-                }`}
-                placeholder={t('home.enterYourName')}
+                id="room-link"
+                className="input"
+                dir="ltr"
+                autoComplete="off"
+                autoCapitalize="off"
+                spellCheck={false}
+                value={roomInput}
+                onChange={(event) => { setRoomInput(event.target.value); setRoomError(null) }}
+                placeholder={t('home.roomCodeOrLinkPlaceholder')}
+                aria-invalid={roomError !== null}
+                aria-describedby={roomError ? 'room-link-error' : undefined}
                 required
               />
-              {userNameError && (
-                <p className="mt-1 text-xs text-red-600 dark:text-red-400">{userNameError}</p>
+              {roomError && (
+                <span className="form-error" id="room-link-error" role="alert">
+                  {t(roomError === 'missing' ? 'home.missingRoomCodeOrLink' : 'home.invalidRoom')}
+                </span>
               )}
             </div>
-
-            {mode === 'join' && (
-              <div>
-                <label htmlFor="roomIdInput" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  {t('home.roomId')}
-                </label>
-                <input
-                  id="roomIdInput"
-                  type="text"
-                  value={roomIdInput}
-                  onChange={(e) => {
-                    setRoomIdInput(e.target.value)
-                    setRoomIdError('')
-                  }}
-                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 ${
-                    roomIdError
-                      ? 'border-red-300 dark:border-red-600'
-                      : 'border-gray-300 dark:border-gray-600'
-                  }`}
-                  placeholder={t('home.enterRoomId')}
-                  required
-                />
-                {roomIdError && (
-                  <p className="mt-1 text-xs text-red-600 dark:text-red-400">{roomIdError}</p>
-                )}
-              </div>
-            )}
-
-            <button
-              type="submit"
-              className={`w-full py-2 px-4 rounded-lg text-white font-medium transition-colors ${
-                mode === 'create'
-                  ? 'bg-indigo-600 dark:bg-indigo-500 hover:bg-indigo-700 dark:hover:bg-indigo-600'
-                  : 'bg-green-600 dark:bg-green-500 hover:bg-green-700 dark:hover:bg-green-600'
-              }`}
-            >
-              {mode === 'create' ? t('home.createJoinRoom') : t('home.joinRoomButton')}
-            </button>
-          </form>
-        </div>
-        </div>
+          )}
+          <button className="button button-primary access-submit" type="submit">
+            {t(mode === 'create' ? 'home.createRoomButton' : 'home.joinRoomButton')}
+            <span className="directional-icon"><Icon name="arrow" size={19} /></span>
+          </button>
+        </form>
       </div>
-      <Footer />
-    </div>
+    </main>
   )
 }

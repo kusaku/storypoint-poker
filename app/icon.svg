@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <g stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <g transform="translate(16.5 33) rotate(-12)" stroke="#765eaf">
+      <rect x="-10" y="-17" width="20" height="34" rx="3.5" fill="#f9f7ff"/>
+      <path transform="translate(-1.5 0)" d="M-5-6h4.7C2-6 3.5-4.9 3.5-3S2 0-.3 0H-2m1.7 0C2.4 0 4 1.1 4 3.4S2.3 7-.3 7H-5" fill="none" stroke-width="2.6"/>
+    </g>
+    <g transform="translate(47.5 33) rotate(12)" stroke="#a84f4b">
+      <rect x="-10" y="-17" width="20" height="34" rx="3.5" fill="#fff7f8"/>
+      <path transform="translate(1.5 0)" d="M0-6c-2.4 0-4 1.3-4 3s1.6 3 4 3 4-1.3 4-3-1.6-3-4-3Zm0 6c-2.6 0-4.4 1.5-4.4 3.5S-2.6 7 0 7s4.4-1.5 4.4-3.5S2.6 0 0 0Z" fill="none" stroke-width="2.3"/>
+    </g>
+    <g transform="translate(32 30)" stroke="#3657bd">
+      <rect x="-10.5" y="-19" width="21" height="38" rx="3.5" fill="#ffffff" stroke-width="2.6"/>
+      <path d="M4.8-7h-8.5l-.9 7h5.5c2.7 0 4.2 1.7 4.2 3.8S3.3 8-.1 8h-4.7" fill="none" stroke-width="2.8"/>
+    </g>
+  </g>
+</svg>

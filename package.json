@@ -6,16 +6,16 @@
     "dev": "NODE_ENV=development node server.js",
     "build": "next build",
     "start": "NODE_ENV=production node server.js",
-    "lint": "next lint",
-    "clean": "rm -rf .next node_modules/.cache",
+    "typecheck": "next typegen && tsc --noEmit",
+    "test": "node --test",
+    "clean": "rm -rf .next node_modules/.cache next-env.d.ts tsconfig.tsbuildinfo",
     "dev:clean": "npm run clean && npm run dev",
-    "clean:full": "rm -rf .next node_modules && npm install"
+    "clean:full": "npm run clean && npm ci"
   },
   "dependencies": {
     "next": "^16.1.6",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "recharts": "^3.6.0",
     "socket.io": "^4.8.3",
     "socket.io-client": "^4.8.3"
   },
@@ -23,9 +23,6 @@
     "@types/node": "^20.19.30",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
-    "autoprefixer": "^10.4.23",
-    "postcss": "^8.4.49",
-    "tailwindcss": "^3.4.19",
     "typescript": "^5.7.2"
   }
 }

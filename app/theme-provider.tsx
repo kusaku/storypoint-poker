@@ -1,74 +1,51 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import { DEFAULT_PALETTE, PALETTE_STORAGE_KEY, isTablePalette, type TablePalette } from '@/app/appearance'
+import { readStorage, writeStorage } from '@/app/storage'
 
 type Theme = 'light' | 'dark' | 'auto'
 
-interface ThemeContextType {
+interface ThemeContextValue {
   theme: Theme
   setTheme: (theme: Theme) => void
-  effectiveTheme: 'light' | 'dark'
+  palette: TablePalette
+  setPalette: (palette: TablePalette) => void
 }
 
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
+const ThemeContext = createContext<ThemeContextValue | null>(null)
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
+export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>('auto')
-  const [effectiveTheme, setEffectiveTheme] = useState<'light' | 'dark'>('light')
-  const [mounted, setMounted] = useState(false)
+  const [palette, setPaletteState] = useState<TablePalette>(DEFAULT_PALETTE)
 
   useEffect(() => {
-    setMounted(true)
-    const savedTheme = localStorage.getItem('theme') as Theme | null
-    if (savedTheme && ['light', 'dark', 'auto'].includes(savedTheme)) {
-      setThemeState(savedTheme)
+    const storedTheme = readStorage('theme')
+    const storedPalette = readStorage(PALETTE_STORAGE_KEY)
+    if (storedTheme === 'light' || storedTheme === 'dark') {
+      document.documentElement.dataset.theme = storedTheme
+      setThemeState(storedTheme)
+    }
+    if (isTablePalette(storedPalette)) {
+      document.documentElement.dataset.palette = storedPalette
+      setPaletteState(storedPalette)
     }
   }, [])
 
-  useEffect(() => {
-    if (!mounted) return
-
-    const updateEffectiveTheme = () => {
-      if (theme === 'auto') {
-        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-        setEffectiveTheme(systemPrefersDark ? 'dark' : 'light')
-      } else {
-        setEffectiveTheme(theme)
-      }
-    }
-
-    updateEffectiveTheme()
-
-    if (theme === 'auto') {
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-      const handler = () => updateEffectiveTheme()
-      mediaQuery.addEventListener('change', handler)
-      return () => mediaQuery.removeEventListener('change', handler)
-    }
-  }, [theme, mounted])
-
-  useEffect(() => {
-    if (!mounted) return
-
-    const root = document.documentElement
-    if (effectiveTheme === 'dark') {
-      root.classList.add('dark')
-    } else {
-      root.classList.remove('dark')
-    }
-  }, [effectiveTheme, mounted])
-
-  const setTheme = (newTheme: Theme) => {
-    setThemeState(newTheme)
-    localStorage.setItem('theme', newTheme)
+  function setTheme(value: Theme) {
+    document.documentElement.dataset.theme = value
+    setThemeState(value)
+    writeStorage('theme', value)
   }
 
-  if (!mounted) {
-    return <>{children}</>
+  function setPalette(value: TablePalette) {
+    document.documentElement.dataset.palette = value
+    setPaletteState(value)
+    writeStorage(PALETTE_STORAGE_KEY, value)
   }
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, effectiveTheme }}>
+    <ThemeContext.Provider value={{ theme, setTheme, palette, setPalette }}>
       {children}
     </ThemeContext.Provider>
   )
@@ -76,13 +53,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
 export function useTheme() {
   const context = useContext(ThemeContext)
-  if (context === undefined) {
-    return {
-      theme: 'auto' as Theme,
-      setTheme: () => {},
-      effectiveTheme: 'light' as const
-    }
-  }
+  if (!context) throw new Error('ThemeProvider is missing')
   return context
 }
-

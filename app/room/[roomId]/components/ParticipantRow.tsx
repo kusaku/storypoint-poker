@@ -1,86 +1,51 @@
-'use client'
-
-import { useState } from 'react'
-import {
-  getDropdownsByTaskType,
-  getWizardSectionLabel,
-} from '@/app/wizard-data'
+import { Icon } from '@/app/components/Icon'
 import { displayVote } from '@/app/fibonacci'
 import { useLanguage } from '@/app/i18n/language-provider'
-import type { User } from '@/app/types/room'
+import type { Participant } from '@/app/types/room'
+import { getDropdownsByTaskType, taskTypeLabel } from '@/app/wizard-data'
 
-interface ParticipantRowProps {
-  user: User
-  revealed: boolean
-}
-
-export function ParticipantRow({ user, revealed }: ParticipantRowProps) {
-  const [showWizardPopup, setShowWizardPopup] = useState(false)
+export function ParticipantRow({ user, current, revealed }: { user: Participant; current: boolean; revealed: boolean }) {
   const { t } = useLanguage()
-  
-  const hasWizardAnswers = user.wizardAnswers?.taskType != null
-  const canShowPopup = revealed && hasWizardAnswers
-  const hasAnswers = user.wizardAnswers && Object.keys(user.wizardAnswers.answers).length > 0
-  
-  const dropdowns = showWizardPopup && user.wizardAnswers?.taskType
-    ? getDropdownsByTaskType(user.wizardAnswers.taskType)
-    : null
-  
+  const initials = user.name.split(/\s+/).slice(0, 2).map((word) => Array.from(word)[0]).join('').toLocaleUpperCase()
+  const color = parseInt(user.id.slice(0, 2), 16) % 4
+  const wizard = revealed ? user.wizardAnswers : null
+  const comment = revealed ? user.comment?.trim() : null
+
   return (
-    <div className="relative flex items-start">
-      <div className="p-2 rounded bg-gray-50 dark:bg-gray-700 flex justify-between items-center flex-1 min-w-0">
-        <span className="font-medium text-gray-900 dark:text-gray-100">
-          {user.name}
-          {user.isHost && <span className="ml-2 text-xs bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 px-1.5 py-0.5 rounded font-semibold">{t('room.host')}</span>}
-        </span>
-        <span 
-          className={`text-sm flex-shrink-0 ml-2 ${hasWizardAnswers ? 'cursor-help' : ''}`}
-          onMouseEnter={() => canShowPopup && setShowWizardPopup(true)}
-          onMouseLeave={() => setShowWizardPopup(false)}
-        >
-          {revealed ? (
-            <span className="font-bold text-indigo-600 dark:text-indigo-400">
-              {displayVote(user.vote)}
-            </span>
-          ) : (
-            <span className={user.hasVoted ? 'text-green-600 dark:text-green-400' : 'text-gray-400 dark:text-gray-500'}>
-              {user.hasVoted ? '✓' : '○'}
-            </span>
-          )}
-        </span>
-      </div>
-      {user.comment && revealed && (
-        <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 z-10" style={{ maxWidth: '320px', width: 'max-content' }}>
-          <div className="bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-900 rounded-lg px-3 py-2 text-sm shadow-lg relative">
-            <div style={{ whiteSpace: 'normal', wordBreak: 'break-word' }}>{user.comment}</div>
-            <div className="absolute right-full top-1/2 -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-r-4 border-transparent border-r-gray-800 dark:border-r-gray-200"></div>
-          </div>
-        </div>
-      )}
-      {showWizardPopup && canShowPopup && user.wizardAnswers && (
-        <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 z-20" style={{ maxWidth: '400px', width: 'max-content' }}>
-          <div className="bg-indigo-50 dark:bg-indigo-900/90 text-indigo-900 dark:text-indigo-100 rounded-lg px-4 py-3 text-sm shadow-lg relative border border-indigo-200 dark:border-indigo-800">
-            <div className="font-semibold mb-2 text-indigo-800 dark:text-indigo-200">{t('wizard.estimationDetails')}</div>
-            <div className="space-y-1 text-xs">
-              <div><span className="font-medium">{t('wizard.taskType')}:</span> {user.wizardAnswers.taskType === 'technical-implementation' ? t('wizard.technicalImplementation') : t('wizard.contentCommunication')}</div>
-              {hasAnswers && dropdowns ? (
-                Object.entries(user.wizardAnswers.answers).map(([section, answer]) => {
-                  const sectionLabel = getWizardSectionLabel(dropdowns, section)
-                  return (
-                    <div key={section} className="border-t border-indigo-200 dark:border-indigo-700 pt-1 mt-1">
-                      <div className="font-medium text-indigo-700 dark:text-indigo-300">{t(sectionLabel)}:</div>
-                      <div className="text-indigo-600 dark:text-indigo-400">{t(answer.option)}</div>
-                    </div>
-                  )
-                })
-              ) : (
-                <div className="mt-2 text-indigo-600 dark:text-indigo-400 italic">{t('wizard.noSelectionsMade')}</div>
-              )}
+    <li className="participant">
+      <div className="participant-row">
+        <span className="avatar" data-color={color} aria-hidden="true">{initials}</span>
+        <div className="participant-info">
+          <bdi className="participant-name">{user.name}</bdi>
+          {(current || user.isHost) && (
+            <div className="participant-roles">
+              {current && <span>{t('room.you')}</span>}
+              {user.isHost && <span className="host-role">{t('room.hostRole')}</span>}
             </div>
-            <div className="absolute right-full top-1/2 -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-r-4 border-transparent border-r-indigo-50 dark:border-r-indigo-900/90"></div>
-          </div>
+          )}
         </div>
+        {revealed ? (
+          <span className="mini-card mono" data-vote={user.vote ?? undefined} aria-label={user.vote === 0 ? t('room.joker') : undefined}>{displayVote(user.vote)}</span>
+        ) : (
+          <span className="participant-status" data-voted={user.hasVoted}>
+            {user.hasVoted && <Icon name="check" size={15} />}
+            {t(user.hasVoted ? 'room.votedStatus' : user.connected ? 'room.waiting' : 'common.disconnected')}
+          </span>
+        )}
+      </div>
+      {comment && <p className="participant-comment" dir="auto">{comment}</p>}
+      {wizard && (
+        <details className="participant-details">
+          <summary>{t('wizard.estimationDetails')} <Icon name="chevron" size={15} /></summary>
+          <p>{t(taskTypeLabel(wizard.taskType))}</p>
+          <dl>
+            {Object.entries(getDropdownsByTaskType(wizard.taskType)).map(([section, { label }]) => {
+              const answer = wizard.answers[section]
+              return answer && <div key={section}><dt>{t(label)}</dt><dd>{t(answer.option)}</dd></div>
+            })}
+          </dl>
+        </details>
       )}
-    </div>
+    </li>
   )
 }

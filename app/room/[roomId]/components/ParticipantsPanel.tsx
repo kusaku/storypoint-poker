@@ -1,18 +1,14 @@
-'use client'
-
-import { ParticipantRow } from '@/app/room/[roomId]/components/ParticipantRow'
-import { VoteDistributionChart } from '@/app/room/[roomId]/components/VoteDistributionChart'
-import { HostControls } from '@/app/room/[roomId]/components/HostControls'
+import { Icon } from '@/app/components/Icon'
 import { useLanguage } from '@/app/i18n/language-provider'
-import type { User } from '@/app/types/room'
-import { PANEL_CARD_CLASS } from '@/app/constants'
+import type { Participant } from '@/app/types/room'
+import { ParticipantRow } from './ParticipantRow'
 
 interface ParticipantsPanelProps {
-  users: User[]
-  revealed: boolean
-  voteDistribution: Array<{ name: string; value: number }>
+  users: Participant[]
+  viewerId: string
   isHost: boolean
-  hasAtLeastOneVote: boolean
+  revealed: boolean
+  disabled: boolean
   onReveal: () => void
   onReset: () => void
   onBecomeHost: () => void
@@ -20,42 +16,47 @@ interface ParticipantsPanelProps {
 }
 
 export function ParticipantsPanel({
-  users,
-  revealed,
-  voteDistribution,
-  isHost,
-  hasAtLeastOneVote,
-  onReveal,
-  onReset,
-  onBecomeHost,
-  onRemoveHost
+  users, viewerId, isHost, revealed, disabled, onReveal, onReset, onBecomeHost, onRemoveHost,
 }: ParticipantsPanelProps) {
   const { t } = useLanguage()
+  const votes = users.filter((user) => user.hasVoted).length
+  const progress = t('room.progress', { voted: votes, total: users.length })
+
   return (
-    <div className={`${PANEL_CARD_CLASS} flex flex-col h-full`}>
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">{t('room.participants')}</h2>
-        <span className="text-sm text-gray-500 dark:text-gray-400">{users.length}</span>
+    <aside className="panel people-panel" aria-labelledby="people-heading">
+      <div className="people-heading">
+        <Icon name="users" size={21} />
+        <h2 id="people-heading">{t('room.participants')}</h2>
+        <span className="people-count mono" aria-hidden="true">{users.length}</span>
       </div>
-      <div className="space-y-3 flex-1">
-        {users.map((user) => (
-          <ParticipantRow key={user.id} user={user} revealed={revealed} />
-        ))}
+      <div className="round-progress">
+        <p aria-live="polite">{progress}</p>
+        <progress aria-label={progress} max={Math.max(1, users.length)} value={votes} />
       </div>
-      {revealed && voteDistribution.length > 0 && (
-        <VoteDistributionChart voteDistribution={voteDistribution} />
-      )}
-      <div className="mt-auto pt-4">
-        <HostControls
-          isHost={isHost}
-          revealed={revealed}
-          hasAtLeastOneVote={hasAtLeastOneVote}
-          onReveal={onReveal}
-          onReset={onReset}
-          onBecomeHost={onBecomeHost}
-          onRemoveHost={onRemoveHost}
-        />
+      <ul className="participant-list">
+        {users.map((user) => <ParticipantRow key={user.id} user={user} current={user.id === viewerId} revealed={revealed} />)}
+      </ul>
+      <div className="host-controls">
+        {isHost && (
+          <button
+            className="button button-primary"
+            type="button"
+            onClick={revealed ? onReset : onReveal}
+            disabled={disabled || (!revealed && !votes)}
+          >
+            <Icon name={revealed ? 'reset' : 'eye'} size={19} />
+            {revealed ? t('room.nextRound') : t('room.revealVotes')}
+          </button>
+        )}
+        <button
+          className={isHost ? 'button button-quiet' : 'button button-outline'}
+          type="button"
+          onClick={isHost ? onRemoveHost : onBecomeHost}
+          disabled={disabled}
+        >
+          {isHost ? t('room.removeHostStatus') : t('room.becomeHost')}
+        </button>
       </div>
-    </div>
+    </aside>
   )
 }

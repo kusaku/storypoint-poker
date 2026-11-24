@@ -1,209 +1,107 @@
 'use client'
 
-import { useState, useMemo } from 'react'
-import {
-  TaskType,
-  WizardAnswers,
-  WizardAnswer,
-  WizardDropdownOption,
-  WizardDropdowns,
-  calculateStoryPoints,
-  getDropdownsByTaskType,
-  getWizardSectionData,
-} from '@/app/wizard-data'
-import { roundToNearestCard } from '@/app/fibonacci'
-import { WizardHelpModal } from '@/app/wizard/components/WizardHelpModal'
-import { WizardResultPreview } from '@/app/wizard/components/WizardResultPreview'
+import { useState } from 'react'
+import { Icon } from '@/app/components/Icon'
+import { SelectControl } from '@/app/components/SelectControl'
+import type { CardValue } from '@/app/fibonacci'
 import { useLanguage } from '@/app/i18n/language-provider'
-import { SECONDARY_BUTTON_CLASS } from '@/app/constants'
+import { calculateStoryPoints, getDropdownsByTaskType, taskTypeLabel, type TaskType, type WizardAnswers } from '@/app/wizard-data'
+import { WizardHelpModal } from './components/WizardHelpModal'
+import { WizardResultPreview } from './components/WizardResultPreview'
+
+const taskTypes = ['technical-implementation', 'content-communication'] as const
 
 interface WizardProps {
-  onCalculate: (suggestedSp: number) => void
+  initialAnswers: WizardAnswers | null
+  onAnswersChange: (answers: WizardAnswers) => void
   onBack: () => void
-  initialAnswers?: WizardAnswers
-  onAnswersChange?: (answers: WizardAnswers) => void
+  onVote: (vote: CardValue) => void
+  disabled: boolean
 }
 
-export function Wizard({ onCalculate, onBack, initialAnswers, onAnswersChange }: WizardProps) {
-  const [taskType, setTaskType] = useState<TaskType | null>(initialAnswers?.taskType || null)
-  const [answers, setAnswers] = useState<Record<string, WizardAnswer>>(
-    initialAnswers?.answers || {}
-  )
-  const [showHelpModal, setShowHelpModal] = useState(false)
+export function Wizard({ initialAnswers, onAnswersChange, onBack, onVote, disabled }: WizardProps) {
+  const [draft, setDraft] = useState(initialAnswers)
+  const [showHelp, setShowHelp] = useState(false)
   const { t } = useLanguage()
+  const sections = draft ? Object.entries(getDropdownsByTaskType(draft.taskType)) : []
+  const answered = sections.filter(([section]) => draft?.answers[section]).length
+  const result = draft && answered === sections.length ? calculateStoryPoints(draft) : null
 
-  const dropdowns = taskType ? getDropdownsByTaskType(taskType) : null
-  const sections = dropdowns ? Object.keys(dropdowns) : []
-
-  const getOptionByIndex = (
-    section: string,
-    index: number,
-    sourceDropdowns: WizardDropdowns
-  ): WizardDropdownOption | undefined => {
-    return getWizardSectionData(sourceDropdowns, section)?.options[index]
+  function update(next: WizardAnswers) {
+    setDraft(next)
+    onAnswersChange(next)
   }
 
-  const handleAnswerChange = (section: string, optionIndex: number | string) => {
-    if (!taskType || !dropdowns) return
-
-    if (optionIndex === '' || (typeof optionIndex === 'number' && optionIndex < 0)) {
-      const newAnswers = { ...answers }
-      delete newAnswers[section]
-      setAnswers(newAnswers)
-      onAnswersChange?.({ taskType, answers: newAnswers })
-      return
-    }
-
-    const index = typeof optionIndex === 'string' ? parseInt(optionIndex) : optionIndex
-    const option = getOptionByIndex(section, index, dropdowns)
-
-    if (!option) return
-
-    const newAnswer: WizardAnswer = {
-      section,
-      option: option.label,
-      value: option.value,
-      minSp: option.minSp,
-    }
-
-    const newAnswers = {
-      ...answers,
-      [section]: newAnswer,
-    }
-
-    setAnswers(newAnswers)
-    onAnswersChange?.({ taskType, answers: newAnswers })
+  function selectTaskType(taskType: TaskType) {
+    if (draft?.taskType !== taskType) update({ taskType, answers: {} })
   }
-
-  const handleCalculate = () => {
-    if (!taskType) return
-    const result = calculateStoryPoints({ taskType, answers })
-    if (result.flags.includes('DECOMPOSE_REQUIRED')) {
-      return
-    }
-    onCalculate(roundToNearestCard(result.suggestedSp))
-    onBack()
-  }
-
-  const getCurrentValue = (section: string): number => {
-    if (!dropdowns || !answers[section]?.option) return -1
-    const options = getWizardSectionData(dropdowns, section)?.options ?? []
-    return options.findIndex((opt) => opt.label === answers[section].option)
-  }
-
-  const answeredSections = useMemo(
-    () => sections.filter(section => answers[section] !== undefined),
-    [sections, answers]
-  )
-  const canCalculate = taskType !== null && answeredSections.length === sections.length
-  const result = useMemo(() => {
-    if (!canCalculate || !taskType) return null
-    return calculateStoryPoints({ taskType, answers })
-  }, [canCalculate, taskType, answers])
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">{t('wizard.storyPointHelper')}</h2>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setShowHelpModal(true)}
-            className={SECONDARY_BUTTON_CLASS}
-          >
-            {t('wizard.howItWorks')}
-          </button>
-          <button
-            onClick={onBack}
-            className={SECONDARY_BUTTON_CLASS}
-          >
-            {t('wizard.backToCards')}
-          </button>
-        </div>
+    <section className="panel wizard-panel" aria-labelledby="wizard-heading">
+      <div className="wizard-navigation">
+        <button className="button button-outline" type="button" onClick={onBack} autoFocus>
+          <span className="directional-icon"><Icon name="back" size={17} /></span>
+          {t('common.back')}
+        </button>
+        <button className="button button-outline" type="button" aria-haspopup="dialog" onClick={() => setShowHelp(true)}>
+          <Icon name="help" size={17} />
+          {t('wizardHelp.howItWorks')}
+        </button>
       </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-          {t('wizard.taskType')}
-        </label>
-        <div className="flex justify-center">
-          <div className="inline-flex items-center gap-1 bg-white dark:bg-gray-800 rounded-lg p-1 shadow-sm border border-gray-200 dark:border-gray-700">
-            {(['technical-implementation', 'content-communication'] as const).map((type) => (
-              <button
-                key={type}
-                type="button"
-                onClick={() => {
-                  setTaskType(type)
-                  setAnswers({})
-                  onAnswersChange?.({ taskType: type, answers: {} })
-                }}
-                className={`px-4 py-2 rounded text-sm font-medium transition-all ${
-                  taskType === type
-                    ? 'bg-indigo-600 dark:bg-indigo-500 text-white shadow-sm'
-                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                }`}
-              >
-                {type === 'technical-implementation' ? t('wizard.technicalImplementation') : t('wizard.contentCommunication')}
-              </button>
-            ))}
-          </div>
+      <h2 id="wizard-heading">{t('wizard.storyPointHelper')}</h2>
+      <fieldset className="field wizard-types" disabled={disabled}>
+        <legend>{t('wizard.taskType')}</legend>
+        <div className="segmented">
+          {taskTypes.map((type) => (
+            <button key={type} type="button" aria-pressed={draft?.taskType === type} onClick={() => selectTaskType(type)}>
+              {t(taskTypeLabel(type))}
+            </button>
+          ))}
         </div>
-      </div>
-
-      {taskType && dropdowns && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {sections.map((section) => {
-            const sectionData = getWizardSectionData(dropdowns, section)
-            const currentValue = getCurrentValue(section)
-            if (!sectionData) return null
-
+      </fieldset>
+      {draft && (
+        <div className="wizard-questions">
+          {sections.map(([section, { label, options }]) => {
+            const selected = draft.answers[section]?.option ?? ''
             return (
-              <div key={section} className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-700">
-                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                  {t(sectionData.label)}
-                </label>
-                <select
-                  value={currentValue >= 0 ? currentValue : ''}
-                  onChange={(e) => handleAnswerChange(section, e.target.value === '' ? '' : parseInt(e.target.value))}
-                  className="w-full px-2.5 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              <label className="field" key={section}>
+                {t(label)}
+                <SelectControl
+                  disabled={disabled}
+                  value={selected}
+                  displayValue={t(selected || 'common.select')}
+                  onChange={(event) => {
+                    const option = options.find(({ label }) => label === event.target.value)
+                    const answers = { ...draft.answers }
+                    if (option) {
+                      const { label, ...scores } = option
+                      answers[section] = { section, option: label, ...scores }
+                    } else {
+                      delete answers[section]
+                    }
+                    update({ ...draft, answers })
+                  }}
                 >
                   <option value="">{t('common.select')}</option>
-                  {sectionData.options.map((option, index) => (
-                    <option key={index} value={index}>
-                      {t(option.label)}
-                    </option>
-                  ))}
-                </select>
-              </div>
+                  {options.map(({ label }) => <option key={label} value={label}>{t(label)}</option>)}
+                </SelectControl>
+              </label>
             )
           })}
         </div>
       )}
-
-      {!canCalculate || !result ? (
-        <div className="bg-indigo-50 dark:bg-indigo-900/30 rounded-lg p-4 border border-indigo-200 dark:border-indigo-800">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-semibold text-indigo-800 dark:text-indigo-300">
-              {t('wizard.suggestedStoryPoints')}
-            </h3>
-          </div>
-          <div className="mt-2 p-2 bg-blue-100 dark:bg-blue-900/30 rounded text-xs text-blue-800 dark:text-blue-300">
-            {!taskType
-              ? t('wizard.selectTaskTypeToBegin')
-              : t('wizard.answerAllQuestions', { total: sections.length, answered: answeredSections.length })
-            }
-          </div>
-        </div>
+      {result ? (
+        <WizardResultPreview result={result} disabled={disabled} onVote={onVote} />
       ) : (
-        <WizardResultPreview
-          result={result}
-          canCalculate={canCalculate}
-          onCalculate={handleCalculate}
-        />
+        <div className="wizard-pending" role="status">
+          <Icon name="sparkle" size={19} />
+          {t(draft ? 'wizard.answerAllQuestions' : 'wizard.selectTaskTypeToBegin', {
+            answered,
+            total: sections.length,
+          })}
+        </div>
       )}
-
-      {showHelpModal && (
-        <WizardHelpModal onClose={() => setShowHelpModal(false)} />
-      )}
-    </div>
+      {showHelp && <WizardHelpModal onClose={() => setShowHelp(false)} />}
+    </section>
   )
 }

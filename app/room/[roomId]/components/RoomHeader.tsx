@@ -1,69 +1,119 @@
 'use client'
 
-import Link from 'next/link'
-import Image from 'next/image'
+import { useEffect, useRef, useState } from 'react'
+import { Dialog } from '@/app/components/Dialog'
+import { Icon } from '@/app/components/Icon'
 import { useLanguage } from '@/app/i18n/language-provider'
-import { PANEL_CARD_CLASS } from '@/app/constants'
+import { roomPath } from '@/app/room-url'
+import type { Connection } from '../useRoom'
 
 interface RoomHeaderProps {
   roomId: string
-  userName: string
-  isConnected: boolean
-  copied: boolean
-  revealed: boolean
-  onCopyInviteLink: () => void
+  connection: Connection
+  round?: number
+  onResetRound?: () => void
 }
 
-export function RoomHeader({ roomId, userName, isConnected, copied, revealed, onCopyInviteLink }: RoomHeaderProps) {
+export function RoomHeader({ roomId, connection, round, onResetRound }: RoomHeaderProps) {
   const { t } = useLanguage()
+  const [copied, setCopied] = useState(false)
+  const [manualLink, setManualLink] = useState('')
+  const [roundToReset, setRoundToReset] = useState<number | null>(null)
+  const timeout = useRef<ReturnType<typeof setTimeout>>()
+
+  useEffect(() => () => clearTimeout(timeout.current), [])
+
+  async function copyInvite() {
+    const url = new URL(roomPath(roomId), window.location.origin).href
+    try {
+      await navigator.clipboard.writeText(url)
+      clearTimeout(timeout.current)
+      setCopied(true)
+      timeout.current = setTimeout(() => setCopied(false), 2200)
+    } catch {
+      setManualLink(url)
+    }
+  }
+
+  const connectionLabel = connection === 'connecting' ? t('room.connecting') : t('common.' + connection)
+  const roundLabel = round === undefined ? '' : t('room.roundLabel', { round })
+  const inviteLabel = t(copied ? 'common.copied' : 'room.copyInvite')
   return (
-    <div className={`${PANEL_CARD_CLASS} mb-4`}>
-      <div className="flex items-center gap-4">
-        <Link href="/" className="flex-shrink-0">
-          <Image
-            src="/logo.webp"
-            alt={t('home.title')}
-            width={90}
-            height={90}
-            className="hover:opacity-80 transition-opacity"
-            priority
-          />
-        </Link>
-        <div>
-          <h1 className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{t('room.room')}: {roomId}</h1>
-          <p className="text-gray-600 dark:text-gray-300">{t('room.welcome', { name: userName })}</p>
-          <div className="flex items-center gap-2 mt-1">
-            {isConnected ? (
-              <span className="text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded">🟢 {t('common.connected')}</span>
-            ) : (
-              <span className="text-xs bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 px-2 py-1 rounded">🔴 {t('common.disconnected')}</span>
-            )}
-            {revealed ? (
-              <span className="text-xs bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 px-2 py-1 rounded font-medium">
-                📊 {t('room.votesRevealedStatus')}
-              </span>
-            ) : (
-              <span className="text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded font-medium">
-                ✋ {t('room.votingOpen')}
-              </span>
-            )}
+    <div className="room-header">
+      <div className="room-heading">
+        <div className="room-code">
+          <span>{t('common.room')}</span>
+          <span className="room-code-link">
+            <bdi className="mono">{roomId}</bdi>
             <button
-              onClick={onCopyInviteLink}
-              className="text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded hover:bg-green-200 dark:hover:bg-green-800 transition-colors flex items-center gap-1"
+              className="icon-button invite-button"
+              type="button"
+              title={inviteLabel}
+              data-copied={copied}
+              onClick={copyInvite}
             >
-              {copied ? (
-                <>
-                  <span>✓</span> {t('common.copied')}
-                </>
-              ) : (
-                <>
-                  <span>🔗</span> {t('room.invitationLink')}
-                </>
-              )}
+              <Icon name={copied ? 'check' : 'link'} size={16} />
+              <span className="sr-only" aria-live="polite">{inviteLabel}</span>
+            </button>
+          </span>
+        </div>
+        <h1>{t('room.planningRoom')}</h1>
+      </div>
+      <div className="room-actions">
+        {round !== undefined && (
+          onResetRound ? (
+            <button
+              className="round-label round-trigger"
+              type="button"
+              title={t('room.resetRound')}
+              aria-label={roundLabel + ' · ' + t('room.resetRound')}
+              aria-haspopup="dialog"
+              disabled={connection !== 'connected'}
+              onClick={() => setRoundToReset(round)}
+            >
+              {roundLabel} <Icon name="reset" size={15} />
+            </button>
+          ) : <span className="round-label">{roundLabel}</span>
+        )}
+        <span className="connection" data-state={connection} role="status">
+          <span className="status-dot" />{connectionLabel}
+        </span>
+      </div>
+      {onResetRound && roundToReset !== null && roundToReset === round && (
+        <Dialog title={t('room.resetRound')} onClose={() => setRoundToReset(null)}>
+          <p className="round-reset-copy">{t('room.resetRoundDescription')}</p>
+          <div className="round-reset-actions">
+            <button className="button button-outline" type="button" onClick={() => setRoundToReset(null)}>
+              {t('common.cancel')}
+            </button>
+            <button
+              className="button button-primary"
+              type="button"
+              disabled={connection !== 'connected'}
+              onClick={() => {
+                onResetRound()
+                setRoundToReset(null)
+              }}
+            >
+              <Icon name="reset" size={16} />
+              {t('room.resetRound')}
             </button>
           </div>
-        </div>
-      </div>
+        </Dialog>
+      )}
+      {manualLink && (
+        <Dialog title={t('room.invitationLink')} onClose={() => setManualLink('')}>
+          <input
+            className="input mono"
+            aria-label={t('room.invitationLink')}
+            dir="ltr"
+            readOnly
+            autoFocus
+            onFocus={(event) => event.currentTarget.select()}
+            value={manualLink}
+          />
+        </Dialog>
+      )}
     </div>
   )
 }

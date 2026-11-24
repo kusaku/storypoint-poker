@@ -1,59 +1,26 @@
-# 🃏 Story Point Poker
+# Story Point Poker
 
-<div align="center">
-  <img src="./public/logo.webp" alt="Story Point Poker Logo" width="200"/>
-</div>
+<img src="./app/icon.svg" alt="Story Point Poker logo" width="96" />
 
-A real-time planning poker application for agile teams. Built with Next.js, Socket.io, and Tailwind CSS.
+Real-time planning poker for agile teams. Create a room, share the invite link, and estimate stories together.
 
-## ✨ Features
+- Vote privately and add comments before the host reveals the round’s results.
+- Get a suggested estimate from the estimation helper.
+- Review the vote breakdown and median estimate after the reveal.
 
-- 🎯 Create and join planning poker rooms
-- ⚡ Real-time voting with Socket.io
-- 🎴 Fibonacci cards: 0 (Joker), 1, 2, 3, 5, 8
-- 🧙 **Story Point Wizard** — guided estimation for Technical or Content tasks; suggests a card and can apply as vote; choices visible in participant details after reveal
-- 💬 Comments with emoji picker (140 character limit)
-- 👁️ Reveal votes and reset round (host only)
-- 📊 Vote distribution pie chart after reveal
-- 🌓 Light, dark, and auto (system) theme
-- 👑 Host: reveal and reset. Any participant can become host or remove host
-- 🔗 Copy invitation link
-- 📱 Responsive design
+The app works on desktop and mobile and supports multiple themes and languages.
 
-## 🚀 Quick Start
+## Run locally
 
-### Prerequisites
-
-- Node.js 18+
-- npm
-
-### Installation & Development
+Requires Node.js 20.9 or newer and npm.
 
 ```bash
-npm install
+npm ci
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) - auto-reloads on changes.
+Open [localhost:3000](http://localhost:3000).
 
-### Production
+Run `npm run typecheck` and `npm test` to check changes.
 
-```bash
-npm run build
-npm start
-```
-
-## 🚢 Deployment
-
-Deploy to your VDS using GitHub Actions. See [DEPLOYMENT.md](./DEPLOYMENT.md) for details.
-
-## 🛠️ Tech Stack
-
-- **Frontend:** Next.js 16, React, TypeScript, Tailwind CSS
-- **Real-time:** Socket.io (custom server, see `server.js`)
-- **Charts:** Recharts
-- **Hosting:** VDS with Nginx + systemd
-
-## 📝 License
-
-MIT
+[Deployment guide](./DEPLOYMENT.md) · [MIT License](./LICENSE)

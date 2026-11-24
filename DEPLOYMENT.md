@@ -90,7 +90,7 @@ sudo systemctl reload nginx
 
 ```bash
 # Install dependencies
-npm install
+npm ci
 
 # Build
 npm run build
@@ -107,16 +107,17 @@ Then open: http://localhost:3000
 storypoint-poker/
 ├── app/              # Next.js app directory
 │   ├── page.tsx      # Home page
+│   ├── icon.svg      # Favicon and header mark
 │   └── room/         # Room pages
-├── public/           # Static assets (logo, favicon)
+├── public/           # Static images
 ├── server.js         # Custom server (Next.js + Socket.io)
 └── package.json
 ```
 
 ## 🔧 Tech Stack
 
-- **Frontend:** Next.js 16, React, TypeScript, Tailwind CSS
-- **Backend:** Socket.io (in `server.js`)
+- **Frontend:** Next.js 16, React, TypeScript, and CSS
+- **Backend:** Socket.IO with room state in `server/rooms.js`
 - **Hosting:** VDS with Nginx + systemd
 
 ## 📋 Service Management
